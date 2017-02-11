@@ -15,6 +15,8 @@ solution 'lm-sv'
 		language 'C++'
 		files { '../EnhancedReborn/**.h', '../EnhancedReborn/**.cpp', '../EnhancedReborn/**.c', '../Server/Source/**.cpp', '../Server/Include/**.h' }
 
+		removefiles { '../**/database_sqlite.cpp', '../**/sqlite3.c' }
+
 		includedirs { '../Server/Include/' }
 
 		defines { 'SERVER_SIDED' }

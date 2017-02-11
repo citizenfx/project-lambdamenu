@@ -1502,6 +1502,8 @@ void update_features()
 		DWORD myThreadID;
 		HANDLE myHandle = CreateThread(0, 0, save_settings_thread, 0, 0, &myThreadID);
 		CloseHandle(myHandle);
+#else
+		save_settings();
 #endif
 	}
 
@@ -4222,6 +4224,8 @@ void reset_globals()
 	DWORD myThreadID;
 	HANDLE myHandle = CreateThread(0, 0, save_settings_thread, 0, 0, &myThreadID);
 	CloseHandle(myHandle);
+#else
+	save_settings();
 #endif
 }
 void RunMain()
@@ -4322,10 +4326,12 @@ int filterException(int code, PEXCEPTION_POINTERS ex)
 
 void ScriptMain()
 {
-	#ifdef _DEBUG
+#ifdef _DEBUG
 	__try
 	{
 #endif
+
+		write_text_to_log_file("main!?");
 
 		clear_log_file();
 
@@ -4333,7 +4339,9 @@ void ScriptMain()
 		init_storage();
 #endif
 
-		database = new ERDatabase();
+		write_text_to_log_file("Creating database?");
+
+		database = create_database();
 		if (!database->open() )
 		{
 			write_text_to_log_file("Failed to open database");

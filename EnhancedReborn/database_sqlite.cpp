@@ -19,10 +19,88 @@
 #include <string>
 #include <sstream>
 
+#include "inc/sqlite3/sqlite3.h"
+
+class ERDatabaseSQL : public ERDatabase
+{
+public:
+	virtual ~ERDatabaseSQL() {};
+
+	virtual bool open() override;
+
+	virtual void close() override;
+
+	virtual void store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values) override;
+
+	virtual void load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values) override;
+
+	virtual void store_setting_pairs(std::vector<StringPairSettingDBRow> values) override;
+
+	virtual std::vector<StringPairSettingDBRow> load_setting_pairs() override;
+
+	virtual bool save_vehicle(Vehicle veh, std::string saveName, int slot = -1) override;
+
+	virtual bool save_skin(Ped ped, std::string saveName, int slot = -1) override;
+
+	virtual std::vector<SavedVehicleDBRow*> get_saved_vehicles(int index = -1) override;
+
+	virtual std::vector<SavedSkinDBRow*> get_saved_skins(int index = -1) override;
+
+	virtual void populate_saved_vehicle(SavedVehicleDBRow *entry) override;
+
+	virtual void populate_saved_skin(SavedSkinDBRow *entry) override;
+
+	virtual void delete_saved_vehicle(int slot) override;
+
+	virtual void delete_saved_vehicle_children(int slot) override;
+
+	virtual void delete_saved_skin(int slot) override;
+
+	virtual void delete_saved_skin_children(int slot) override;
+
+	virtual void rename_saved_vehicle(std::string name, int slot) override;
+
+	virtual void rename_saved_skin(std::string name, int slot) override;
+
+private:
+
+	void save_vehicle_extras(Vehicle veh, sqlite3_int64 rowID);
+
+	void save_vehicle_mods(Vehicle veh, sqlite3_int64 rowID);
+
+	void save_skin_components(Ped ped, sqlite3_int64 rowID);
+
+	void save_skin_props(Ped ped, sqlite3_int64 rowID);
+
+	void handle_version(int oldVersion);
+
+	void begin_transaction();
+
+	void end_transaction();
+
+	void mutex_lock();
+
+	void mutex_unlock();
+
+	sqlite3 *db;
+
+	char *zErrMsg = 0;
+
+	int manifest_version = 0;
+
+	bool has_transaction_begun = false;
+
+	sqlite3_mutex *db_mutex;
+
+	std::map<std::string, bool> featureEnablementCache;
+
+	std::map<std::string, std::string> genericSettingsCache;
+};
+
 #pragma warning(disable : 4267) // size_t conversion
 
 /**This value should be increased whenever you change the schema and a release is made.
-However you must also put in code to upgrade from older versions, in ERDatabase::handle_version,
+However you must also put in code to upgrade from older versions, in ERDatabaseSQL::handle_version,
 as they will be deployed in the wild already.*/
 const int DATABASE_VERSION = 6;
 
@@ -75,7 +153,7 @@ static int genericSettingPairsFetchCallback(void *data, int count, char **rows, 
 	return 0;
 }
 
-void ERDatabase::handle_version(int oldVersion)
+void ERDatabaseSQL::handle_version(int oldVersion)
 {
 	if (oldVersion == -1)
 	{
@@ -313,7 +391,7 @@ neonToggle3 INTEGER \
 	}
 }
 
-bool ERDatabase::open()
+bool ERDatabaseSQL::open()
 {
 	std::stringstream ss;
 
@@ -436,7 +514,7 @@ bool ERDatabase::open()
 	return true;
 }
 
-void ERDatabase::close()
+void ERDatabaseSQL::close()
 {
 	write_text_to_log_file("DB closing");
 	if (db != NULL)
@@ -456,7 +534,7 @@ void ERDatabase::close()
 	write_text_to_log_file("DB shutdown");
 }
 
-void ERDatabase::store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values)
+void ERDatabaseSQL::store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values)
 {
 	bool cacheIsSame = true;
 	for (FeatureEnabledLocalDefinition def : values)
@@ -518,7 +596,7 @@ void ERDatabase::store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefi
 	write_text_to_log_file("Done storing feature pairs");
 }
 
-void ERDatabase::load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values)
+void ERDatabaseSQL::load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values)
 {
 	mutex_lock();
 
@@ -557,7 +635,7 @@ void ERDatabase::load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefin
 	mutex_unlock();
 }
 
-void ERDatabase::store_setting_pairs(std::vector<StringPairSettingDBRow> values)
+void ERDatabaseSQL::store_setting_pairs(std::vector<StringPairSettingDBRow> values)
 {
 	bool cacheIsSame = true;
 	for (StringPairSettingDBRow row : values)
@@ -645,7 +723,7 @@ void ERDatabase::store_setting_pairs(std::vector<StringPairSettingDBRow> values)
 	write_text_to_log_file("Done storing generic pairs");
 }
 
-std::vector<StringPairSettingDBRow> ERDatabase::load_setting_pairs()
+std::vector<StringPairSettingDBRow> ERDatabaseSQL::load_setting_pairs()
 {
 	mutex_lock();
 
@@ -679,7 +757,7 @@ std::vector<StringPairSettingDBRow> ERDatabase::load_setting_pairs()
 	return dbPairs;
 }
 
-void ERDatabase::save_vehicle_extras(Vehicle veh, sqlite3_int64 rowID)
+void ERDatabaseSQL::save_vehicle_extras(Vehicle veh, sqlite3_int64 rowID)
 {
 	mutex_lock();
 
@@ -723,7 +801,7 @@ void ERDatabase::save_vehicle_extras(Vehicle veh, sqlite3_int64 rowID)
 	mutex_unlock();
 }
 
-void ERDatabase::save_vehicle_mods(Vehicle veh, sqlite3_int64 rowID)
+void ERDatabaseSQL::save_vehicle_mods(Vehicle veh, sqlite3_int64 rowID)
 {
 	mutex_lock();
 
@@ -773,7 +851,7 @@ void ERDatabase::save_vehicle_mods(Vehicle veh, sqlite3_int64 rowID)
 	mutex_unlock();
 }
 
-void ERDatabase::save_skin_components(Ped ped, sqlite3_int64 rowID)
+void ERDatabaseSQL::save_skin_components(Ped ped, sqlite3_int64 rowID)
 {
 	mutex_lock();
 
@@ -816,7 +894,7 @@ void ERDatabase::save_skin_components(Ped ped, sqlite3_int64 rowID)
 	mutex_unlock();
 }
 
-void ERDatabase::save_skin_props(Ped ped, sqlite3_int64 rowID)
+void ERDatabaseSQL::save_skin_props(Ped ped, sqlite3_int64 rowID)
 {
 	mutex_lock();
 
@@ -859,7 +937,7 @@ void ERDatabase::save_skin_props(Ped ped, sqlite3_int64 rowID)
 	mutex_unlock();
 }
 
-bool ERDatabase::save_skin(Ped ped, std::string saveName, sqlite3_int64 slot)
+bool ERDatabaseSQL::save_skin(Ped ped, std::string saveName, int slot)
 {
 	mutex_lock();
 
@@ -911,7 +989,7 @@ bool ERDatabase::save_skin(Ped ped, std::string saveName, sqlite3_int64 slot)
 	return result;
 }
 
-bool ERDatabase::save_vehicle(Vehicle veh, std::string saveName, sqlite3_int64 slot)
+bool ERDatabaseSQL::save_vehicle(Vehicle veh, std::string saveName, int slot)
 {
 	mutex_lock();
 
@@ -1121,7 +1199,7 @@ bool ERDatabase::save_vehicle(Vehicle veh, std::string saveName, sqlite3_int64 s
 	return result;
 }
 
-std::vector<SavedSkinDBRow*> ERDatabase::get_saved_skins(int index)
+std::vector<SavedSkinDBRow*> ERDatabaseSQL::get_saved_skins(int index)
 {
 	write_text_to_log_file("Asked to load saved skins");
 
@@ -1180,7 +1258,7 @@ std::vector<SavedSkinDBRow*> ERDatabase::get_saved_skins(int index)
 	return results;
 }
 
-std::vector<SavedVehicleDBRow*> ERDatabase::get_saved_vehicles(int index)
+std::vector<SavedVehicleDBRow*> ERDatabaseSQL::get_saved_vehicles(int index)
 {
 	write_text_to_log_file("Asked to load saved vehicles");
 
@@ -1294,7 +1372,7 @@ std::vector<SavedVehicleDBRow*> ERDatabase::get_saved_vehicles(int index)
 	return results;
 }
 
-void ERDatabase::populate_saved_skin(SavedSkinDBRow *entry)
+void ERDatabaseSQL::populate_saved_skin(SavedSkinDBRow *entry)
 {
 	mutex_lock();
 
@@ -1366,7 +1444,7 @@ void ERDatabase::populate_saved_skin(SavedSkinDBRow *entry)
 	return;
 }
 
-void ERDatabase::populate_saved_vehicle(SavedVehicleDBRow *entry)
+void ERDatabaseSQL::populate_saved_vehicle(SavedVehicleDBRow *entry)
 {
 	mutex_lock();
 
@@ -1437,7 +1515,7 @@ void ERDatabase::populate_saved_vehicle(SavedVehicleDBRow *entry)
 	return;
 }
 
-void ERDatabase::delete_saved_vehicle(sqlite3_int64 slot)
+void ERDatabaseSQL::delete_saved_vehicle(int slot)
 {
 	mutex_lock();
 
@@ -1464,7 +1542,7 @@ void ERDatabase::delete_saved_vehicle(sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::delete_saved_skin(sqlite3_int64 slot)
+void ERDatabaseSQL::delete_saved_skin(int slot)
 {
 	mutex_lock();
 
@@ -1491,7 +1569,7 @@ void ERDatabase::delete_saved_skin(sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::rename_saved_vehicle(std::string name, sqlite3_int64 slot)
+void ERDatabaseSQL::rename_saved_vehicle(std::string name, int slot)
 {
 	mutex_lock();
 
@@ -1519,7 +1597,7 @@ void ERDatabase::rename_saved_vehicle(std::string name, sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::rename_saved_skin(std::string name, sqlite3_int64 slot)
+void ERDatabaseSQL::rename_saved_skin(std::string name, int slot)
 {
 	mutex_lock();
 
@@ -1547,7 +1625,7 @@ void ERDatabase::rename_saved_skin(std::string name, sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::delete_saved_vehicle_children(sqlite3_int64 slot)
+void ERDatabaseSQL::delete_saved_vehicle_children(int slot)
 {
 	mutex_lock();
 
@@ -1594,7 +1672,7 @@ void ERDatabase::delete_saved_vehicle_children(sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::delete_saved_skin_children(sqlite3_int64 slot)
+void ERDatabaseSQL::delete_saved_skin_children(int slot)
 {
 	mutex_lock();
 
@@ -1641,7 +1719,7 @@ void ERDatabase::delete_saved_skin_children(sqlite3_int64 slot)
 	mutex_unlock();
 }
 
-void ERDatabase::begin_transaction()
+void ERDatabaseSQL::begin_transaction()
 {
 	if (has_transaction_begun == false)
 	{
@@ -1649,7 +1727,7 @@ void ERDatabase::begin_transaction()
 		sqlite3_exec(db, "BEGIN TRANSACTION;", NULL, NULL, NULL);
 	}
 }
-void ERDatabase::end_transaction()
+void ERDatabaseSQL::end_transaction()
 {
 	if (has_transaction_begun == true)
 	{
@@ -1658,12 +1736,17 @@ void ERDatabase::end_transaction()
 	}
 }
 
-void ERDatabase::mutex_lock()
+void ERDatabaseSQL::mutex_lock()
 {
 	sqlite3_mutex_enter(db_mutex);
 }
 
-void ERDatabase::mutex_unlock()
+void ERDatabaseSQL::mutex_unlock()
 {
 	sqlite3_mutex_leave(db_mutex);
+}
+
+ERDatabase* create_database()
+{
+	return new ERDatabaseSQL();
 }

@@ -13,7 +13,6 @@
 */
 
 #include <stdio.h>
-#include "inc/sqlite3/sqlite3.h"
 
 #include <natives.h>
 #include <types.h>
@@ -180,73 +179,41 @@ public:
 
 	virtual ~ERDatabase() {};
 
-	bool open();
+	virtual bool open() = 0;
 
-	void close();
+	virtual void close() = 0;
 
-	void store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values);
+	virtual void store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values) = 0;
 
-	void load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values);
+	virtual void load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values) = 0;
 
-	void store_setting_pairs(std::vector<StringPairSettingDBRow> values);
+	virtual void store_setting_pairs(std::vector<StringPairSettingDBRow> values) = 0;
 
-	std::vector<StringPairSettingDBRow> load_setting_pairs();
+	virtual std::vector<StringPairSettingDBRow> load_setting_pairs() = 0;
 
-	bool save_vehicle(Vehicle veh, std::string saveName, sqlite3_int64 slot = -1);
+	virtual bool save_vehicle(Vehicle veh, std::string saveName, int slot = -1) = 0;
 
-	bool save_skin(Ped ped, std::string saveName, sqlite3_int64 slot = -1);
+	virtual bool save_skin(Ped ped, std::string saveName, int slot = -1) = 0;
 
-	std::vector<SavedVehicleDBRow*> get_saved_vehicles(int index = -1);
+	virtual std::vector<SavedVehicleDBRow*> get_saved_vehicles(int index = -1) = 0;
 
-	std::vector<SavedSkinDBRow*> get_saved_skins(int index = -1);
+	virtual std::vector<SavedSkinDBRow*> get_saved_skins(int index = -1) = 0;
 
-	void populate_saved_vehicle(SavedVehicleDBRow *entry);
+	virtual void populate_saved_vehicle(SavedVehicleDBRow *entry) = 0;
 
-	void populate_saved_skin(SavedSkinDBRow *entry);
+	virtual void populate_saved_skin(SavedSkinDBRow *entry) = 0;
 
-	void delete_saved_vehicle(sqlite3_int64 slot);
+	virtual void delete_saved_vehicle(int slot) = 0;
 
-	void delete_saved_vehicle_children(sqlite3_int64 slot);
+	virtual void delete_saved_vehicle_children(int slot) = 0;
 
-	void delete_saved_skin(sqlite3_int64 slot);
+	virtual void delete_saved_skin(int slot) = 0;
 
-	void delete_saved_skin_children(sqlite3_int64 slot);
+	virtual void delete_saved_skin_children(int slot) = 0;
 
-	void rename_saved_vehicle(std::string name, sqlite3_int64 slot);
+	virtual void rename_saved_vehicle(std::string name, int slot) = 0;
 
-	void rename_saved_skin(std::string name, sqlite3_int64 slot);
-
-private:
-
-	void save_vehicle_extras(Vehicle veh, sqlite3_int64 rowID);
-
-	void save_vehicle_mods(Vehicle veh, sqlite3_int64 rowID);
-
-	void save_skin_components(Ped ped, sqlite3_int64 rowID);
-
-	void save_skin_props(Ped ped, sqlite3_int64 rowID);
-
-	void handle_version(int oldVersion);
-
-	void begin_transaction();
-
-	void end_transaction();
-
-	void mutex_lock();
-
-	void mutex_unlock();
-
-	sqlite3 *db;
-
-	char *zErrMsg = 0;
-
-	int manifest_version = 0;
-
-	bool has_transaction_begun = false;
-
-	sqlite3_mutex *db_mutex;
-
-	std::map<std::string, bool> featureEnablementCache;
-
-	std::map<std::string, std::string> genericSettingsCache;
+	virtual void rename_saved_skin(std::string name, int slot) = 0;
 };
+
+ERDatabase* create_database();
