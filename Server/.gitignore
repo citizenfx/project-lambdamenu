@@ -1,0 +1,5 @@
+Bin/
+Build/
+Obj/
+whitelist.tmp
+whitelist.txt

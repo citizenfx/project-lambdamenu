@@ -637,27 +637,27 @@ bool process_vehmod_category_special_menu(int category)
 		return false;
 	}
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < values.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
+		MenuItem<int> item;
 		std::string specialName = geSpecialItemTitle(category, i);
 		if (!specialName.empty())
 		{
-			item->caption = specialName;
+			item.caption = specialName;
 		}
 		else if (i == 0 && values.at(i) == -1)
 		{
-			item->caption = "Default";
+			item.caption = "Default";
 		}
 		else
 		{
 			std::ostringstream ss;
 			ss << getModCategoryName(category) << " Item " << i;
-			item->caption = ss.str();
+			item.caption = ss.str();
 		}
-		item->value = values.at(i);
-		item->isLeaf = true;
+		item.value = values.at(i);
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -703,7 +703,7 @@ bool process_vehmod_category_menu(int category)
 	}
 
 	Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int count = 0;
 	if (category == SPECIAL_ID_FOR_WHEEL_SELECTION)
@@ -733,28 +733,28 @@ bool process_vehmod_category_menu(int category)
 
 	if (category == SPECIAL_ID_FOR_WHEEL_SELECTION)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = "Default Wheel For Vehicle";
-		item->value = -1;
-		item->isLeaf = true;
+		MenuItem<int> item;
+		item.caption = "Default Wheel For Vehicle";
+		item.value = -1;
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 	else
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = getNormalItemTitle(veh, category, -1);
-		item->value = -1;
-		item->isLeaf = true;
+		MenuItem<int> item;
+		item.caption = getNormalItemTitle(veh, category, -1);
+		item.value = -1;
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
 	for (int i = 0; i < count; i++)
 	{
 		std::string modItemNameStr = getNormalItemTitle(veh, actualCategory, i);
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = modItemNameStr;
-		item->value = i;
-		item->isLeaf = true;
+		MenuItem<int> item;
+		item.caption = modItemNameStr;
+		item.value = i;
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -2728,54 +2728,54 @@ bool process_vehmod_menu()
 
 	std::string caption = "Vehicle Mod Options";
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	if (!isWeird && !isAircraft)
 	{
-		MenuItem<int> *item1 = new MenuItem<int>();
-		item1->caption = "Add All Armor Upgrades";
-		item1->value = -1;
-		item1->isLeaf = true;
+		MenuItem<int> item1;
+		item1.caption = "Add All Armor Upgrades";
+		item1.value = -1;
+		item1.isLeaf = true;
 		menuItems.push_back(item1);
 
-		MenuItem<int> *item2 = new MenuItem<int>();
-		item2->caption = "Add Random Paint Colors";
-		item2->value = -2;
-		item2->isLeaf = true;
+		MenuItem<int> item2;
+		item2.caption = "Add Random Paint Colors";
+		item2.value = -2;
+		item2.isLeaf = true;
 		menuItems.push_back(item2);
 
-		MenuItem<int> *item3 = new MenuItem<int>();
-		item3->caption = "Add Random Cosmetic Upgrades";
-		item3->value = -3;
-		item3->isLeaf = true;
+		MenuItem<int> item3;
+		item3.caption = "Add Random Cosmetic Upgrades";
+		item3.value = -3;
+		item3.isLeaf = true;
 		menuItems.push_back(item3);
 
-		MenuItem<int> *item4 = new MenuItem<int>();
-		item4->caption = "Add All Performance Upgrades";
-		item4->value = -4;
-		item4->isLeaf = true;
+		MenuItem<int> item4;
+		item4.caption = "Add All Performance Upgrades";
+		item4.value = -4;
+		item4.isLeaf = true;
 		menuItems.push_back(item4);
 
-		MenuItem<int> *item5 = new MenuItem<int>();
-		item5->caption = "Remove All Upgrades";
-		item5->value = -5;
-		item5->isLeaf = true;
+		MenuItem<int> item5;
+		item5.caption = "Remove All Upgrades";
+		item5.value = -5;
+		item5.isLeaf = true;
 		menuItems.push_back(item5);
 	}
 
 	if (!isACar)
 	//if (isSpecial)
 	{
-		MenuItem<int> *item7 = new MenuItem<int>();
-		item7->caption = "Accent Color (74)";
-		item7->value = -6;
-		item7->isLeaf = false;
+		MenuItem<int> item7;
+		item7.caption = "Accent Color (74)";
+		item7.value = -6;
+		item7.isLeaf = false;
 		menuItems.push_back(item7);
 
-		MenuItem<int> *item8 = new MenuItem<int>();
-		item8->caption = "Interior Trim (74)";
-		item8->value = -7;
-		item8->isLeaf = false;
+		MenuItem<int> item8;
+		item8.caption = "Interior Trim (74)";
+		item8.value = -7;
+		item8.isLeaf = false;
 		menuItems.push_back(item8);
 	}
 
@@ -2798,10 +2798,10 @@ bool process_vehmod_menu()
 				//ss << "Slot " << (compIndex + 1) << ": ";
 				ss << getModCategoryName(i) << " (" << (mods + 1) << ")";
 
-				MenuItem<int> *item = new MenuItem<int>();
-				item->caption = ss.str();
-				item->value = compIndex;
-				item->isLeaf = false;
+				MenuItem<int> item;
+				item.caption = ss.str();
+				item.value = compIndex;
+				item.isLeaf = false;
 				menuItems.push_back(item);
 			}
 		}
@@ -2812,42 +2812,40 @@ bool process_vehmod_menu()
 	if (!isWeird && !isAircraft)
 	{
 		int tintCount = VEHICLE::GET_NUM_VEHICLE_WINDOW_TINTS();
-		MenuItem<int> *item = new MenuItem<int>();
+		MenuItem<int> item;
 		ss << getModCategoryName(SPECIAL_ID_FOR_WINDOW_TINT) << " (" << tintCount << ")";
-		item->caption = ss.str();
-		item->value = SPECIAL_ID_FOR_WINDOW_TINT;
-		item->isLeaf = false;
+		item.caption = ss.str();
+		item.value = SPECIAL_ID_FOR_WINDOW_TINT;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 
 		ss.str(""); ss.clear();
 
 		int plateCount = VEHICLE::GET_NUMBER_OF_VEHICLE_NUMBER_PLATES();
-		item = new MenuItem<int>();
 		ss << getModCategoryName(SPECIAL_ID_FOR_LICENSE_PLATES) << " (" << plateCount << ")";
-		item->caption = ss.str();
-		item->value = SPECIAL_ID_FOR_LICENSE_PLATES;
-		item->isLeaf = false;
+		item.caption = ss.str();
+		item.value = SPECIAL_ID_FOR_LICENSE_PLATES;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 
 		ss.str(""); ss.clear();
 
 		if (!isWeird && !isAircraft)
 		{
-			MenuItem<int>* item = new MenuItem<int>();
-			item->caption = "Change Plate Text";
-			item->isLeaf = false;
-			item->onConfirmFunction = set_plate_text;
-			item->value = SPECIAL_ID_FOR_PLATE_TEXT;
+			MenuItem<int> item;
+			item.caption = "Change Plate Text";
+			item.isLeaf = false;
+			item.onConfirmFunction = set_plate_text;
+			item.value = SPECIAL_ID_FOR_PLATE_TEXT;
 			menuItems.push_back(item);
 		}
 
 		if (!VEHICLE::IS_THIS_MODEL_A_BIKE(ENTITY::GET_ENTITY_MODEL(veh)))
 		{
-			item = new MenuItem<int>();
 			ss << getModCategoryName(SPECIAL_ID_FOR_WHEEL_CATEGORY) << " (" << WHEEL_CATEGORY_COUNT << ")";
-			item->caption = ss.str();
-			item->value = SPECIAL_ID_FOR_WHEEL_CATEGORY;
-			item->isLeaf = false;
+			item.caption = ss.str();
+			item.value = SPECIAL_ID_FOR_WHEEL_CATEGORY;
+			item.isLeaf = false;
 			menuItems.push_back(item);
 
 			ss.str(""); ss.clear();
@@ -2872,11 +2870,10 @@ bool process_vehmod_menu()
 			wheelCount = WHEEL_CATEGORY_COUNTS[wheelType];
 		}
 
-		item = new MenuItem<int>();
 		ss << getModCategoryName(SPECIAL_ID_FOR_WHEEL_SELECTION) << " (" << wheelCount << ")";
-		item->caption = ss.str();
-		item->value = SPECIAL_ID_FOR_WHEEL_SELECTION;
-		item->isLeaf = false;
+		item.caption = ss.str();
+		item.value = SPECIAL_ID_FOR_WHEEL_SELECTION;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 
 		ss.str(""); ss.clear();
@@ -2884,58 +2881,54 @@ bool process_vehmod_menu()
 
 	if (!isACar)
 	{
-		MenuItem<int> *item5 = new MenuItem<int>();
-		item5->caption = "Tire Smoke (69)";
-		item5->value = SPECIAL_ID_FOR_SMOKE;
-		item5->isLeaf = false;
+		MenuItem<int> item5;
+		item5.caption = "Tire Smoke (69)";
+		item5.value = SPECIAL_ID_FOR_SMOKE;
+		item5.isLeaf = false;
 		menuItems.push_back(item5);
 
-		MenuItem<int> *item6 = new MenuItem<int>();
-		item6->caption = "Neon Lights (39)";
-		item6->value = SPECIAL_ID_FOR_NEONS;
-		item6->isLeaf = false;
+		MenuItem<int> item6;
+		item6.caption = "Neon Lights (39)";
+		item6.value = SPECIAL_ID_FOR_NEONS;
+		item6.isLeaf = false;
 		menuItems.push_back(item6);
 	}
 
 
 
-	FunctionDrivenToggleMenuItem<int> *toggleItem;
+	FunctionDrivenToggleMenuItem<int> toggleItem;
 
 	if (!isWeird && !isAircraft)
 	{
-		toggleItem = new FunctionDrivenToggleMenuItem<int>();
-		toggleItem->caption = "Toggle Turbo Tuning";
-		toggleItem->getter_call = is_turbocharged;
-		toggleItem->setter_call = set_turbocharged;
-		toggleItem->value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
+		toggleItem.caption = "Toggle Turbo Tuning";
+		toggleItem.getter_call = is_turbocharged;
+		toggleItem.setter_call = set_turbocharged;
+		toggleItem.value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
 		menuItems.push_back(toggleItem);
 
-		toggleItem = new FunctionDrivenToggleMenuItem<int>();
-		toggleItem->caption = "Toggle Xenon Lights";
-		toggleItem->getter_call = is_xenon_headlights;
-		toggleItem->setter_call = set_xenon_headlights;
-		toggleItem->value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
+		toggleItem.caption = "Toggle Xenon Lights";
+		toggleItem.getter_call = is_xenon_headlights;
+		toggleItem.setter_call = set_xenon_headlights;
+		toggleItem.value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
 		menuItems.push_back(toggleItem);
 	}
 
 	if (!isWeird && !isAircraft)
 	{
-		toggleItem = new FunctionDrivenToggleMenuItem<int>();
-		toggleItem->caption = "Toggle Bulletproof Tires";
-		toggleItem->getter_call = is_bulletproof_tyres;
-		toggleItem->setter_call = set_bulletproof_tyres;
-		toggleItem->value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
+		toggleItem.caption = "Toggle Bulletproof Tires";
+		toggleItem.getter_call = is_bulletproof_tyres;
+		toggleItem.setter_call = set_bulletproof_tyres;
+		toggleItem.value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
 		menuItems.push_back(toggleItem);
 
 	}
 
 	if (!isWeird && !isAircraft) // && !isABike
 	{
-		toggleItem = new FunctionDrivenToggleMenuItem<int>();
-		toggleItem->caption = "Toggle Custom Tires";
-		toggleItem->getter_call = is_custom_tyres;
-		toggleItem->setter_call = set_custom_tyres;
-		toggleItem->value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
+		toggleItem.caption = "Toggle Custom Tires";
+		toggleItem.getter_call = is_custom_tyres;
+		toggleItem.setter_call = set_custom_tyres;
+		toggleItem.value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
 		menuItems.push_back(toggleItem);
 	}
 
@@ -2946,13 +2939,14 @@ bool process_vehmod_menu()
 			continue;
 		}
 
+		toggleItem.extra_arguments.clear();
+
 		ss << "Toggle Extra #" << i;
-		toggleItem = new FunctionDrivenToggleMenuItem<int>();
-		toggleItem->caption = ss.str();
-		toggleItem->getter_call = is_extra_enabled;
-		toggleItem->setter_call = set_extra_enabled;
-		toggleItem->value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
-		toggleItem->extra_arguments.push_back(i);
+		toggleItem.caption = ss.str();
+		toggleItem.getter_call = is_extra_enabled;
+		toggleItem.setter_call = set_extra_enabled;
+		toggleItem.value = SPECIAL_ID_FOR_TOGGLE_VARIATIONS;
+		toggleItem.extra_arguments.push_back(i);
 		menuItems.push_back(toggleItem);
 		ss.str(""); ss.clear();
 	}

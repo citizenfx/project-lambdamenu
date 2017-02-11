@@ -33,6 +33,7 @@ int driveStyle;
 const std::vector<std::string> ALL_ANIMS =
 {
 	"amb@bagels@male@walking@ static",
+#ifndef SERVER_SIDED
 	"amb@code_human_cower@female@base base",
 	"amb@code_human_cower@female@enter enter",
 	"amb@code_human_cower@female@exit exit_flee",
@@ -21913,6 +21914,7 @@ const std::vector<std::string> ALL_ANIMS =
 	"weapons@unarmed walk_additive_forward",
 	"weapons@unarmed walk_additive_left",
 	"weapons@unarmed walk_additive_right"
+#endif
 };
 
 
@@ -21936,7 +21938,7 @@ static bool StringEndsWith(const std::string& a, const std::string& b)
 std::vector<std::string> find_all_anims_with_suffix(std::string suffix)
 {
 	std::vector<std::string> results;
-	for each (std::string anim in ALL_ANIMS)
+	for (const auto& anim : ALL_ANIMS)
 	{
 		if (StringEndsWith(anim, suffix))
 		{
@@ -21977,7 +21979,7 @@ TreeNode* build_anim_tree(std::vector<std::string> input)
 {
 	TreeNode* resultRoot = new TreeNode();
 	
-	for each (std::string anim in input)
+	for (const auto& anim : input)
 	{
 		/*
 		std::stringstream logss;
@@ -22249,22 +22251,22 @@ bool process_anims_menu()
 		
 	}
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int i = 0;
-	for each (TreeNode *node in currentMenuNode->children)
+	for (TreeNode *node : currentMenuNode->children)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
+		MenuItem<int> item;
 		if (node->hasChildren())
 		{
-			item->isLeaf = false;
+			item.isLeaf = false;
 		}
 		else
 		{
-			item->isLeaf = true;
+			item.isLeaf = true;
 		}
-		item->caption = node->value;
-		item->value = i++;
+		item.caption = node->value;
+		item.value = i++;
 		menuItems.push_back(item);
 	}
 
@@ -22307,32 +22309,29 @@ bool onconfirm_anim_top_menu(MenuItem<int> choice)
 
 bool process_anims_menu_top()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int i = 0;
 
-	MenuItem<int> *item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Facial Anims (Immediate)";
-	item->value = i++;
+	MenuItem<int> item;
+	item.isLeaf = false;
+	item.caption = "Facial Anims (Immediate)";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Facial Anims (Idle)";
-	item->value = i++;
+	item.isLeaf = false;
+	item.caption = "Facial Anims (Idle)";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Player Anims";
-	item->value = i++;
+	item.isLeaf = false;
+	item.caption = "Player Anims";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = true;
-	item->caption = "Clear Idle Facial Anim";
-	item->value = i++;
+	item.isLeaf = true;
+	item.caption = "Clear Idle Facial Anim";
+	item.value = i++;
 	menuItems.push_back(item);
 
 	draw_generic_menu<int>(menuItems, 0, "Animation Types", onconfirm_anim_top_menu, NULL, NULL, NULL);

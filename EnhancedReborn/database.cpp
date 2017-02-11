@@ -301,7 +301,7 @@ neonToggle3 INTEGER \
 				"ALTER TABLE ER_SAVED_VEHICLES ADD neonToggle3 INTEGER",
 		};
 
-		for each (char* q in queries)
+		for (char* q : queries)
 		{
 			int extraColsAddition = sqlite3_exec(db, q, NULL, 0, &zErrMsg);
 			if (extraColsAddition != SQLITE_OK)
@@ -325,16 +325,28 @@ bool ERDatabase::open()
 
 	write_text_to_log_file("Opening DB file");
 
-	WCHAR* db_path = get_storage_dir_path("lm.db");
+#ifdef SERVER_SIDED
+	char* db_path = get_storage_dir_path("/lm.db");
 
-	std::wstring ws(db_path);
-	std::string fileSS(ws.begin(), ws.end());
-	write_text_to_log_file(fileSS);
+	//std::wstring ws(db_path);
+	//std::string fileSS(ws.begin(), ws.end());
+	//write_text_to_log_file(fileSS);
+
+	mutex_lock();
+
+	int rc = sqlite3_open(db_path, &db);
+#else
+	WCHAR* db_path = get_storage_dir_path("/lm.db");
+
+	//std::wstring ws(db_path);
+	//std::string fileSS(ws.begin(), ws.end());
+	//write_text_to_log_file(fileSS);
 
 	mutex_lock();
 
 	int rc = sqlite3_open16(db_path, &db);
-	delete db_path;
+#endif
+	//delete db_path;
 	if (rc == SQLITE_OK)
 	{
 		write_text_to_log_file("DB opened");
@@ -447,7 +459,7 @@ void ERDatabase::close()
 void ERDatabase::store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefinition> values)
 {
 	bool cacheIsSame = true;
-	for each (FeatureEnabledLocalDefinition def in values)
+	for (FeatureEnabledLocalDefinition def : values)
 	{
 		if (featureEnablementCache.find(def.name) == featureEnablementCache.end())
 		{
@@ -488,7 +500,7 @@ void ERDatabase::store_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefi
 		}
 	}
 
-	for each (FeatureEnabledLocalDefinition def in values)
+	for (FeatureEnabledLocalDefinition def : values)
 	{
 		if (featureEnablementCache.find(def.name) == featureEnablementCache.end())
 		{
@@ -529,7 +541,7 @@ void ERDatabase::load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefin
 		write_text_to_log_file("Done loading feature pairs");
 	}
 
-	for each (FeatureEnabledLocalDefinition def in values)
+	for (FeatureEnabledLocalDefinition def : values)
 	{
 		if (featureEnablementCache.find(def.name) == featureEnablementCache.end())
 		{
@@ -548,7 +560,7 @@ void ERDatabase::load_feature_enabled_pairs(std::vector<FeatureEnabledLocalDefin
 void ERDatabase::store_setting_pairs(std::vector<StringPairSettingDBRow> values)
 {
 	bool cacheIsSame = true;
-	for each (StringPairSettingDBRow row in values)
+	for (StringPairSettingDBRow row : values)
 	{
 		if (genericSettingsCache.find(row.name) == genericSettingsCache.end())
 		{
@@ -614,7 +626,7 @@ void ERDatabase::store_setting_pairs(std::vector<StringPairSettingDBRow> values)
 		}
 	}
 
-	for each (StringPairSettingDBRow row in values)
+	for (StringPairSettingDBRow row : values)
 	{
 		if (genericSettingsCache.find(row.name) == genericSettingsCache.end())
 		{
@@ -648,7 +660,7 @@ std::vector<StringPairSettingDBRow> ERDatabase::load_setting_pairs()
 		sqlite3_free(zErrMsg);
 	}
 
-	for each (StringPairSettingDBRow row in dbPairs)
+	for (StringPairSettingDBRow row : dbPairs)
 	{
 		if (genericSettingsCache.find(row.name) == genericSettingsCache.end())
 		{

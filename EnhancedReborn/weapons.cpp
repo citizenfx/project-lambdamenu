@@ -209,7 +209,7 @@ bool process_individual_weapon_menu(int weaponIndex)
 	}
 
 	std::string value = VOV_WEAPON_VALUES[lastSelectedWeaponCategory].at(weaponIndex);
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	std::string weaponValue = VOV_WEAPON_VALUES[lastSelectedWeaponCategory].at(weaponIndex);
 	char *weaponChar = (char*)weaponValue.c_str();
@@ -218,15 +218,15 @@ bool process_individual_weapon_menu(int weaponIndex)
 
 	WEAPON::SET_CURRENT_PED_WEAPON(playerPed, thisWeaponHash, true);
 
-	FunctionDrivenToggleMenuItem<int> *equipItem = new FunctionDrivenToggleMenuItem<int>();
+	FunctionDrivenToggleMenuItem<int> equipItem;
 	std::stringstream ss;
 	ss << "Equip " << caption << "?";
-	equipItem->caption = ss.str();
-	equipItem->value = 1;
-	equipItem->getter_call = is_weapon_equipped;
-	equipItem->setter_call = set_weapon_equipped;
-	equipItem->extra_arguments.push_back(lastSelectedWeaponCategory);
-	equipItem->extra_arguments.push_back(weaponIndex);
+	equipItem.caption = ss.str();
+	equipItem.value = 1;
+	equipItem.getter_call = is_weapon_equipped;
+	equipItem.setter_call = set_weapon_equipped;
+	equipItem.extra_arguments.push_back(lastSelectedWeaponCategory);
+	equipItem.extra_arguments.push_back(weaponIndex);
 	menuItems.push_back(equipItem);
 
 	if (isEquipped)
@@ -240,18 +240,18 @@ bool process_individual_weapon_menu(int weaponIndex)
 
 		if (maxClipAmmo > 0)
 		{
-			MenuItem<int> *giveClipItem = new MenuItem<int>();
-			giveClipItem->caption = "Give Clip";
-			giveClipItem->value = 2;
-			giveClipItem->isLeaf = true;
-			giveClipItem->onConfirmFunction = give_weapon_clip;
+			MenuItem<int> giveClipItem;
+			giveClipItem.caption = "Give Clip";
+			giveClipItem.value = 2;
+			giveClipItem.isLeaf = true;
+			giveClipItem.onConfirmFunction = give_weapon_clip;
 			menuItems.push_back(giveClipItem);
 
-			MenuItem<int> *fillAmmoItem = new MenuItem<int>();
-			fillAmmoItem->caption = "Fill Ammo";
-			fillAmmoItem->value = 3;
-			fillAmmoItem->isLeaf = true;
-			fillAmmoItem->onConfirmFunction = fill_weapon_ammo;
+			MenuItem<int> fillAmmoItem;
+			fillAmmoItem.caption = "Fill Ammo";
+			fillAmmoItem.value = 3;
+			fillAmmoItem.isLeaf = true;
+			fillAmmoItem.onConfirmFunction = fill_weapon_ammo;
 			menuItems.push_back(fillAmmoItem);
 		}
 
@@ -270,14 +270,14 @@ bool process_individual_weapon_menu(int weaponIndex)
 			std::vector<std::string> modCaptions = VOV_WEAPONMOD_CAPTIONS[moddableIndex];
 			for (int i = 0; i < modCaptions.size(); i++)
 			{
-				FunctionDrivenToggleMenuItem<int> *item = new FunctionDrivenToggleMenuItem<int>();
-				item->caption = modCaptions.at(i);
-				item->getter_call = is_weaponmod_equipped;
-				item->setter_call = set_weaponmod_equipped;
-				item->extra_arguments.push_back(lastSelectedWeaponCategory);
-				item->extra_arguments.push_back(weaponIndex);
-				item->extra_arguments.push_back(moddableIndex);
-				item->extra_arguments.push_back(i);
+				FunctionDrivenToggleMenuItem<int> item;
+				item.caption = modCaptions.at(i);
+				item.getter_call = is_weaponmod_equipped;
+				item.setter_call = set_weaponmod_equipped;
+				item.extra_arguments.push_back(lastSelectedWeaponCategory);
+				item.extra_arguments.push_back(weaponIndex);
+				item.extra_arguments.push_back(moddableIndex);
+				item.extra_arguments.push_back(i);
 				menuItems.push_back(item);
 			}
 		}
@@ -295,11 +295,11 @@ bool process_individual_weapon_menu(int weaponIndex)
 
 		if (tintableIndex != -1)
 		{
-			MenuItem<int> *tintItem = new MenuItem<int>();
-			tintItem->caption = "Weapon Tints";
-			tintItem->value = 4;
-			tintItem->isLeaf = false;
-			tintItem->onConfirmFunction = onconfirm_open_tint_menu;
+			MenuItem<int> tintItem;
+			tintItem.caption = "Weapon Tints";
+			tintItem.value = 4;
+			tintItem.isLeaf = false;
+			tintItem.onConfirmFunction = onconfirm_open_tint_menu;
 			menuItems.push_back(tintItem);
 		}
 	}
@@ -341,7 +341,7 @@ bool onconfirm_weapon_in_category(MenuItem<int> choice)
 bool process_weapons_in_category_menu(int category)
 {
 	lastSelectedWeaponCategory = category;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	int weaponSelectionIndex = 0;
@@ -349,8 +349,8 @@ bool process_weapons_in_category_menu(int category)
 
 	for (int i = 0; i < VOV_WEAPON_CAPTIONS[category].size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = VOV_WEAPON_CAPTIONS[category].at(i);
+		MenuItem<int> item;
+		item.caption = VOV_WEAPON_CAPTIONS[category].at(i);
 
 		const char* value = VOV_WEAPON_VALUES[category].at(i).c_str();
 		if (weaponSelectionIndex == 0 && GAMEPLAY::GET_HASH_KEY((char*)value) == current)
@@ -358,8 +358,8 @@ bool process_weapons_in_category_menu(int category)
 			weaponSelectionIndex = i;
 		}
 
-		item->value = i;
-		item->isLeaf = false;
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -439,7 +439,7 @@ bool onconfirm_weaponlist_menu(MenuItem<int> choice)
 
 bool process_weaponlist_menu()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	int weaponSelectionIndex = 0;
@@ -447,10 +447,10 @@ bool process_weaponlist_menu()
 
 	for (int i = 0; i < MENU_WEAPON_CATEGORIES.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_WEAPON_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = item->isLeaf = (i == MENU_WEAPON_CATEGORIES.size() - 1 || i == MENU_WEAPON_CATEGORIES.size() - 2);
+		MenuItem<int> item;
+		item.caption = MENU_WEAPON_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = item.isLeaf = (i == MENU_WEAPON_CATEGORIES.size() - 1 || i == MENU_WEAPON_CATEGORIES.size() - 2);
 		menuItems.push_back(item);
 
 		if (weaponSelectionIndex == 0)
@@ -901,12 +901,12 @@ void onconfirm_open_tint_menu(MenuItem<int> choice)
 {
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < VALUES_TINT.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = CAPTIONS_TINT[i];
-		item->value = VALUES_TINT[i];
+		MenuItem<int> item;
+		item.caption = CAPTIONS_TINT[i];
+		item.value = VALUES_TINT[i];
 		menuItems.push_back(item);
 	}
 

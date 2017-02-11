@@ -6,8 +6,6 @@
 
 #pragma once
 
-#include <windows.h>
-
 enum eBlipColor
 {
 	BlipColorWhite = 0,

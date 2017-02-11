@@ -176,7 +176,7 @@ void update_noclip_text()
 			float rectXScaled = 571.5 / (float)screen_h; //increase to move right
 			float rectYScaled = 35 / (float)screen_h;
 
-			int rect_col[4] = { 0, 0, 0, 50.0f };
+			int rect_col[4] = { 0, 0, 0, 50 };
 
 			// rect
 			draw_rect(rectXScaled, rectYScaled,
@@ -287,6 +287,7 @@ void noclip(bool inVehicle)
 	float xVect = forwardPush * sin(degToRad(curHeading)) * -1.0f;
 	float yVect = forwardPush * cos(degToRad(curHeading));
 
+#ifndef SERVER_SIDED
 	KeyInputConfig* keyConfig = get_config()->get_key_config();
 
 	bool moveUpKey = get_key_pressed(keyConfig->key_noclip_up);
@@ -374,6 +375,7 @@ void noclip(bool inVehicle)
 
 	ENTITY::SET_ENTITY_COORDS_NO_OFFSET(target, curLocation.x, curLocation.y, curLocation.z, xBoolParam, yBoolParam, zBoolParam);
 	ENTITY::SET_ENTITY_HEADING(target, curHeading - rotationSpeed);
+#endif
 }
 
 bool is_in_noclip_mode()

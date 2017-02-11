@@ -269,7 +269,7 @@ bool process_skinchanger_texture_menu(std::string caption)
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	Hash model = ENTITY::GET_ENTITY_MODEL(playerPed);
@@ -285,9 +285,9 @@ bool process_skinchanger_texture_menu(std::string caption)
 		{
 			std::ostringstream ss;
 			ss << "Texture #" << i;
-			MenuItem<int> *item = new MenuItem<int>();
-			item->caption = ss.str();
-			item->value = i;
+			MenuItem<int> item;
+			item.caption = ss.str();
+			item.value = i;
 			menuItems.push_back(item);
 		}
 
@@ -335,7 +335,7 @@ bool process_skinchanger_drawable_menu(std::string caption, int component)
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	Hash model = ENTITY::GET_ENTITY_MODEL(playerPed);
@@ -352,10 +352,10 @@ bool process_skinchanger_drawable_menu(std::string caption, int component)
 			std::ostringstream ss;
 			ss << "Drawable #" << i << " (" << textures << ")";
 
-			MenuItem<int> *item = new MenuItem<int>();
-			item->caption = ss.str();
-			item->value = i;
-			item->isLeaf = (textures <= 1);
+			MenuItem<int> item;
+			item.caption = ss.str();
+			item.value = i;
+			item.isLeaf = (textures <= 1);
 			menuItems.push_back(item);
 		}
 
@@ -396,7 +396,7 @@ bool process_skinchanger_detail_menu()
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int fixedChoices = 0;
 	const int partVariations = 12; 
@@ -428,10 +428,10 @@ bool process_skinchanger_detail_menu()
 				std::string itemText = getSkinDetailAttribDescription(compIndex);
 				//ss << "Slot " << (compIndex + 1) << ": " << itemText << " (" << drawables << ")";
 				ss << itemText << " (" << drawables << ")";
-				MenuItem<int> *item = new MenuItem<int>();
-				item->caption = ss.str();
-				item->value = compIndex;
-				item->isLeaf = false;
+				MenuItem<int> item;
+				item.caption = ss.str();
+				item.value = compIndex;
+				item.isLeaf = false;
 				menuItems.push_back(item);
 			}
 		}
@@ -457,13 +457,13 @@ bool onconfirm_skinchanger_choices_players(MenuItem<std::string> choice)
 
 bool process_skinchanger_choices_players()
 {
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < SKINS_PLAYER_CAPTIONS.size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = SKINS_PLAYER_CAPTIONS[i];
-		item->value = SKINS_PLAYER_VALUES[i];
-		item->isLeaf = true;
+		MenuItem<std::string> item;
+		item.caption = SKINS_PLAYER_CAPTIONS[i];
+		item.value = SKINS_PLAYER_VALUES[i];
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -485,13 +485,13 @@ bool onconfirm_skinchanger_choices_animals(MenuItem<std::string> choice)
 
 bool process_skinchanger_choices_animals()
 {
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < SKINS_ANIMAL_CAPTIONS.size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = SKINS_ANIMAL_CAPTIONS[i];
-		item->value = SKINS_ANIMAL_VALUES[i];
-		item->isLeaf = true;
+		MenuItem<std::string> item;
+		item.caption = SKINS_ANIMAL_CAPTIONS[i];
+		item.value = SKINS_ANIMAL_VALUES[i];
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -513,13 +513,13 @@ bool onconfirm_skinchanger_choices_misc(MenuItem<std::string> choice)
 
 bool process_skinchanger_choices_misc()
 {
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < SKINS_GENERAL_CAPTIONS.size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = SKINS_GENERAL_CAPTIONS[i];
-		item->value = SKINS_GENERAL_VALUES[i];
-		item->isLeaf = true;
+		MenuItem<std::string> item;
+		item.caption = SKINS_GENERAL_CAPTIONS[i];
+		item.value = SKINS_GENERAL_VALUES[i];
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -600,14 +600,14 @@ bool onconfirm_skinchanger_menu(MenuItem<int> choice)
 
 bool process_skinchanger_menu()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	for (int i = 0; i < MENU_SKINS_TYPES_CAPTIONS.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_SKINS_TYPES_CAPTIONS[i];
-		item->value = i;
-		item->isLeaf = (i == 4 || i == 7 || i == MENU_SKINS_TYPES_CAPTIONS.size() - 1);
+		MenuItem<int> item;
+		item.caption = MENU_SKINS_TYPES_CAPTIONS[i];
+		item.value = i;
+		item.isLeaf = (i == 4 || i == 7 || i == MENU_SKINS_TYPES_CAPTIONS.size() - 1);
 		menuItems.push_back(item);
 	}
 
@@ -634,7 +634,7 @@ bool process_prop_texture_menu()
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int thisDrawable = skinPropsDrawablePosition[skinPropsCategoryValue] - 1;
 	int textures = PED::GET_NUMBER_OF_PED_PROP_TEXTURE_VARIATIONS(PLAYER::PLAYER_PED_ID(), skinPropsCategoryValue, thisDrawable);
@@ -644,14 +644,14 @@ bool process_prop_texture_menu()
 		bool iFound = false;
 		int compIndex = i;
 
-		MenuItem<int> *item = new MenuItem<int>();
+		MenuItem<int> item;
 
 		std::ostringstream ss;
 		ss << "Texture #" << (i + 1);
-		item->caption = ss.str();
+		item.caption = ss.str();
 
-		item->value = i;
-		item->isLeaf = true;
+		item.value = i;
+		item.isLeaf = true;
 		menuItems.push_back(item);
 	}
 
@@ -694,7 +694,7 @@ bool process_prop_drawable_menu()
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int drawables = PED::GET_NUMBER_OF_PED_PROP_DRAWABLE_VARIATIONS(PLAYER::PLAYER_PED_ID(), skinPropsCategoryValue);
 
@@ -708,23 +708,23 @@ bool process_prop_drawable_menu()
 		int textures = 0;
 		//if (drawables > 1 || textures != 0)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
+			MenuItem<int> item;
 
 			if (i == -1)
 			{
-				item->caption = "Nothing";
-				item->isLeaf = true;
+				item.caption = "Nothing";
+				item.isLeaf = true;
 			}
 			else
 			{
 				std::ostringstream ss;
 				ss << "Prop Item #" << (i + 1);
-				item->caption = ss.str();
+				item.caption = ss.str();
 				int textures = PED::GET_NUMBER_OF_PED_PROP_TEXTURE_VARIATIONS(PLAYER::PLAYER_PED_ID(), skinPropsCategoryValue, i);
-				item->isLeaf = (textures <= 1);
+				item.isLeaf = (textures <= 1);
 			}
 
-			item->value = i;
+			item.value = i;
 			menuItems.push_back(item);
 		}
 	}
@@ -743,7 +743,7 @@ bool process_prop_menu()
 {
 	DWORD waitTime = 150;
 	int foundTextures = 0;
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int fixedChoices = 0;
 	const int partVariations = 10;
@@ -759,17 +759,17 @@ bool process_prop_menu()
 		int drawables = PED::GET_NUMBER_OF_PED_PROP_DRAWABLE_VARIATIONS(PLAYER::PLAYER_PED_ID(), compIndex);
 		if (drawables > 0)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
+			MenuItem<int> item;
 
 			std::ostringstream ss;
 			
 				std::string itemText = getPropDetailAttribDescription(compIndex);
 				//ss << "Slot " << (compIndex + 1) << ": " << itemText << " (" << drawables << ")";
 				ss << itemText << " (" << drawables << ")";
-				item->caption = ss.str();
+				item.caption = ss.str();
 
-			item->value = compIndex;
-			item->isLeaf = false;
+			item.value = compIndex;
+			item.isLeaf = false;
 			menuItems.push_back(item);
 			count++;
 		}
@@ -877,20 +877,22 @@ bool process_savedskin_menu()
 
 		lastKnownSavedSkinCount = savedSkins.size();
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = -1;
-		item->caption = "Create New Skin Save";
-		menuItems.push_back(item);
-
-		for each (SavedSkinDBRow *sv in savedSkins)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->isLeaf = false;
-			item->value = sv->rowID;
-			item->caption = sv->saveName;
+			MenuItem<int> item;
+			item.isLeaf = false;
+			item.value = -1;
+			item.caption = "Create New Skin Save";
+			menuItems.push_back(item);
+		}
+
+		for (SavedSkinDBRow *sv : savedSkins)
+		{
+			MenuItem<int> item;
+			item.isLeaf = false;
+			item.value = sv->rowID;
+			item.caption = sv->saveName;
 			menuItems.push_back(item);
 		}
 
@@ -913,30 +915,27 @@ bool process_savedskin_slot_menu(int slot)
 		skinSaveSlotMenuInterrupt = false;
 		requireRefreshOfSkinSlotMenu = false;
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 1;
-		item->caption = "Apply To Player";
+		MenuItem<int> item;
+		item.isLeaf = false;
+		item.value = 1;
+		item.caption = "Apply To Player";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 2;
-		item->caption = "Overwrite With Current";
+		item.isLeaf = false;
+		item.value = 2;
+		item.caption = "Overwrite With Current";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 3;
-		item->caption = "Rename";
+		item.isLeaf = false;
+		item.value = 3;
+		item.caption = "Rename";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 4;
-		item->caption = "Delete";
+		item.isLeaf = false;
+		item.value = 4;
+		item.caption = "Delete";
 		menuItems.push_back(item);
 
 		draw_generic_menu<int>(menuItems, 0, activeSavedSkinSlotName, onconfirm_savedskin_slot_menu, NULL, NULL, skin_save_slot_menu_interrupt);
@@ -957,13 +956,13 @@ bool spawn_saved_skin(int slot, std::string caption)
 
 	Ped ped = PLAYER::PLAYER_PED_ID();
 
-	for each (SavedSkinComponentDBRow *comp in savedSkin->components)
+	for (SavedSkinComponentDBRow *comp : savedSkin->components)
 	{
 		PED::SET_PED_COMPONENT_VARIATION( ped, comp->slotID, comp->drawable, comp->texture, 0);
 	}
 
 	PED::CLEAR_ALL_PED_PROPS(ped);
-	for each (SavedSkinPropDBRow *prop in savedSkin->props)
+	for (SavedSkinPropDBRow *prop : savedSkin->props)
 	{
 		PED::SET_PED_PROP_INDEX(ped, prop->propID, prop->drawable, prop->texture, 0);
 	}

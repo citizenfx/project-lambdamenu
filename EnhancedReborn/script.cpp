@@ -34,10 +34,12 @@
 #include "anims.h"
 //#include "crash_handler.h"
 
+#ifndef SERVER_SIDED
 #include <DbgHelp.h>
 #include <ShlObj.h>
 #include <windows.h>
 #include <Shlwapi.h>
+#endif
 
 #include <string>
 #include <sstream> 
@@ -103,6 +105,7 @@ bool featureThermalVision = false;
 bool featurePlayerInvincible = false;
 bool featurePlayerInvincibleUpdated = false;
 bool featureKeepClean = false;
+bool featureKeepWet = false;
 bool featurePlayerNeverWanted =	false;
 bool featurePlayerNeverWantedUpdated = false;
 bool featurePlayerIgnoredByPolice =	false;
@@ -191,7 +194,7 @@ int editorRecord = 0;
 int activeLineIndexOnlinePlayer = 0;
 
 
-LPCSTR player_models[] = { "a_c_boar", "a_c_cat_01", "a_c_chimp", "a_c_chop", "a_c_cormorant", "a_c_cow", "a_c_coyote", "a_c_crow", "a_c_deer", "a_c_dolphin", "a_c_fish", "a_c_shepherd", "a_c_sharkhammer", "a_c_chickenhawk", "a_c_hen", "a_c_humpback", "a_c_husky", "a_c_killerwhale", "a_c_mtlion", "a_c_pig", "a_c_pigeon", "a_c_poodle", "a_c_pug", "a_c_rabbit_01", "a_c_rat", "a_c_retriever", "a_c_rhesus", "a_c_rottweiler", "a_c_seagull", "a_c_stingray", "a_c_sharktiger", "a_c_westy" }; //"a_c_whalegrey", 
+const char* player_models[] = { "a_c_boar", "a_c_cat_01", "a_c_chimp", "a_c_chop", "a_c_cormorant", "a_c_cow", "a_c_coyote", "a_c_crow", "a_c_deer", "a_c_dolphin", "a_c_fish", "a_c_shepherd", "a_c_sharkhammer", "a_c_chickenhawk", "a_c_hen", "a_c_humpback", "a_c_husky", "a_c_killerwhale", "a_c_mtlion", "a_c_pig", "a_c_pigeon", "a_c_poodle", "a_c_pug", "a_c_rabbit_01", "a_c_rat", "a_c_retriever", "a_c_rhesus", "a_c_rottweiler", "a_c_seagull", "a_c_stingray", "a_c_sharktiger", "a_c_westy" }; //"a_c_whalegrey", 
 
 const char* CLIPSET_DRUNK = "move_m@drunk@verydrunk";
 
@@ -1039,7 +1042,7 @@ void death_watch()
 
 			AUDIO::PLAY_SOUND_FRONTEND(-1, "TextHit", "WastedSounds", 1);
 			while (ENTITY::IS_ENTITY_DEAD(PLAYER::GET_PLAYER_PED(playerId))) {
-				GRAPHICS::_0x0DF606929C105BE1(scaleform, 255, 255, 255, 255);
+				GRAPHICS::_DRAW_SCALEFORM_MOVIE_DEFAULT(scaleform, 255, 255, 255, 255);
 				WAIT(0);
 			}
 
@@ -1302,7 +1305,7 @@ void update_features()
 				if (i != playerId)
 				{
 					Ped pedId = PLAYER::GET_PLAYER_PED(i);
-					unsigned int headDisplayId = UI::_0xBFEFE3321A3F5015(pedId, (Any*)"", 0, 0, (Any*)"", 0); // CREATE_PED_HEAD_DISPLAY
+					unsigned int headDisplayId = UI::_0xBFEFE3321A3F5015(pedId, (char*)"", 0, 0, (char*)"", 0); // CREATE_PED_HEAD_DISPLAY
 
 					if (ENTITY::IS_ENTITY_DEAD(pedId) && ENTITY::DOES_ENTITY_EXIST(pedId))
 					{
@@ -1495,9 +1498,11 @@ void update_features()
 
 	if (game_frame_num % 1000 == 0)
 	{
+#ifndef SERVER_SIDED
 		DWORD myThreadID;
 		HANDLE myHandle = CreateThread(0, 0, save_settings_thread, 0, 0, &myThreadID);
 		CloseHandle(myHandle);
+#endif
 	}
 
 	update_centre_screen_status_text();
@@ -1533,10 +1538,16 @@ void update_features()
 	//keep clean
 	if (featureKeepClean)
 	{
-		if (bPlayerExists)
+		if (bPlayerExists && !featureKeepWet)
 			PED::SET_PED_WETNESS_HEIGHT(playerPed, -2.0);
 		PED::CLEAR_PED_BLOOD_DAMAGE(playerPed);
 		PED::CLEAR_PED_LAST_DAMAGE_BONE(playerPed);
+	}
+
+	if (featureKeepWet)
+	{
+		if (bPlayerExists)
+			PED::SET_PED_WETNESS_HEIGHT(playerPed, 2.0);
 	}
 
 
@@ -1694,6 +1705,7 @@ void update_features()
 	else
 	{
 		PED::SET_PED_CAN_RAGDOLL(playerPed, 1); //CAN ragdoll
+#ifndef SERVER_SIDED
 		KeyInputConfig* keyConfig = get_config()->get_key_config();
 		bool pRag = get_key_pressed(keyConfig->player_ragdoll);
 		bool fRag = get_key_pressed(keyConfig->ragdoll_force);
@@ -1707,6 +1719,7 @@ void update_features()
 				ENTITY::APPLY_FORCE_TO_ENTITY(playerPed, 1, rand() % 100, rand() % 100, rand() % 100, rand() % 100, rand() % 100, rand() % 100, false, false, false, false, false, false);
 			}
 		}
+#endif
 	}
 
 	//Player Invisible
@@ -1965,6 +1978,7 @@ void update_features()
 	//----Hotkeys----
 
 	//map cycle
+#ifndef SERVER_SIDED
 	if (bPlayerExists)
 	{
 		bool mapcycle = IsKeyJustUp(get_config()->get_key_config()->map_cycle);
@@ -2166,6 +2180,7 @@ void update_features()
 			}
 		}
 	}
+#endif
 }
 
 //==================
@@ -2532,11 +2547,9 @@ bool onconfirm_player_menu(MenuItem<int> choice)
 }
 void process_player_menu()
 {
-	const int lineCount = 20;
-	
 	std::string caption = "Player Options";
 
-	StandardOrToggleMenuDef lines[lineCount] = {
+	StandardOrToggleMenuDef lines[] = {
 		{ "Player Skin", NULL, NULL, false},
 		{ "Clean & Heal Player", NULL, NULL, true},
 		{ "Give Armor To Player", NULL, NULL, true },
@@ -2550,6 +2563,7 @@ void process_player_menu()
 		{ "Fast Swim", &featurePlayerFastSwim, &featurePlayerFastSwimUpdated, true },
 		{ "Night Vision", &featureNightVision, NULL, true },
 		{ "Thermal Vision", &featureThermalVision, NULL, true },
+		{ "Wet", &featureKeepWet, NULL, true },
 		{ "Invisibility", &featurePlayerInvisible, &featurePlayerInvisibleUpdated, true },
 		{ "Silent", &featurePlayerNoNoise, &featurePlayerNoNoiseUpdated, true },
 		{ "Everyone Ignores You", &featurePlayerIgnoredByAll, &featurePlayerIgnoredByAllUpdated, true },
@@ -2559,7 +2573,7 @@ void process_player_menu()
 		{ "Freeze Wanted Level", &featureWantedLevelFrozen, &featureWantedLevelFrozenUpdated, true }
 	};
 
-	draw_menu_from_struct_def(lines, lineCount, &activeLineIndexPlayer, caption, onconfirm_player_menu);
+	draw_menu_from_struct_def(lines, sizeof(lines) / sizeof(*lines), &activeLineIndexPlayer, caption, onconfirm_player_menu);
 }
 
 
@@ -4085,14 +4099,14 @@ void process_main_menu()
 		"Leave Session"
 	};
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < TOP_OPTIONS.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = TOP_OPTIONS[i];
-		item->value = i;
-		item->isLeaf = (i==7);
-		item->currentMenuIndex = i;
+		MenuItem<int> item;
+		item.caption = TOP_OPTIONS[i];
+		item.value = i;
+		item.isLeaf = (i==7);
+		item.currentMenuIndex = i;
 		menuItems.push_back(item);
 	}
 
@@ -4118,6 +4132,7 @@ void reset_globals()
 	featureNightVision =
 	featureThermalVision =
 	featureKeepClean =
+	featureKeepWet =
 	featurePlayerInvincible =
 	featurePlayerNeverWanted =
 	featurePlayerIgnoredByPolice =
@@ -4203,12 +4218,13 @@ void reset_globals()
 	
 	set_status_text("All Settings ~r~RESET.");
 
+#ifndef SERVER_SIDED
 	DWORD myThreadID;
 	HANDLE myHandle = CreateThread(0, 0, save_settings_thread, 0, 0, &myThreadID);
 	CloseHandle(myHandle);
-
+#endif
 }
-void main()
+void RunMain()
 {	
 
 	//reset_globals();
@@ -4252,6 +4268,7 @@ void main()
 	}
 }
 
+#ifndef SERVER_SIDED
 void make_minidump(EXCEPTION_POINTERS* e)
 {
 	write_text_to_log_file("Dump requested");
@@ -4301,6 +4318,7 @@ int filterException(int code, PEXCEPTION_POINTERS ex)
 	make_minidump(ex);
 	return EXCEPTION_EXECUTE_HANDLER;
 }
+#endif
 
 void ScriptMain()
 {
@@ -4311,7 +4329,9 @@ void ScriptMain()
 
 		clear_log_file();
 
+#ifndef SERVER_SIDED
 		init_storage();
+#endif
 
 		database = new ERDatabase();
 		if (!database->open() )
@@ -4325,9 +4345,11 @@ void ScriptMain()
 
 		srand(GetTickCount());
 		write_text_to_log_file("Reading config...");
+#ifndef SERVER_SIDED
 		read_config_file();
+#endif
 		write_text_to_log_file("Config read complete");	
-		main();
+		RunMain();
 		
 		write_text_to_log_file("ScriptMain ended");
 
@@ -4404,6 +4426,7 @@ std::vector<FeatureEnabledLocalDefinition> get_feature_enablements()
 
 	results.push_back(FeatureEnabledLocalDefinition{ "featurePlayerInvincible", &featurePlayerInvincible, &featurePlayerInvincibleUpdated });
 	results.push_back(FeatureEnabledLocalDefinition{ "featureKeepClean", &featureKeepClean });
+	results.push_back(FeatureEnabledLocalDefinition{ "featureKeepWet", &featureKeepWet });
 	results.push_back(FeatureEnabledLocalDefinition{ "featurePlayerNeverWanted", &featurePlayerNeverWanted, &featurePlayerNeverWantedUpdated });
 	results.push_back(FeatureEnabledLocalDefinition{ "featurePlayerIgnoredByPolice", &featurePlayerIgnoredByPolice, &featurePlayerIgnoredByPoliceUpdated });
 	results.push_back(FeatureEnabledLocalDefinition{ "featurePlayerIgnoredByAll", &featurePlayerIgnoredByAll, &featurePlayerIgnoredByAllUpdated });
@@ -4491,11 +4514,13 @@ std::vector<FeatureEnabledLocalDefinition> get_feature_enablements()
 	return results;
 }
 
+#ifndef SERVER_SIDED
 DWORD WINAPI save_settings_thread(LPVOID lpParameter)
 {
 	save_settings();
 	return 0;
 }
+#endif
 
 void save_settings()
 {
@@ -4525,6 +4550,7 @@ void load_settings()
 
 void init_storage()
 {
+#ifndef SERVER_SIDED
 	WCHAR* folder = get_storage_dir_path();
 	write_text_to_log_file("Trying to create storage folder");
 
@@ -4557,8 +4583,10 @@ void init_storage()
 		write_text_to_log_file("Couldn't create temp dir");
 	}
 	delete folder2;
+#endif
 }
 
+#ifndef SERVER_SIDED
 WCHAR* get_temp_dir_path()
 {
 	WCHAR s[MAX_PATH];
@@ -4629,8 +4657,16 @@ WCHAR* get_storage_dir_path(char* file)
 
 	return output;
 }
+#endif
 
 ERDatabase* get_database()
 {
 	return database;
 }
+
+#ifdef SERVER_SIDED
+DWORD GetTickCount()
+{
+	return GAMEPLAY::GET_GAME_TIMER();
+}
+#endif

@@ -14,11 +14,11 @@
 
 #pragma once
 
-#include "inc\natives.h"
-#include "inc\types.h"
-#include "inc\enums.h"
+#include <natives.h>
+#include <types.h>
+#include "inc/enums.h"
 
-#include "inc\main.h"
+#include <main.h>
 
 #include "database.h"
 
@@ -65,6 +65,7 @@ void load_settings();
 
 void save_settings();
 
+#ifndef SERVER_SIDED
 DWORD WINAPI save_settings_thread(LPVOID lpParameter);
 
 void init_storage();
@@ -76,5 +77,26 @@ WCHAR* get_storage_dir_path(char* file);
 WCHAR* get_temp_dir_path();
 
 WCHAR* get_temp_dir_path(char* file);
+#else
+inline char* get_storage_dir_path()
+{
+       return "";
+}
+
+inline char* get_storage_dir_path(char* file)
+{
+       return file;
+}
+
+inline char* get_temp_dir_path()
+{
+       return "";
+}
+
+inline char* get_temp_dir_path(char* file)
+{
+       return file;
+}
+#endif
 
 ERDatabase* get_database();

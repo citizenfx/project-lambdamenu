@@ -33,7 +33,7 @@ public:
 
 	inline TreeNode* findChildWithValue(std::string value)
 	{
-		for each (TreeNode *child  in children)
+		for (TreeNode *child : children)
 		{
 			if (child->value.compare(value) == 0)
 			{

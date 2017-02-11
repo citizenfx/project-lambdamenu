@@ -13,6 +13,8 @@
 */
 
 #include <stdio.h>
+
+#ifndef SERVER_SIDED
 #include <tchar.h>
 #include <windows.h>
 
@@ -114,3 +116,4 @@ void read_config_file();
 /**Get the current config object.*/
 inline TrainerConfig* get_config() { return config;  }
 
+#endif

@@ -376,20 +376,20 @@ bool onconfirm_vehdoor_menu(MenuItem<int> choice) {
 bool process_veh_door_menu() {
 	std::string caption = "Door Options";
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	std::vector<int>menuIndexes;
 
-	ToggleMenuItem<int> *immediateToggle = new ToggleMenuItem<int>();
-	immediateToggle->value = 0;
-	immediateToggle->caption = DOOR_OPTIONS[0].text;
-	immediateToggle->toggleValue = DOOR_OPTIONS[0].pState;
+	ToggleMenuItem<int> immediateToggle;
+	immediateToggle.value = 0;
+	immediateToggle.caption = DOOR_OPTIONS[0].text;
+	immediateToggle.toggleValue = DOOR_OPTIONS[0].pState;
 	menuItems.push_back(immediateToggle);
 
 	for (int i = 1; i < DOOR_OPTIONS.size(); i++) {
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->value = i;
-		item->caption = DOOR_OPTIONS[i].text;
+		MenuItem<int> item;
+		item.value = i;
+		item.caption = DOOR_OPTIONS[i].text;
 		menuItems.push_back(item);
 	}
 
@@ -2973,6 +2973,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
 
+#ifndef SERVER_SIDED
 		bool bUp = get_key_pressed(get_config()->get_key_config()->key_veh_boost);
 		bool bDown = get_key_pressed(get_config()->get_key_config()->key_veh_stop);
 
@@ -2995,6 +2996,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////	
@@ -3492,6 +3494,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
 
+#ifndef SERVER_SIDED
 		KeyInputConfig* keyConfig = get_config()->get_key_config();
 
 		bool bSelect = get_key_pressed(keyConfig->drift_mode);
@@ -3509,6 +3512,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 
@@ -3526,12 +3530,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3541,12 +3545,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 
 				char speedKph_text[50];
 
-				sprintf_s(speedKph_text, "%.0f", speedKph);
+				snprintf(speedKph_text, 50, "%.0f", speedKph);
 
 				draw_text1(speedKph_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "KPH");
+				snprintf(speed_text, 50, "KPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 		}
@@ -3565,12 +3569,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3580,12 +3584,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 
 				char speedMph_text[50];
 
-				sprintf_s(speedMph_text, "%.0f", speedMph);
+				snprintf(speedMph_text, 50, "%.0f", speedMph);
 
 				draw_text1(speedMph_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "MPH");
+				snprintf(speed_text, 50, "MPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 		}
@@ -3604,12 +3608,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3621,18 +3625,18 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				char speedMph_text[50];
 				char speedKph_text[50];
 
-				sprintf_s(speedKph_text, "~b~%.0f", speedKph);
-				sprintf_s(speedMph_text, "%.0f", speedMph);
+				snprintf(speedKph_text, 50, "~b~%.0f", speedKph);
+				snprintf(speedMph_text, 50, "%.0f", speedMph);
 
 				draw_text2(speedKph_text, 0.798, 0.914, 1.8);
 				draw_text1(speedMph_text, 0.857, 0.91, 2.8);
 
 				char kphspeed_text[50];
-				sprintf_s(kphspeed_text, "~b~KPH");
+				snprintf(kphspeed_text,50,  "~b~KPH");
 				draw_text4(kphspeed_text, 0.902, 0.856, 0.9);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "MPH");
+				snprintf(speed_text, 50, "MPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2); 
 			}
 		}
@@ -3888,6 +3892,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 	//vehicle controls
 	if (featureVehControls && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
 	{
+#ifndef SERVER_SIDED
 		Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
@@ -4093,6 +4098,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 	if (ownedveh != NULL && ENTITY::DOES_ENTITY_EXIST(ownedveh) && !VEHICLE::_IS_VEHICLE_ENGINE_ON(ownedveh) && !featureRemoteEngine)
@@ -4232,13 +4238,13 @@ bool onconfirm_carspawn_menu(MenuItem<int> choice)
 
 bool process_carspawn_menu()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < MENU_VEHICLE_CATEGORIES.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_VEHICLE_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = (i == MENU_VEHICLE_CATEGORIES.size() - 1);
+		MenuItem<int> item;
+		item.caption = MENU_VEHICLE_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = (i == MENU_VEHICLE_CATEGORIES.size() - 1);
 		menuItems.push_back(item);
 	}
 
@@ -4249,12 +4255,12 @@ bool onconfirm_spawn_menu_cars(MenuItem<int> choice)
 {
 	std::string category = choice.caption;
 
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < VOV_CAR_VALUES[choice.value].size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_CAR_CAPTIONS[choice.value][i];
-		item->value = VOV_CAR_VALUES[choice.value][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_CAR_CAPTIONS[choice.value][i];
+		item.value = VOV_CAR_VALUES[choice.value][i];
 		menuItems.push_back(item);
 	}
 
@@ -4263,13 +4269,13 @@ bool onconfirm_spawn_menu_cars(MenuItem<int> choice)
 
 bool process_spawn_menu_cars()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < MENU_CAR_CATEGORIES.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_CAR_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_CAR_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -4294,12 +4300,12 @@ bool onconfirm_spawn_menu_indus(MenuItem<int> choice)
 		category = choice.caption;
 	}
 
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < VOV_INDUS_CAPTIONS[selection].size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_INDUS_CAPTIONS[selection][i];
-		item->value = VOV_INDUS_VALUES[selection][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_INDUS_CAPTIONS[selection][i];
+		item.value = VOV_INDUS_VALUES[selection][i];
 		menuItems.push_back(item);
 	}
 
@@ -4308,13 +4314,13 @@ bool onconfirm_spawn_menu_indus(MenuItem<int> choice)
 
 bool process_spawn_menu_indus()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < MENU_INDUS_CATEGORIES.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_INDUS_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_INDUS_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -4333,12 +4339,12 @@ bool process_spawn_menu_generic(int topMenuSelection)
 
 	std::string category = MENU_VEHICLE_CATEGORIES[topMenuSelection];
 
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < VOV_SHALLOW_CAPTIONS[selection].size(); i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_SHALLOW_CAPTIONS[selection][i];
-		item->value = VOV_SHALLOW_VALUES[selection][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_SHALLOW_CAPTIONS[selection][i];
+		item.value = VOV_SHALLOW_VALUES[selection][i];
 		menuItems.push_back(item);
 	}
 
@@ -4399,7 +4405,7 @@ Vehicle do_spawn_vehicle(DWORD model, std::string modelTitle) //, bool cleanup)
 	{
 		STREAMING::REQUEST_MODEL(model);
 		while (!STREAMING::HAS_MODEL_LOADED(model)) WAIT(0);
-		FLOAT lookDir = ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
+		float lookDir = ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
 		Vector3 coords = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER::PLAYER_PED_ID(), 0.0, 5.0, 0.0);
 		Vehicle rveh = VEHICLE::CREATE_VEHICLE(model, coords.x, coords.y, coords.z, lookDir, 1, 0);
 		VEHICLE::SET_VEHICLE_DIRT_LEVEL(rveh, 0);
@@ -4604,12 +4610,12 @@ bool spawn_saved_car(int slot, std::string caption)
 
 		VEHICLE::SET_VEHICLE_WHEEL_TYPE(rveh, savedVeh->wheelType);
 
-		for each (SavedVehicleExtraDBRow *extra in savedVeh->extras)
+		for (SavedVehicleExtraDBRow *extra : savedVeh->extras)
 		{
 			VEHICLE::SET_VEHICLE_EXTRA(rveh, extra->extraID, (extra->extraState == 1) ? 0 : -1);
 		}
 
-		for each (SavedVehicleModDBRow *mod in savedVeh->mods)
+		for (SavedVehicleModDBRow *mod : savedVeh->mods)
 		{
 			if (mod->isToggle)
 			{
@@ -4738,30 +4744,27 @@ bool process_savedveh_slot_menu(int slot)
 		vehSaveSlotMenuInterrupt = false;
 		requireRefreshOfSlotMenu = false;
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 1;
-		item->caption = "Spawn";
+		MenuItem<int> item;
+		item.isLeaf = false;
+		item.value = 1;
+		item.caption = "Spawn";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 2;
-		item->caption = "Overwrite With Current";
+		item.isLeaf = false;
+		item.value = 2;
+		item.caption = "Overwrite With Current";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 3;
-		item->caption = "Rename";
+		item.isLeaf = false;
+		item.value = 3;
+		item.caption = "Rename";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 4;
-		item->caption = "Delete";
+		item.isLeaf = false;
+		item.value = 4;
+		item.caption = "Delete";
 		menuItems.push_back(item);
 
 		draw_generic_menu<int>(menuItems, 0, activeSavedVehicleSlotName, onconfirm_savedveh_slot_menu, NULL, NULL, vehicle_save_slot_menu_interrupt);
@@ -4860,20 +4863,19 @@ bool process_savedveh_menu()
 
 		lastKnownSavedVehicleCount = savedVehs.size();
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = -1;
-		item->caption = "Create New Vehicle Save";
+		MenuItem<int> item;
+		item.isLeaf = false;
+		item.value = -1;
+		item.caption = "Create New Vehicle Save";
 		menuItems.push_back(item);
 
-		for each (SavedVehicleDBRow *sv in savedVehs)
+		for (SavedVehicleDBRow *sv : savedVehs)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->isLeaf = false;
-			item->value = sv->rowID;
-			item->caption = sv->saveName;
+			item.isLeaf = false;
+			item.value = sv->rowID;
+			item.caption = sv->saveName;
 			menuItems.push_back(item);
 		}
 

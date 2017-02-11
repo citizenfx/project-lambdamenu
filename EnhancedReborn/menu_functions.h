@@ -14,11 +14,13 @@
 
 #pragma once
 
-#include "inc\natives.h"
-#include "inc\types.h"
+#include <natives.h>
+#include <types.h>
 #include "inc\enums.h"
 
-#include "inc\main.h"
+#include <main.h>
+
+#include <math.h>
 
 #include "script.h"
 #include "io.h"
@@ -30,7 +32,19 @@
 #include <ctime>
 #include <vector>
 
+#include <memory>
+
 #pragma warning(disable : 4244 4305) // double <-> float conversions
+
+void set_status_text(std::string str, bool isGxtEntry = false);
+
+void set_status_text_centre_screen(std::string str, DWORD time = 2500, bool isGxtEntry = false);
+
+void update_centre_screen_status_text();
+
+void menu_beep();
+
+std::string show_keyboard(char* title_id, char* prepopulated_text);
 
 extern void(*periodic_feature_call)(void);
 
@@ -57,6 +71,17 @@ public:
 
 protected:
 
+};
+
+template<class T>
+class MenuItemVector : public std::vector<std::shared_ptr<MenuItem<T>>>
+{
+public:
+       template<class TItem>
+       void push_back(const TItem& item)
+       {
+               std::vector<std::shared_ptr<MenuItem<T>>>::push_back(std::make_shared<TItem>(item));
+       }
 };
 
 template<class T>
@@ -167,8 +192,8 @@ void draw_rect(float A_0, float A_1, float A_2, float A_3, int A_4, int A_5, int
 inline void draw_menu_header_line(std::string caption, float lineWidth, float lineHeight, float lineTop, float lineLeft, float textLeft, bool active, bool rescaleText = true, int curPage = 1, int pageCount = 1)
 {
 	// default values
-	int text_col[4] = { 255, 255, 255, 255.0f },
-		rect_col[4] = { 0, 0, 0, 200.0f };
+	int text_col[4] = { 255, 255, 255, 255 },
+		rect_col[4] = { 0, 0, 0, 200 };
 
 	float text_scale = rescaleText ? 0.60 : 0.35;
 
@@ -263,9 +288,9 @@ template<typename T>
 void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, float lineTop, float lineLeft, float textLeft, bool active, bool rescaleText)
 {
 	// default values
-	int text_col[4] = { 255, 255, 255, 255.0f },
+	int text_col[4] = { 255, 255, 255, 255 },
 	//	rect_col[4] = { 255, 255, 255, 80.f };
-		rect_col[4] = { 0, 0, 0, 50.f };
+		rect_col[4] = { 0, 0, 0, 50 };
 	float text_scale = 0.33;
 	int font = 0;
 	bool outline = false;
@@ -284,7 +309,7 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 		rect_col[0] = 93;
 		rect_col[1] = 182;
 		rect_col[2] = 229;
-		rect_col[3] = 200.0f;
+		rect_col[3] = 200;
 
 		if (rescaleText) text_scale = 0.33;
 	}
@@ -380,7 +405,7 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 		UI::SET_TEXT_CENTRE(1);
 		UI::SET_TEXT_WRAP(0, lineLeftScaled + lineWidthScaled - leftMarginScaled);
 		UI::_SET_TEXT_ENTRY("STRING");
-		UI::_ADD_TEXT_COMPONENT_STRING(toggleItem->get_toggle_value() ? "ON" : "OFF");
+		UI::_ADD_TEXT_COMPONENT_STRING(const_cast<char*>(toggleItem->get_toggle_value() ? "ON" : "OFF"));
 		UI::_DRAW_TEXT(lineLeftScaled + lineWidthScaled - rightMarginScaled, textY);
 	}	
 	else if (WantedSymbolItem<T>* wantedItem = dynamic_cast<WantedSymbolItem<T>*>(item))
@@ -485,7 +510,7 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 * - interruptCheck: an optional method that will be called to see if the menu should be aborted
 */
 template<typename T>
-bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, std::string headerText,
+bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::string headerText,
 	bool(*onConfirmation)(MenuItem<T> value),
 	void(*onHighlight)(MenuItem<T> value),
 	void(*onExit)(bool returnValue),
@@ -499,9 +524,9 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 
 	bool result = false;
 	DWORD waitTime = 150;
-	const int totalItems = (int)items.size();
+	int totalItems = (int)items.size();
 	const int itemsPerLine = 10;
-	const int lineCount = (int)(ceil((double)totalItems / (double)itemsPerLine));
+	int lineCount = (int)(ceil((double)totalItems / (double)itemsPerLine));
 
 	int currentSelectionIndex;
 	if (menuSelectionPtr != 0)
@@ -570,9 +595,9 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 			continue;
 		}
 
-		const int currentLine = floor((double)currentSelectionIndex / (double)itemsPerLine);
+		int currentLine = floor((double)currentSelectionIndex / (double)itemsPerLine);
 
-		const int originalIndex = currentSelectionIndex;
+		int originalIndex = currentSelectionIndex;
 
 		int positionOnThisLine = currentSelectionIndex % itemsPerLine;
 		int lineStartPosition = currentSelectionIndex - positionOnThisLine;
@@ -605,7 +630,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 				float lineLeft = 1016.0f;
 				float textOffset = 10.0f;
 
-				draw_menu_item_line(items[lineStartPosition + i], lineWidth, lineHeight, lineTop, lineLeft, textOffset, i == positionOnThisLine, false);
+				draw_menu_item_line(items[lineStartPosition + i].get(), lineWidth, lineHeight, lineTop, lineLeft, textOffset, i == positionOnThisLine, false);
 			}
 
 			if (periodic_feature_call != NULL)
@@ -620,7 +645,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 		bool bSelect, bBack, bUp, bDown, bLeft, bRight;
 		get_button_state(&bSelect, &bBack, &bUp, &bDown, &bLeft, &bRight);
 
-		MenuItem<T> *choice = items[currentSelectionIndex];
+		MenuItem<T> *choice = items[currentSelectionIndex].get();
 
 		if (bSelect)
 		{
@@ -756,30 +781,25 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 		do
 		{
 			WAIT(0);
+
+			if (periodic_feature_call != NULL)
+			{
+				periodic_feature_call();
+			}
 		} while (GetTickCount() < maxTickCount);
 		waitTime = 0;
 	}
 
 	//clean up the items memory
-	for (int i = 0; i< items.size(); i++)
+	/*for (int i = 0; i< items.size(); i++)
 	{
 		delete (items[i]);
 	}
-	items.clear();
+	items.clear();*/
 
 	return result;
 }
 
-void set_status_text(std::string str, bool isGxtEntry = false);
-
-void set_status_text_centre_screen(std::string str, DWORD time = 2500, bool isGxtEntry = false);
-
-void update_centre_screen_status_text();
-
-void menu_beep();
-
 void draw_menu_from_struct_def(StandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<int> value));
 
 void draw_menu_from_struct_def(StringStandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<std::string> value));
-
-std::string show_keyboard(char* title_id, char* prepopulated_text);

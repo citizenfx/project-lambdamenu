@@ -401,14 +401,14 @@ bool onconfirm_teleport_location(MenuItem<int> choice)
 		
 		if ( ENTITY::DOES_ENTITY_EXIST ( PLAYER::PLAYER_PED_ID () ) )// && STREAMING::IS_IPL_ACTIVE("plg_01") == 0)
 		{
-			for each (const char* scenery in value->scenery_toremove)
+			for (const char* scenery : value->scenery_toremove)
 			{
 				if (STREAMING::IS_IPL_ACTIVE(scenery))
 				{
 					STREAMING::REMOVE_IPL(scenery);
 				}
 			}
-			for each ( const char* scenery in value->scenery_required )
+			for ( const char* scenery : value->scenery_required )
 			{
 				if (!STREAMING::IS_IPL_ACTIVE(scenery))
 				{
@@ -477,14 +477,14 @@ bool onconfirm_teleport_location(MenuItem<int> choice)
 
 				if ( ENTITY::DOES_ENTITY_EXIST ( PLAYER::PLAYER_PED_ID () ) )// && STREAMING::IS_IPL_ACTIVE("plg_01") == 1)
 				{
-					for each ( const char* scenery in loc->scenery_required )
+					for ( const char* scenery : loc->scenery_required )
 					{
 						if (STREAMING::IS_IPL_ACTIVE(scenery))
 						{
 							STREAMING::REMOVE_IPL(scenery);
 						}
 					}
-					for each (const char* scenery in loc->scenery_toremove)
+					for (const char* scenery : loc->scenery_toremove)
 					{
 						if (!STREAMING::IS_IPL_ACTIVE(scenery))
 						{
@@ -518,26 +518,26 @@ bool process_teleport_menu(int categoryIndex)
 {
 	if (categoryIndex == -1)
 	{
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *markerItem = new MenuItem<int>();
-		markerItem->caption = "GO TO MARKER LOCATION";
-		markerItem->value = -2;
-		markerItem->isLeaf = true;
+		MenuItem<int> markerItem;
+		markerItem.caption = "GO TO MARKER LOCATION";
+		markerItem.value = -2;
+		markerItem.isLeaf = true;
 		menuItems.push_back(markerItem);
 
-		MenuItem<int> *dialogItem = new MenuItem<int>();
-		dialogItem->caption = "SHOW COORDINATES";
-		dialogItem->value = -1;
-		dialogItem->isLeaf = true;
+		MenuItem<int> dialogItem;
+		dialogItem.caption = "SHOW COORDINATES";
+		dialogItem.value = -1;
+		dialogItem.isLeaf = true;
 		menuItems.push_back(dialogItem);
 
 		for (int i = 0; i < MENU_LOCATION_CATEGORIES.size(); i++)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->caption = MENU_LOCATION_CATEGORIES[i];
-			item->value = i;
-			item->isLeaf = false;
+			MenuItem<int> item;
+			item.caption = MENU_LOCATION_CATEGORIES[i];
+			item.value = i;
+			item.isLeaf = false;
 			menuItems.push_back(item);
 		}
 
@@ -546,13 +546,13 @@ bool process_teleport_menu(int categoryIndex)
 	}
 	else
 	{
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
 		for (int i = 0; i < VOV_LOCATIONS[categoryIndex].size(); i++)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->caption = VOV_LOCATIONS[categoryIndex][i].text;
-			item->value = i;
+			MenuItem<int> item;
+			item.caption = VOV_LOCATIONS[categoryIndex][i].text;
+			item.value = i;
 			menuItems.push_back(item);
 		}
 

@@ -15,10 +15,11 @@
 #include <stdio.h>
 #include "inc/sqlite3/sqlite3.h"
 
-#include "inc\natives.h"
-#include "inc\types.h"
+#include <natives.h>
+#include <types.h>
 #include "inc\enums.h"
 
+#include <string>
 #include <vector>
 #include <map>
 
