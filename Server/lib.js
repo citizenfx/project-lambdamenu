@@ -151,6 +151,11 @@ var library = {
 
 		let str = NATIVE.callNative(Citizen.resultAsString());
 
+		if (str === null)
+		{
+			return null;
+		}
+
 		if (typeof window.stringPool === 'undefined')
 		{
 			window.stringPool = {};
