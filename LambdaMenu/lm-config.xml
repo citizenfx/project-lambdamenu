@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<lm-config>
+  <keys>
+    <!--
+    Lambda Menu by Oui - https://lambda.menu
+	  Use this link to replace keys: https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx 
+    For now, if you want controller input, you need to map it to a key first using some utility. 
+    -->
+
+			<!--Menu Controls-->   
+    <key function="toggle_main_menu" value="VK_F1"/> 
+    <key function="menu_up" value="VK_NUMPAD8"/> 
+    <key function="menu_down" value="VK_NUMPAD2"/> 
+    <key function="menu_left" value="VK_NUMPAD4"/> 
+    <key function="menu_right" value="VK_NUMPAD6"/> 
+    <key function="menu_select" value="VK_NUMPAD5"/> 
+    <key function="menu_back" value="VK_NUMPAD0"/>
+    
+    <!--NoClip Controls-->
+    <key function="toggle_noclip" value="VK_F2"/> 
+    <key function="noclip_up" value="VK_KEY_Q"/> 
+    <key function="noclip_down" value="VK_KEY_Z"/> 
+    <key function="noclip_forward" value="VK_KEY_W"/> 
+    <key function="noclip_back" value="VK_KEY_S"/> 
+    <key function="noclip_rotate_left" value="VK_KEY_A"/> 
+    <key function="noclip_rotate_right" value="VK_KEY_D"/> 
+    <key function="noclip_speed" value="VK_SHIFT"/>
+
+    <!--Editor Controls-->
+    <key function="toggle_editor" value="VK_F3"/>
+    <key function="discard_recording" value="VK_DELETE"/>
+
+    <!--Player Controls-->
+  	<key function="player_ragdoll" value="VK_NUMPAD1"/> 
+    <key function="ragdoll_force" value="VK_NUMPAD7"/>
+    <key function="pointing_action" value="VK_KEY_B"/>
+
+    <!--Teleport Controls-->	
+    <key function="teleport_to_marker" value="VK_F4"/> 
+
+		<!--Vehicle Controls-->
+	  <key function="veh_boost" value="VK_NUMPAD9"/> 
+    <key function="veh_stop" value="VK_NUMPAD3"/> 
+    <key function="left_signal" value="VK_LEFT"/> 
+    <key function="right_signal" value="VK_RIGHT"/> 
+    <key function="interior_light" value="VK_DECIMAL"/> 
+    <key function="front_windows_up" value="VK_UP"/> 
+    <key function="front_windows_down" value="VK_DOWN"/> 
+    <key function="no_siren" value="VK_SUBTRACT"/> 
+    <key function="drift_mode" value="VK_SHIFT"/> 
+
+		<!--Game Controls-->
+	  <key function="player_names" value="NULL"/>
+    <key function="player_names_vehicles" value="NULL"/>
+    <key function="map_cycle" value="VK_MULTIPLY"/> 
+    <key function="push_through_wall" value="VK_DIVIDE"/> 
+
+		<!--Hotkey Modifier One Controls-->
+	  <key function="hotkey_modifier_one" value="VK_CONTROL"/>
+	  <key function="back_windows_up" value="VK_UP"/>
+    <key function="back_windows_down" value="VK_DOWN"/>
+	  <key function="door_front_left" value="VK_NUMPAD7"/> 
+	  <key function="hood" value="VK_NUMPAD8"/> 
+    <key function="door_front_right" value="VK_NUMPAD9"/> 
+    <key function="door_back_left" value="VK_NUMPAD4"/> 
+	  <key function="trunk" value="VK_NUMPAD5"/> 
+    <key function="door_back_right" value="VK_NUMPAD6"/> 
+  </keys>
+</lm-config>

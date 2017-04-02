@@ -1,0 +1,149 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="noclip.cpp" />
+    <ClCompile Include="anims.cpp" />
+    <ClCompile Include="config_io.cpp" />
+    <ClCompile Include="database.cpp" />
+    <ClCompile Include="debuglog.cpp" />
+    <ClCompile Include="inc\sqlite3\sqlite3.c" />
+    <ClCompile Include="io.cpp" />
+    <ClCompile Include="keyboard.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="menu_functions.cpp" />
+    <ClCompile Include="paintmenu.cpp" />
+    <ClCompile Include="script.cpp" />
+    <ClCompile Include="skins.cpp" />
+    <ClCompile Include="teleportation.cpp" />
+    <ClCompile Include="vehicles.cpp" />
+    <ClCompile Include="vehmodmenu.cpp">
+      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Sync</ExceptionHandling>
+    </ClCompile>
+    <ClCompile Include="weapons.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="inc\enums.h" />
+    <ClInclude Include="inc\natives.h" />
+    <ClInclude Include="inc\types.h" />
+    <ClInclude Include="noclip.h" />
+    <ClInclude Include="anims.h" />
+    <ClInclude Include="config_io.h" />
+    <ClInclude Include="database.h" />
+    <ClInclude Include="debuglog.h" />
+    <ClInclude Include="types.h" />
+    <ClInclude Include="inc\main.h" />
+    <ClInclude Include="inc\nativeCaller.h" />
+    <ClInclude Include="inc\sqlite3\sqlite3.h" />
+    <ClInclude Include="inc\sqlite3\sqlite3ext.h" />
+    <ClInclude Include="io.h" />
+    <ClInclude Include="keyboard.h" />
+    <ClInclude Include="menu_functions.h" />
+    <ClInclude Include="script.h" />
+    <ClInclude Include="skins.h" />
+    <ClInclude Include="teleportation.h" />
+    <ClInclude Include="vehicles.h" />
+    <ClInclude Include="weapons.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="lib\ScriptHookV.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="lm-config.xml">
+      <SubType>Designer</SubType>
+    </Xml>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{8D82F34A-1D64-465B-84B1-37F89AD3D20B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>MultiFiveMenu</RootNamespace>
+    <ProjectName>LambdaMenu</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <TargetExt>.asi</TargetExt>
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>tmp\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <TargetExt>.asi</TargetExt>
+    <OutDir>bin\$(Configuration)\</OutDir>
+    <IntDir>tmp\$(Configuration)\</IntDir>
+    <LibraryPath>$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Program Files\Microsoft SDKs\Windows\v6.0A\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NativeTrainer_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <ExceptionHandling>false</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalOptions>lib\ScriptHookV.lib %(AdditionalOptions)</AdditionalOptions>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;NativeTrainer_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Fast</FloatingPointModel>
+      <ExceptionHandling>Sync</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>lib\ScriptHookV.lib;msxml6.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
