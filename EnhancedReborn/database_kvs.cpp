@@ -325,6 +325,53 @@ static void save_vehicle_extras(Vehicle veh, json& j)
 	j["extras"] = extras;
 }
 
+static void save_skin_components(Ped ped, json& j)
+{
+	json elems = json::array();
+
+	for (int i = 0; i < 12; i++)
+	{
+		int drawable = PED::GET_PED_DRAWABLE_VARIATION(ped, i);
+		int texture = PED::GET_PED_TEXTURE_VARIATION(ped, i);
+
+		auto stmt = json::array();
+		int index = 1;
+		sqlite3_bind_null(stmt, index++);
+		sqlite3_bind_int(stmt, index++, 0);
+		sqlite3_bind_int(stmt, index++, i); //slot id
+		sqlite3_bind_int(stmt, index++, drawable); //drawable id
+		sqlite3_bind_int(stmt, index++, texture); //texture id
+
+		elems.push_back(stmt);
+	}
+
+	j["components"] = elems;
+}
+
+static void save_skin_props(Ped ped, json& j)
+{
+	json elems = json::array();
+
+	for (int i = 0; i < 10; i++)
+	{
+		int drawable = PED::GET_PED_PROP_INDEX(ped, i);
+		int texture = PED::GET_PED_PROP_TEXTURE_INDEX(ped, i);
+
+		auto stmt = json::array();
+
+		int index = 1;
+		sqlite3_bind_null(stmt, index++);
+		sqlite3_bind_int(stmt, index++, 0);
+		sqlite3_bind_int(stmt, index++, i); //slot id
+		sqlite3_bind_int(stmt, index++, drawable); //drawable id
+		sqlite3_bind_int(stmt, index++, texture); //texture id
+
+		elems.push_back(stmt);
+	}
+
+	j["props"] = elems;
+}
+
 bool ERDatabaseKVS::save_vehicle(Vehicle veh, std::string saveName, int slot /*= -1*/)
 {
 	int numVehicles = GET_RESOURCE_KVP_INT("num_vehicles");
@@ -482,6 +529,38 @@ bool ERDatabaseKVS::save_vehicle(Vehicle veh, std::string saveName, int slot /*=
 
 bool ERDatabaseKVS::save_skin(Ped ped, std::string saveName, int slot /*= -1*/)
 {
+	int numSkins = GET_RESOURCE_KVP_INT("num_skins");
+
+	if (slot == -1)
+	{
+		slot = numSkins;
+
+		SET_RESOURCE_KVP_INT("num_skins", numSkins + 1);
+	}
+	else if (slot > numSkins)
+	{
+		numSkins = slot + 1;
+
+		SET_RESOURCE_KVP_INT("num_skins", numSkins + 1);
+	}
+
+	json j = json::object();
+	auto stmt = json::array();
+
+	int index = 0;
+
+	sqlite3_bind_int(stmt, index++, slot);
+	sqlite3_bind_text(stmt, index++, saveName.c_str(), saveName.length(), 0); //save name
+	sqlite3_bind_int(stmt, index++, ENTITY::GET_ENTITY_MODEL(ped)); //model
+
+	// set row
+	j["row"] = stmt;
+
+	save_skin_components(ped, j);
+	save_skin_props(ped, j);
+
+	SET_RESOURCE_KVP(("skin:" + std::to_string(slot)).c_str(), j.dump().c_str());
+
 	return true;
 }
 
@@ -559,19 +638,6 @@ std::vector<SavedVehicleDBRow*> ERDatabaseKVS::get_saved_vehicles(int index /*= 
 
 				veh->interiorColor = sqlite3_column_int(stmt, index++);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 				veh->lightColor = sqlite3_column_int(stmt, index++);
 
 
@@ -602,7 +668,50 @@ std::vector<SavedVehicleDBRow*> ERDatabaseKVS::get_saved_vehicles(int index /*= 
 
 std::vector<SavedSkinDBRow*> ERDatabaseKVS::get_saved_skins(int index /*= -1*/)
 {
-	return{};
+	std::vector<SavedSkinDBRow*> results;
+
+	int findHandle;
+
+	if (index != -1)
+	{
+		findHandle = START_FIND_KVP(("skin:" + std::to_string(index)).c_str());
+	}
+	else
+	{
+		findHandle = START_FIND_KVP("skin:");
+	}
+
+	if (findHandle != -1)
+	{
+		const char* k = nullptr;
+
+		do
+		{
+			k = FIND_KVP(findHandle);
+
+			if (k)
+			{
+				StringPairSettingDBRow row;
+				row.name = &k[8];
+				json j = json::parse(GET_RESOURCE_KVP_STRING(k));
+
+				json& stmt = j["row"];
+
+				SavedSkinDBRow *skin = new SavedSkinDBRow();
+
+				int index = 0;
+				skin->rowID = sqlite3_column_int(stmt, index++);
+				skin->saveName = sqlite3_column_text(stmt, index++);
+				skin->model = sqlite3_column_int(stmt, index++);
+
+				results.push_back(skin);
+			}
+		} while (k);
+	}
+
+	END_FIND_KVP(findHandle);
+
+	return results;
 }
 
 void ERDatabaseKVS::populate_saved_vehicle(SavedVehicleDBRow *entry)
@@ -630,7 +739,26 @@ void ERDatabaseKVS::populate_saved_vehicle(SavedVehicleDBRow *entry)
 
 void ERDatabaseKVS::populate_saved_skin(SavedSkinDBRow *entry)
 {
+	json j = json::parse(GET_RESOURCE_KVP_STRING(("skin:" + std::to_string(entry->rowID)).c_str()));
 
+	for (auto& stmt : j["components"])
+	{
+		auto row = new SavedSkinComponentDBRow();
+		row->slotID = sqlite3_column_int(stmt, 2);
+		row->drawable = sqlite3_column_int(stmt, 3);
+		row->texture = sqlite3_column_int(stmt, 4);
+		
+		entry->components.push_back(row);
+	}
+
+	for (auto& stmt : j["props"])
+	{
+		auto row = new SavedSkinPropDBRow();
+		row->propID = sqlite3_column_int(stmt, 2);
+		row->drawable = sqlite3_column_int(stmt, 3);
+		row->texture = sqlite3_column_int(stmt, 4);
+		entry->props.push_back(row);
+	}
 }
 
 void ERDatabaseKVS::delete_saved_vehicle(int slot)
@@ -655,12 +783,18 @@ void ERDatabaseKVS::delete_saved_skin_children(int slot)
 
 void ERDatabaseKVS::rename_saved_vehicle(std::string name, int slot)
 {
+	json j = json::parse(GET_RESOURCE_KVP_STRING(("vehicle:" + std::to_string(slot)).c_str()));
+	j["row"][1] = name;
 
+	SET_RESOURCE_KVP(("vehicle:" + std::to_string(slot)).c_str(), j.dump().c_str());
 }
 
 void ERDatabaseKVS::rename_saved_skin(std::string name, int slot)
 {
+	json j = json::parse(GET_RESOURCE_KVP_STRING(("skin:" + std::to_string(slot)).c_str()));
+	j["row"][1] = name;
 
+	SET_RESOURCE_KVP(("skin:" + std::to_string(slot)).c_str(), j.dump().c_str());
 }
 
 #ifdef SERVER_SIDED
