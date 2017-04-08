@@ -18,7 +18,6 @@
 
 #pragma comment(lib, "Shlwapi.lib")
 
-#define TRAINER_VERSION "5"
 #define MAX_PLAYERS 32
 
 #include "io.h"
@@ -3955,9 +3954,10 @@ bool onconfirm_misc_menu(MenuItem<int> choice)
 		process_reset_globals();
 		break;
 	case 21:
-		set_status_text("       <C>~b~Lambda ~s~Menu</C>  ~s~by <C>Oui</C>");
+		set_status_text("           <C>~b~Lambda ~s~Menu 2</C>");
 		set_status_text("Contributors:");
-		set_status_text("Sami Alaoui (TheDroidGeek)");
+		set_status_text("Oui, TheDroidGeek & ");
+		set_status_text("The FiveM Collective");
 		break;
 		// switchable features
 	default:
@@ -4037,34 +4037,6 @@ void process_leave_menu()
 }
 
 //==================
-// EXIT MENU
-//==================
-int activeLineIndexExit = 0;
-bool onconfirm_exit_menu(MenuItem<int> choice)
-{
-	switch (activeLineIndexExit)
-	{
-	case 0:
-		system("taskkill /F /T /IM FiveReborn.exe");
-		break;
-	}
-
-	return false;
-}
-void process_exit_menu()
-{
-	std::string caption = "ARE YOU SURE YOU WANT TO EXIT";
-
-	const int lineCount = 1;
-
-	StandardOrToggleMenuDef lines[lineCount] = {
-		{ "YES, I Want To Exit FiveM", NULL, NULL, true }
-	};
-
-	draw_menu_from_struct_def(lines, lineCount, &activeLineIndexExit, caption, onconfirm_exit_menu);
-}
-
-//==================
 // MAIN MENU
 //==================
 int activeLineIndexMain = 0;
@@ -4096,9 +4068,6 @@ bool onconfirm_main_menu(MenuItem<int> choice)
 	case 7:
 		process_leave_menu();
 		break;
-	case 8:
-		process_exit_menu();
-		break;
 	}
 	return false;
 }
@@ -4113,8 +4082,7 @@ void process_main_menu()
 		"Vehicles",
 		"World",
 		"Settings",
-		"Leave Session",
-		"Exit Game"
+		"Leave Session"
 	};
 
 	std::vector<MenuItem<int>*> menuItems;
@@ -4123,7 +4091,7 @@ void process_main_menu()
 		MenuItem<int> *item = new MenuItem<int>();
 		item->caption = TOP_OPTIONS[i];
 		item->value = i;
-		item->isLeaf = (i==7 || i == 8);
+		item->isLeaf = (i==7);
 		item->currentMenuIndex = i;
 		menuItems.push_back(item);
 	}
