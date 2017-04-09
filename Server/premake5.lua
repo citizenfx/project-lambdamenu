@@ -13,7 +13,7 @@ solution 'lm-sv'
 		kind 'ConsoleApp'
 		targetextension '.bc'
 		language 'C++'
-		files { '../EnhancedReborn/**.h', '../EnhancedReborn/**.cpp', '../EnhancedReborn/**.c', '../Server/Source/**.cpp', '../Server/Include/**.h' }
+		files { '../LambdaMenu/**.h', '../LambdaMenu/**.cpp', '../LambdaMenu/**.c', '../Server/Source/**.cpp', '../Server/Include/**.h' }
 
 		removefiles { '../**/database_sqlite.cpp', '../**/sqlite3.c' }
 

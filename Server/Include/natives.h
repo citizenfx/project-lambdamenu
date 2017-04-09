@@ -1854,11 +1854,11 @@ namespace AI
 	static void _0xD5B35BEA41919ACB(Any p0, Any* p1, float p2, float p3, float p4, float p5, float p6, float p7, Any p8, float p9, BOOL p10, Any* p11, Any p12) { invoke<Void>(0xD5B35BEA41919ACB, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); } // 0xD5B35BEA41919ACB 0x71A5C5DB
 	static BOOL _0x921CE12C489C4C41(int PlayerID) { return invoke<BOOL>(0x921CE12C489C4C41, PlayerID); } // 0x921CE12C489C4C41 0x902656EB
 	static BOOL _0x30ED88D5E0C56A37(Any p0) { return invoke<BOOL>(0x30ED88D5E0C56A37, p0); } // 0x30ED88D5E0C56A37 0x92FDBAE6
-	static Any _0xD01015C7316AE176(Any p0, Any p1) { return invoke<Any>(0xD01015C7316AE176, p0, p1); } // 0xD01015C7316AE176 0x885724DE
+	static Any _0xD01015C7316AE176(Any p0, const char* p1) { return invoke<Any>(0xD01015C7316AE176, p0, p1); } // 0xD01015C7316AE176 0x885724DE
 	static Any _0xAB13A5565480B6D9(Any p0, Any p1) { return invoke<Any>(0xAB13A5565480B6D9, p0, p1); } // 0xAB13A5565480B6D9
 	static Any _0x717E4D1F2048376D(Any p0) { return invoke<Any>(0x717E4D1F2048376D, p0); } // 0x717E4D1F2048376D 0x96C0277B
-	static void _0xD5BB4025AE449A4E(Any p0, Any* p1, float p2) { invoke<Void>(0xD5BB4025AE449A4E, p0, p1, p2); } // 0xD5BB4025AE449A4E 0xA79BE783
-	static void _0xB0A6CFD2C69C1088(Any p0, Any* p1, BOOL p2) { invoke<Void>(0xB0A6CFD2C69C1088, p0, p1, p2); } // 0xB0A6CFD2C69C1088 0xF3538041
+	static void _0xD5BB4025AE449A4E(Any p0, const char* p1, float p2) { invoke<Void>(0xD5BB4025AE449A4E, p0, p1, p2); } // 0xD5BB4025AE449A4E 0xA79BE783
+	static void _0xB0A6CFD2C69C1088(Any p0, const char* p1, BOOL p2) { invoke<Void>(0xB0A6CFD2C69C1088, p0, p1, p2); } // 0xB0A6CFD2C69C1088 0xF3538041
 	static BOOL _0xA7FFBA498E4AAF67(Any p0, Any* p1) { return invoke<BOOL>(0xA7FFBA498E4AAF67, p0, p1); } // 0xA7FFBA498E4AAF67 0x1EBB6F3D
 	static BOOL _0xB4F47213DF45A64C(Any p0, Any* p1) { return invoke<BOOL>(0xB4F47213DF45A64C, p0, p1); } // 0xB4F47213DF45A64C 0x72FA5EF2
 	static BOOL IS_MOVE_BLEND_RATIO_STILL(Ped ped) { return invoke<BOOL>(0x349CE7B56DAFD95C, ped); } // 0x349CE7B56DAFD95C 0xE9DAF877
@@ -4312,10 +4312,10 @@ namespace WORLDPROBE
 	static Any _0x052837721A854EC7(Any p0, Any p1, Any p2) { return invoke<Any>(0x052837721A854EC7, p0, p1, p2); } // 0x052837721A854EC7 0xCEEAD94B
 	static Any _0xFE466162C4401D18(float p0, float p1, float p2, float p3, float p4, float p5, float p6, float p7, float p8, Any p9, Any p10, Any p11, Any p12) { return invoke<Any>(0xFE466162C4401D18, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12); } // 0xFE466162C4401D18 0x249BC876
 	static Any _0x37181417CE7C8900(Any p0, Any p1, Any p2) { return invoke<Any>(0x37181417CE7C8900, p0, p1, p2); } // 0x37181417CE7C8900 0x13BC46C0
-	static Any _CAST_3D_RAY_POINT_TO_POINT(float x1, float y1, float z1, float x2, float y2, float z2, float radius, int flags, Entity entity, int p8) { return invoke<Any>(0x28579D1B8F8AAC80, x1, y1, z1, x2, y2, z2, radius, flags, entity, p8); } // 0x28579D1B8F8AAC80 0x591EA833
+	static int START_SHAPE_TEST_CAPSULE(float x1, float y1, float z1, float x2, float y2, float z2, float radius, int flags, Entity entity, int p8) { return invoke<Any>(0x28579D1B8F8AAC80, x1, y1, z1, x2, y2, z2, radius, flags, entity, p8); } // 0x28579D1B8F8AAC80 0x591EA833
 	static Any _0xE6AC6C45FBE83004(float p0, float p1, float p2, float p3, float p4, float p5, float p6, Any p7, Any p8, Any p9) { return invoke<Any>(0xE6AC6C45FBE83004, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9); } // 0xE6AC6C45FBE83004 0x4559460A
 	static Any _0xFF6BE494C7987F34(Any p0, Any p1, Any p2, Any p3, Any p4) { return invoke<Any>(0xFF6BE494C7987F34, p0, p1, p2, p3, p4); } // 0xFF6BE494C7987F34
-	static int _GET_RAYCAST_RESULT(int rayHandle, BOOL* hit, Vector3* endCoords, Vector3* surfaceNormal, Entity* entityHit) { return invoke<int>(0x3D87450E15D98694, rayHandle, hit, endCoords, surfaceNormal, entityHit); } // 0x3D87450E15D98694 0xF3C2875A
+	static int GET_SHAPE_TEST_RESULT(int rayHandle, BOOL* hit, Vector3* endCoords, Vector3* surfaceNormal, Entity* entityHit) { return invoke<int>(0x3D87450E15D98694, rayHandle, hit, endCoords, surfaceNormal, entityHit); } // 0x3D87450E15D98694 0xF3C2875A
 	static int _0x65287525D951F6BE(int rayHandle, BOOL* hit, Vector3* endCoords, Vector3* surfaceNormal, Any unk, Entity* entityHit) { return invoke<int>(0x65287525D951F6BE, rayHandle, hit, endCoords, surfaceNormal, unk, entityHit); } // 0x65287525D951F6BE 0x4301E10C
 	static void _0x2B3334BCA57CD799(Entity p0) { invoke<Void>(0x2B3334BCA57CD799, p0); } // 0x2B3334BCA57CD799 0xEC2AAF06
 }
