@@ -488,13 +488,6 @@ bool onconfirm_teleport_location(MenuItem<int> choice)
 	if (unloadedAnything)
 	{
 		set_status_text("Old scenery unloaded");
-
-		time = GetTickCount() + 1000;
-		while (GetTickCount() < time)
-		{
-			make_periodic_feature_call();
-			WAIT(0);
-		}
 	}
 
 	return false;

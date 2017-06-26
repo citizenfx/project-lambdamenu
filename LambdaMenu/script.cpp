@@ -1008,27 +1008,28 @@ void restore_player_appearance()
 	{
 		STREAMING::REQUEST_MODEL(pmodel);
 
-		while (!STREAMING::HAS_MODEL_LOADED(pmodel))
-			WAIT(0);
-
-		if (pmodel == GAMEPLAY::GET_HASH_KEY("a_c_dolphin") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_fish") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharkhammer") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_humpback") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_killerwhale") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_stingray") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharktiger"))
+		submit_call_on_result([=]()
 		{
-			set_status_text("Restore appearance disabled for fish");
-		}
-		else
+			return STREAMING::HAS_MODEL_LOADED(pmodel);
+		}, [=]()
 		{
-			PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), pmodel);
-
-			for (int i = 0; i < 12; i++)
+			if (pmodel == GAMEPLAY::GET_HASH_KEY("a_c_dolphin") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_fish") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharkhammer") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_humpback") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_killerwhale") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_stingray") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharktiger"))
 			{
-				PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), i, drawable[i], dtexture[i], pallet[i]);
-				PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), i, prop[i], ptexture[i], 0);
+				set_status_text("Restore appearance disabled for fish");
 			}
-		}
+			else
+			{
+				PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), pmodel);
 
-		WAIT(100);
-
-		STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(pmodel);
+				for (int i = 0; i < 12; i++)
+				{
+					PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), i, drawable[i], dtexture[i], pallet[i]);
+					PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), i, prop[i], ptexture[i], 0);
+				}
+			}
+			
+			STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(pmodel);
+		});
 	}
 }
 
@@ -2286,19 +2287,24 @@ bool onconfirm_online_player_options_menu(MenuItem<int> choice)
 		{
 			if (!NETWORK::NETWORK_IS_PLAYER_CONNECTED(targetId))
 				set_status_text("Player has ~r~<C>disconnected</C>.");
-#if 0
 			else if (featureSpectate)
 			{
 				if (!CAM::IS_SCREEN_FADED_OUT()) {
 					if (!CAM::IS_SCREEN_FADING_OUT()) {
 						CAM::DO_SCREEN_FADE_OUT(1000);
-						while (!CAM::IS_SCREEN_FADED_OUT()) WAIT(0);
-						Vector3 targetpos = ENTITY::GET_ENTITY_COORDS(target.ped, 0);
-						STREAMING::REQUEST_COLLISION_AT_COORD(targetpos.x, targetpos.y, targetpos.z);
-						NETWORK::NETWORK_SET_IN_SPECTATOR_MODE(1, target.ped);
-						if (CAM::IS_SCREEN_FADED_OUT()) {
-							CAM::DO_SCREEN_FADE_IN(1000);
-						}
+
+						submit_call_on_result([]() 
+						{
+							return CAM::IS_SCREEN_FADED_OUT();
+						}, [=]()
+						{
+							Vector3 targetpos = ENTITY::GET_ENTITY_COORDS(target.ped, 0);
+							STREAMING::REQUEST_COLLISION_AT_COORD(targetpos.x, targetpos.y, targetpos.z);
+							NETWORK::NETWORK_SET_IN_SPECTATOR_MODE(1, target.ped);
+							if (CAM::IS_SCREEN_FADED_OUT()) {
+								CAM::DO_SCREEN_FADE_IN(1000);
+							}
+						});
 					}
 				}
 				set_status_text("Spectating: ~b~<C>" + target.name + "</C>.");
@@ -2308,17 +2314,21 @@ bool onconfirm_online_player_options_menu(MenuItem<int> choice)
 				if (!CAM::IS_SCREEN_FADED_OUT()) {
 					if (!CAM::IS_SCREEN_FADING_OUT()) {
 						CAM::DO_SCREEN_FADE_OUT(1000);
-						while (!CAM::IS_SCREEN_FADED_OUT()) WAIT(0);
-						Vector3 targetposME = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
-						STREAMING::REQUEST_COLLISION_AT_COORD(targetposME.x, targetposME.y, targetposME.z);
-						NETWORK::NETWORK_SET_IN_SPECTATOR_MODE(0, target.ped);
-						if (CAM::IS_SCREEN_FADED_OUT()) {
-							CAM::DO_SCREEN_FADE_IN(1000);
-						}
+						submit_call_on_result([]()
+						{
+							return CAM::IS_SCREEN_FADED_OUT();
+						}, [=]()
+						{
+							Vector3 targetposME = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
+							STREAMING::REQUEST_COLLISION_AT_COORD(targetposME.x, targetposME.y, targetposME.z);
+							NETWORK::NETWORK_SET_IN_SPECTATOR_MODE(0, target.ped);
+							if (CAM::IS_SCREEN_FADED_OUT()) {
+								CAM::DO_SCREEN_FADE_IN(1000);
+							}
+						});
 					}
 				}
 			}
-#endif
 		}
 		break;
 
@@ -4071,7 +4081,6 @@ bool onconfirm_leave_menu(MenuItem<int> choice)
 	case 0:
 		if (!CAM::IS_SCREEN_FADED_OUT()) {
 			if (!CAM::IS_SCREEN_FADING_OUT()) {
-				CAM::DO_SCREEN_FADE_OUT(500);
 				NETWORK::NETWORK_SESSION_LEAVE_SINGLE_PLAYER();
 #if 0
 				while (!CAM::IS_SCREEN_FADED_OUT()) WAIT(0);
