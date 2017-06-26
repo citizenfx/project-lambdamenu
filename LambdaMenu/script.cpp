@@ -61,6 +61,7 @@ struct playerinfo {
 	Ped ped;
 	Blip blip;
 	int head;
+	bool wasDead;
 };
 
 Player playerId;
@@ -198,7 +199,29 @@ const char* player_models[] = { "a_c_boar", "a_c_cat_01", "a_c_chimp", "a_c_chop
 
 const char* CLIPSET_DRUNK = "move_m@drunk@verydrunk";
 
-Hash $(char* string) { return GAMEPLAY::GET_HASH_KEY(string); }
+inline constexpr char ToLower(const char c)
+{
+	return (c >= 'A' && c <= 'Z') ? (c - 'A' + 'a') : c;
+}
+
+// hash string, lowercase
+inline constexpr Hash $(const char* string)
+{
+	uint32_t hash = 0;
+
+	for (; *string; ++string)
+	{
+		hash += ToLower(*string);
+		hash += (hash << 10);
+		hash ^= (hash >> 6);
+	}
+
+	hash += (hash << 3);
+	hash ^= (hash >> 11);
+	hash += (hash << 15);
+
+	return hash;
+}
 
 std::string killActionFromWeaponHash(Hash weaponHash)
 {
@@ -955,7 +978,6 @@ void blips()
 void teleport_to_marker_coords(Entity e, Vector3 coords)
 {
 	ENTITY::SET_ENTITY_COORDS_NO_OFFSET(e, coords.x, coords.y, coords.z, 0, 0, 1);
-	WAIT(0);
 	set_status_text("Teleported to map marker.");
 }
 
@@ -978,6 +1000,60 @@ void animal_watch()
 			//change this to only the elements needed to prevent weapons/wheel, rather than disabling the entire hud
 		}
 	}
+}
+
+void restore_player_appearance()
+{
+	if (STREAMING::IS_MODEL_IN_CDIMAGE(pmodel) && STREAMING::IS_MODEL_VALID(pmodel))
+	{
+		STREAMING::REQUEST_MODEL(pmodel);
+
+		while (!STREAMING::HAS_MODEL_LOADED(pmodel))
+			WAIT(0);
+
+		if (pmodel == GAMEPLAY::GET_HASH_KEY("a_c_dolphin") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_fish") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharkhammer") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_humpback") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_killerwhale") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_stingray") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharktiger"))
+		{
+			set_status_text("Restore appearance disabled for fish");
+		}
+		else
+		{
+			PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), pmodel);
+
+			for (int i = 0; i < 12; i++)
+			{
+				PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), i, drawable[i], dtexture[i], pallet[i]);
+				PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), i, prop[i], ptexture[i], 0);
+			}
+		}
+
+		WAIT(100);
+
+		STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(pmodel);
+	}
+}
+
+static bool deathLock = false;
+
+static void on_undead_tick()
+{
+	submit_call_on_result([=]()
+	{
+		return ENTITY::IS_ENTITY_DEAD(PLAYER::PLAYER_PED_ID());
+	}, [=]()
+	{
+
+		if (featureRestoreAppearance)
+		{
+			restore_player_appearance();
+		}
+
+		if (featureRestoreWeapons)
+		{
+			restore_player_weapons();
+		}
+
+		deathLock = false;
+	});
 }
 
 void death_watch()
@@ -1021,7 +1097,6 @@ void death_watch()
 			set_status_text((char*)msg.c_str());
 		}
 
-
 		if (featureShowDeathCutscene)
 		{
 			AUDIO::PLAY_SOUND_FRONTEND(-1, "Bed", "WastedSounds", 1);
@@ -1029,99 +1104,50 @@ void death_watch()
 
 			int scaleform = GRAPHICS::REQUEST_SCALEFORM_MOVIE("MP_BIG_MESSAGE_FREEMODE");
 
-			while (!GRAPHICS::HAS_SCALEFORM_MOVIE_LOADED(scaleform))
-				WAIT(0);
+			deathLock = true;
 
-			GRAPHICS::_PUSH_SCALEFORM_MOVIE_FUNCTION(scaleform, "SHOW_SHARD_WASTED_MP_MESSAGE");
-			GRAPHICS::_BEGIN_TEXT_COMPONENT("STRING");
-			UI::_ADD_TEXT_COMPONENT_ITEM_STRING("RESPAWN_W");
-			GRAPHICS::_END_TEXT_COMPONENT();
-			GRAPHICS::_POP_SCALEFORM_MOVIE_FUNCTION_VOID();
-
-			WAIT(1000);
-
-			AUDIO::PLAY_SOUND_FRONTEND(-1, "TextHit", "WastedSounds", 1);
-			while (ENTITY::IS_ENTITY_DEAD(PLAYER::GET_PLAYER_PED(playerId))) {
-				GRAPHICS::_DRAW_SCALEFORM_MOVIE_DEFAULT(scaleform, 255, 255, 255, 255);
-				WAIT(0);
-			}
-
-			GRAPHICS::_STOP_SCREEN_EFFECT("DeathFailOut");
-
-			if (featureRestoreAppearance)
+			submit_call_on_result([=]()
 			{
-				if (STREAMING::IS_MODEL_IN_CDIMAGE(pmodel) && STREAMING::IS_MODEL_VALID(pmodel))
+				return GRAPHICS::HAS_SCALEFORM_MOVIE_LOADED(scaleform);
+			}, [=]()
+			{
+				GRAPHICS::_PUSH_SCALEFORM_MOVIE_FUNCTION(scaleform, "SHOW_SHARD_WASTED_MP_MESSAGE");
+				GRAPHICS::_BEGIN_TEXT_COMPONENT("STRING");
+				UI::_ADD_TEXT_COMPONENT_ITEM_STRING("RESPAWN_W");
+				GRAPHICS::_END_TEXT_COMPONENT();
+				GRAPHICS::_POP_SCALEFORM_MOVIE_FUNCTION_VOID();
+
+				uint32_t endTick = GetTickCount() + 1000;
+
+				submit_call_on_result([=]()
 				{
-					STREAMING::REQUEST_MODEL(pmodel);
+					return (GetTickCount() > endTick);
+				}, [=]()
+				{
+					AUDIO::PLAY_SOUND_FRONTEND(-1, "TextHit", "WastedSounds", 1);
 
-					while (!STREAMING::HAS_MODEL_LOADED(pmodel))
-						WAIT(0);
-
-					if (pmodel == GAMEPLAY::GET_HASH_KEY("a_c_dolphin") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_fish") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharkhammer") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_humpback") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_killerwhale") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_stingray") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharktiger"))
+					submit_call_on_result([=]()
 					{
-						set_status_text("Restore appearance disabled for fish");
-					}
-					else
-					{
-						PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), pmodel);
+						bool dead = ENTITY::IS_ENTITY_DEAD(PLAYER::GET_PLAYER_PED(playerId));
 
-						for (int i = 0; i < 12; i++)
+						if (dead)
 						{
-							PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), i, drawable[i], dtexture[i], pallet[i]);
-							PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), i, prop[i], ptexture[i], 0);
+							GRAPHICS::_DRAW_SCALEFORM_MOVIE_DEFAULT(scaleform, 255, 255, 255, 255);
 						}
-					}
 
-					WAIT(100);
+						return !dead;
+					}, [=]()
+					{
+						GRAPHICS::_STOP_SCREEN_EFFECT("DeathFailOut");
+					});
 
-					STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(pmodel);
-				}
-			}
-
-			if (featureRestoreWeapons)
-			{
-				restore_player_weapons();
-			}
+					on_undead_tick();
+				});
+			});
 		}
 		else
 		{
-			while (ENTITY::IS_ENTITY_DEAD(PLAYER::PLAYER_PED_ID()))
-				WAIT(0);
-
-			if (featureRestoreAppearance)
-			{
-				if (STREAMING::IS_MODEL_IN_CDIMAGE(pmodel) && STREAMING::IS_MODEL_VALID(pmodel))
-				{
-					STREAMING::REQUEST_MODEL(pmodel);
-
-					while (!STREAMING::HAS_MODEL_LOADED(pmodel))
-						WAIT(0);
-
-					if (pmodel == GAMEPLAY::GET_HASH_KEY("a_c_dolphin") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_fish") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharkhammer") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_humpback") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_killerwhale") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_stingray") || pmodel == GAMEPLAY::GET_HASH_KEY("a_c_sharktiger"))
-					{
-						set_status_text("Restore appearance disabled for fish");
-					}
-					else
-					{
-						PLAYER::SET_PLAYER_MODEL(PLAYER::PLAYER_ID(), pmodel);
-
-						for (int i = 0; i < 12; i++)
-						{
-							PED::SET_PED_COMPONENT_VARIATION(PLAYER::PLAYER_PED_ID(), i, drawable[i], dtexture[i], pallet[i]);
-							PED::SET_PED_PROP_INDEX(PLAYER::PLAYER_PED_ID(), i, prop[i], ptexture[i], 0);
-						}
-					}
-
-					WAIT(100);
-
-					STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(pmodel);
-				}
-			}
-
-			if (featureRestoreWeapons)
-			{
-				restore_player_weapons();
-			}
+			on_undead_tick();
 		}
 	}
 }
@@ -1293,67 +1319,80 @@ void update_features()
 
 			if (NETWORK::NETWORK_IS_PLAYER_CONNECTED(i))
 			{
-				std::string name = (char*)PLAYER::GET_PLAYER_NAME(i);
+				char* name = PLAYER::GET_PLAYER_NAME(i);
 
 				if (featureShowVoiceChatSpeaker && NETWORK::NETWORK_IS_PLAYER_TALKING(i))
 				{
 					if (!isVoiceChatRunning)
 						isVoiceChatRunning = true;
-					voice_status_msg += "~n~~b~" + name;
+					voice_status_msg += "~n~~b~" + std::string(name);
 				}
 
 				if (i != playerId)
 				{
 					Ped pedId = PLAYER::GET_PLAYER_PED(i);
-					unsigned int headDisplayId = UI::_0xBFEFE3321A3F5015(pedId, (char*)"", 0, 0, (char*)"", 0); // CREATE_PED_HEAD_DISPLAY
 
 					if (ENTITY::IS_ENTITY_DEAD(pedId) && ENTITY::DOES_ENTITY_EXIST(pedId))
 					{
-						if (featurePlayerBlips && UI::DOES_BLIP_EXIST(playerdb[i].blip))
+						if (!playerdb[i].wasDead)
 						{
-							UI::SET_BLIP_SPRITE(playerdb[i].blip, 274); // Death blip ('X')
-							UI::SET_BLIP_NAME_TO_PLAYER_NAME(playerdb[i].blip, i);
-							UI::_0x5FBCA48327B914DF(playerdb[i].blip, 0);
-						}
+							if (featurePlayerBlips && UI::DOES_BLIP_EXIST(playerdb[i].blip))
+							{
+								UI::SET_BLIP_SPRITE(playerdb[i].blip, 274); // Death blip ('X')
+								UI::SET_BLIP_NAME_TO_PLAYER_NAME(playerdb[i].blip, i);
+								UI::_0x5FBCA48327B914DF(playerdb[i].blip, 0);
+							}
 
-						if (featureDeathNotifications)
-						{
-							std::string msg = "<C>~o~" + name + "</C> ~s~died.";
-							Hash weaponHash;
-							Entity e = NETWORK::NETWORK_GET_ENTITY_KILLER_OF_PLAYER(i, &weaponHash);
-							if (PED::IS_PED_A_PLAYER(e)) {
-								Player killer = NETWORK::_0x6C0E2E0125610278(e); // _NETWORK_GET_PLAYER_FROM_PED
-								std::string kname = PLAYER::GET_PLAYER_NAME(killer);
-								if (kname != "") {
-									if (kname == name) {
-										msg = "<C>~o~" + name + "</C> ~s~commited suicide.";
-									}
-									else if (kname == PLAYER::GET_PLAYER_NAME(playerId)) {
-										msg = "~y~<C>You</C> ~s~" + killActionFromWeaponHash(weaponHash) + " <C>~o~" + name + "</C>~s~.";
-									}
-									else {
-										msg = "~y~<C>" + kname + "</C> ~s~" + killActionFromWeaponHash(weaponHash) + " <C>~o~" + name + "</C>~s~.";
+							if (featureDeathNotifications)
+							{
+								std::string msg = "<C>~o~" + std::string(name) + "</C> ~s~died.";
+								Hash weaponHash;
+								Entity e = NETWORK::NETWORK_GET_ENTITY_KILLER_OF_PLAYER(i, &weaponHash);
+								if (PED::IS_PED_A_PLAYER(e)) {
+									Player killer = NETWORK::_0x6C0E2E0125610278(e); // _NETWORK_GET_PLAYER_FROM_PED
+									std::string kname = PLAYER::GET_PLAYER_NAME(killer);
+									if (kname != "") {
+										if (kname == name) {
+											msg = "<C>~o~" + std::string(name) + "</C> ~s~commited suicide.";
+										}
+										else if (kname == PLAYER::GET_PLAYER_NAME(playerId)) {
+											msg = "~y~<C>You</C> ~s~" + killActionFromWeaponHash(weaponHash) + " <C>~o~" + name + "</C>~s~.";
+										}
+										else {
+											msg = "~y~<C>" + kname + "</C> ~s~" + killActionFromWeaponHash(weaponHash) + " <C>~o~" + name + "</C>~s~.";
+										}
 									}
 								}
+								set_status_text((char*)msg.c_str());
 							}
-							set_status_text((char*)msg.c_str());
 						}
+
+						playerdb[i].wasDead = true;
+					}
+					else
+					{
+						playerdb[i].wasDead = false;
 					}
 
-					if (UI::_0x4E929E7A5796FD26(headDisplayId))
+					if (!playerdb[i].head || playerdb[i].ped != pedId)
 					{
-						playerdb[i].head = headDisplayId;
-						if (featurePlayerHeadDisplay)
+						unsigned int headDisplayId = UI::_0xBFEFE3321A3F5015(pedId, (char*)"", 0, 0, (char*)"", 0); // CREATE_PED_HEAD_DISPLAY
+
+						if (UI::_0x4E929E7A5796FD26(headDisplayId))
 						{
-							UI::_0xDEA2B8283BAA3944(headDisplayId, (char*)name.c_str());
-							Ped playerPed = PLAYER::PLAYER_PED_ID();
-							if (ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY(playerPed, playerdb[i].ped, 17) && !(!featurePlayerVehHeadDisplay && PED::IS_PED_IN_ANY_VEHICLE(playerdb[i].ped, 0)))
+							playerdb[i].head = headDisplayId;
+							if (featurePlayerHeadDisplay)
 							{
-								UI::_0x63BB75ABEDC1F6A0(headDisplayId, 0, 1);
-							}
-							else
-							{
-								UI::_0x63BB75ABEDC1F6A0(headDisplayId, 0, 0);
+								UI::_0xDEA2B8283BAA3944(headDisplayId, (char*)name);
+								Ped playerPed = PLAYER::PLAYER_PED_ID();
+								if (ENTITY::HAS_ENTITY_CLEAR_LOS_TO_ENTITY(playerPed, playerdb[i].ped, 17) && !(!featurePlayerVehHeadDisplay && PED::IS_PED_IN_ANY_VEHICLE(playerdb[i].ped, 0)))
+								{
+									UI::_0x63BB75ABEDC1F6A0(headDisplayId, 0, 1);
+								}
+								else
+								{
+									UI::_0x63BB75ABEDC1F6A0(headDisplayId, 0, 0);
+								}
 							}
 						}
 					}
@@ -1377,13 +1416,12 @@ void update_features()
 						{
 							if (featurePlayerNotifications)
 							{
-								std::string msg = "~g~<C>" + name + "</C> ~s~joined.";
+								std::string msg = "~g~<C>" + std::string(name) + "</C> ~s~joined.";
 								set_status_text((char*)msg.c_str());
 							}
 
 							playerdb[i].name = name;
 						}
-						playerdb[i].ped = pedId;
 					}
 
 					if (featurePlayerBlips) {
@@ -1454,6 +1492,8 @@ void update_features()
 
 						UI::SET_BLIP_SCALE(playerdb[i].blip, UI::IS_PAUSE_MENU_ACTIVE() ? 1.2 : 0.8);
 					}
+
+					playerdb[i].ped = pedId;
 				}
 			}
 			else if (playerdb[i].name != "")
@@ -1733,6 +1773,7 @@ void update_features()
 		else if (bPlayerExists){ ENTITY::SET_ENTITY_VISIBLE(playerPed, true); }
 	}
 
+#if 0
 	if (featurePlayerDrunkUpdated)
 	{
 		featurePlayerDrunkUpdated = false;
@@ -1753,6 +1794,7 @@ void update_features()
 			CAM::STOP_GAMEPLAY_CAM_SHAKING(true);
 		}
 	}
+#endif
 
 	if (featureRadioAlwaysOff || featurePlayerRadioUpdated)
 	{
@@ -2066,7 +2108,7 @@ void update_features()
 				for (int i = 0; i < sizeof(groundCheckHeight) / sizeof(float); i++)
 				{
 					ENTITY::SET_ENTITY_COORDS_NO_OFFSET(e, coords.x, coords.y, groundCheckHeight[i], 0, 0, 1);
-					WAIT(100);
+					//WAIT(100);
 					if (GAMEPLAY::GET_GROUND_Z_FOR_3D_COORD(coords.x, coords.y, groundCheckHeight[i], &coords.z))
 					{
 						groundFound = true;
@@ -2154,6 +2196,7 @@ void update_features()
 			}
 		}
 
+#if 0
 		if (pointingAction)
 		{
 			if (AI::_0x921CE12C489C4C41(playerPed))
@@ -2181,6 +2224,7 @@ void update_features()
 				STREAMING::REMOVE_ANIM_DICT("anim@mp_point");
 			}
 		}
+#endif
 	}
 #endif
 }
@@ -2242,7 +2286,7 @@ bool onconfirm_online_player_options_menu(MenuItem<int> choice)
 		{
 			if (!NETWORK::NETWORK_IS_PLAYER_CONNECTED(targetId))
 				set_status_text("Player has ~r~<C>disconnected</C>.");
-
+#if 0
 			else if (featureSpectate)
 			{
 				if (!CAM::IS_SCREEN_FADED_OUT()) {
@@ -2274,6 +2318,7 @@ bool onconfirm_online_player_options_menu(MenuItem<int> choice)
 					}
 				}
 			}
+#endif
 		}
 		break;
 
@@ -4028,10 +4073,12 @@ bool onconfirm_leave_menu(MenuItem<int> choice)
 			if (!CAM::IS_SCREEN_FADING_OUT()) {
 				CAM::DO_SCREEN_FADE_OUT(500);
 				NETWORK::NETWORK_SESSION_LEAVE_SINGLE_PLAYER();
+#if 0
 				while (!CAM::IS_SCREEN_FADED_OUT()) WAIT(0);
 				if (CAM::IS_SCREEN_FADED_OUT()) {
 					CAM::DO_SCREEN_FADE_IN(500);
 				}
+#endif
 			}
 		}
 		break;
@@ -4228,6 +4275,79 @@ void reset_globals()
 	save_settings();
 #endif
 }
+
+#include <tuple>
+#include <list>
+
+std::list<std::tuple<std::function<bool()>, std::function<void()>>> g_callResults;
+
+void submit_call_on_result(const std::function<bool()>& result, const std::function<void()>& call)
+{
+	g_callResults.push_back({ result, call });
+}
+
+using TMenu = std::tuple<std::function<bool()>, std::function<void(bool)>>;
+
+#include <stack>
+
+std::stack<TMenu> g_menuList;
+
+void set_menu_processor(const std::function<bool()>& process, const std::function<void(bool)>& onExit)
+{
+	g_menuList.push({ process, onExit });
+}
+
+void process_current_menu()
+{
+	if (!g_menuList.empty())
+	{
+		if (!std::get<0>(g_menuList.top())())
+		{
+			auto fn = std::get<1>(g_menuList.top());
+
+			if (fn)
+			{
+				fn(false);
+			}
+
+			g_menuList.pop();
+		}
+	}
+}
+
+void main_loop()
+{
+	if (trainer_switch_pressed())
+	{
+		menu_beep();
+		set_menu_showing(true);
+		process_main_menu();
+	}
+	else if (noclip_switch_pressed())
+	{
+		menu_beep();
+		process_noclip_menu();
+
+	}
+
+	process_current_menu();
+	update_features();
+
+	for (auto it = g_callResults.begin(); it != g_callResults.end(); )
+	{
+		if (std::get<0>(*it)())
+		{
+			std::get<1>(*it)();
+
+			it = g_callResults.erase(it);
+		}
+		else
+		{
+			it++;
+		}
+	}
+}
+
 void RunMain()
 {	
 
@@ -4252,24 +4372,16 @@ void RunMain()
 	// tell cout to use our new locale.
 	std::cout.imbue(comma_locale);
 
+#ifndef SERVER_SIDED
 	while (true)
 	{
-		if (trainer_switch_pressed())
-		{
-			menu_beep();
-			set_menu_showing(true);
-			process_main_menu();
-		}
-		else if (noclip_switch_pressed())
-		{
-			menu_beep();
-			process_noclip_menu();
-			
-		}
+		main_loop();
 
-		update_features();
 		WAIT(0);
 	}
+#else
+	emscripten_set_main_loop(main_loop, 60, false);
+#endif
 }
 
 #ifndef SERVER_SIDED
@@ -4537,13 +4649,9 @@ void save_settings()
 		return;
 	}
 
-	write_text_to_log_file("Saving settings, start");
-
 	if (database != NULL)
 	{
-		write_text_to_log_file("Actually saving");
 		database->store_feature_enabled_pairs(get_feature_enablements());
-		write_text_to_log_file("Save flag released");
 	}
 }
 

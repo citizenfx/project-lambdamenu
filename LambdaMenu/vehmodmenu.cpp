@@ -2967,11 +2967,13 @@ void set_plate_text(MenuItem<int> choice)
 {
 	Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
 	char* existingText = VEHICLE::GET_VEHICLE_NUMBER_PLATE_TEXT(veh);
-	std::string result = show_keyboard("CMOD_MOD_18_D", existingText);
-	if (!result.empty())
+	show_keyboard("CMOD_MOD_18_D", existingText, [=](const std::string& result)
 	{
-		VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(veh, (char*) result.c_str());
-	}
+		if (!result.empty())
+		{
+			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(veh, (char*)result.c_str());
+		}
+	});
 }
 
 bool is_custom_tyres(std::vector<int> extras)

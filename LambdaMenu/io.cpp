@@ -109,8 +109,37 @@ void get_button_state(bool *a, bool *b, bool *up, bool *down, bool *l, bool *r)
 {
 	//SettingsConfig *setConf = config->get_trainer_config();
 
-	if (a) *a = CONTROLS::IS_CONTROL_PRESSED(0, 201);
-	if (b) *b = CONTROLS::IS_CONTROL_PRESSED(0, 202);
+	static bool lastA, lastB;
+
+	if (a) *a = false;
+	if (b) *b = false;
+
+	if (CONTROLS::IS_CONTROL_PRESSED(0, 201))
+	{
+		if (!lastA)
+		{
+			if (a) *a = true;
+			lastA = true;
+		}
+	}
+	else
+	{
+		lastA = false;
+	}
+
+	if (CONTROLS::IS_CONTROL_PRESSED(0, 202))
+	{
+		if (!lastB)
+		{
+			if (b) *b = true;
+			lastB = true;
+		}
+	}
+	else
+	{
+		lastB = false;
+	}
+
 	if (up) *up = CONTROLS::IS_CONTROL_PRESSED(0, 188);
 	if (down) *down = CONTROLS::IS_CONTROL_PRESSED(0, 187);
 	if (r) *r = CONTROLS::IS_CONTROL_PRESSED(0, 190);

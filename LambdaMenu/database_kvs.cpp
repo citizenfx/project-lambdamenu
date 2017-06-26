@@ -72,6 +72,8 @@ static const char* GET_RESOURCE_KVP_STRING(const char* key) { return invoke<char
 static int GET_RESOURCE_KVP_INT(const char* key) { return invoke<int>(0x557b586a, key); }
 static float GET_RESOURCE_KVP_FLOAT(const char* key) { return invoke<float>(0x35bdceea, key); }
 
+static void DELETE_RESOURCE_KVP(const char* key) { invoke<Void>(0x7389b5df, key); }
+
 static void SET_RESOURCE_KVP(const char* key, const char* value) { invoke<Void>(0x21c7a35b, key, value); }
 static void SET_RESOURCE_KVP_INT(const char* key, int value) { invoke<Void>(0x06a2b1e8, key, value); }
 static void SET_RESOURCE_KVP_FLOAT(const char* key, float value) { invoke<Void>(0x9add2938, key, value); }
@@ -763,7 +765,7 @@ void ERDatabaseKVS::populate_saved_skin(SavedSkinDBRow *entry)
 
 void ERDatabaseKVS::delete_saved_vehicle(int slot)
 {
-
+	DELETE_RESOURCE_KVP(("vehicle:" + std::to_string(slot)).c_str());
 }
 
 void ERDatabaseKVS::delete_saved_vehicle_children(int slot)
@@ -773,7 +775,7 @@ void ERDatabaseKVS::delete_saved_vehicle_children(int slot)
 
 void ERDatabaseKVS::delete_saved_skin(int slot)
 {
-
+	DELETE_RESOURCE_KVP(("skin:" + std::to_string(slot)).c_str());
 }
 
 void ERDatabaseKVS::delete_saved_skin_children(int slot)

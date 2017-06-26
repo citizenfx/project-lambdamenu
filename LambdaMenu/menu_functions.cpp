@@ -255,44 +255,45 @@ void draw_menu_from_struct_def(StringStandardOrToggleMenuDef defs[], int lineCou
 	draw_generic_menu<std::string>(menuItems, selectionRef, caption, onConfirmation, NULL, NULL);
 }
 
-std::string show_keyboard(char* title_id, char* prepopulated_text)
+void show_keyboard(char* title_id, char* prepopulated_text, const std::function<void(const std::string&)>& onEntry)
 {
 	DWORD time = GetTickCount() + 400;
-	while (GetTickCount() < time)
-	{
-		make_periodic_feature_call();
-		WAIT(0);
-	}
 
-	/*
-	Any x;
-	GAMEPLAY::START_SAVE_DATA(&x, 1, 1);
-	GAMEPLAY::REGISTER_TEXT_LABEL_TO_SAVE(&x, "XYZ123");
-	GAMEPLAY::STOP_SAVE_DATA();
-	*/
-
-	GAMEPLAY::DISPLAY_ONSCREEN_KEYBOARD(
-		true,
-		const_cast<char*>(title_id == NULL ? "HUD_TITLE" : title_id),
-		"",
-		const_cast<char*>(prepopulated_text == NULL ? "" : prepopulated_text),
-		"", "", "", 64);
-
-	while (GAMEPLAY::UPDATE_ONSCREEN_KEYBOARD() == 0)
+	submit_call_on_result([=]()
 	{
-		//update_status_text();
-		WAIT(0);
-	}
+		return (GetTickCount() >= time);
+	}, [=]()
+	{
 
-	std::stringstream ss;
-	if (!GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT())
-	{
-		return std::string("");
-	}
-	else
-	{
-		return std::string(GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT());
-	}
+		/*
+		Any x;
+		GAMEPLAY::START_SAVE_DATA(&x, 1, 1);
+		GAMEPLAY::REGISTER_TEXT_LABEL_TO_SAVE(&x, "XYZ123");
+		GAMEPLAY::STOP_SAVE_DATA();
+		*/
+
+		GAMEPLAY::DISPLAY_ONSCREEN_KEYBOARD(
+			true,
+			const_cast<char*>(title_id == NULL ? "HUD_TITLE" : title_id),
+			"",
+			const_cast<char*>(prepopulated_text == NULL ? "" : prepopulated_text),
+			"", "", "", 64);
+
+		submit_call_on_result([=]()
+		{
+			return GAMEPLAY::UPDATE_ONSCREEN_KEYBOARD() != 0;
+		}, [=]()
+		{
+			if (!GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT())
+			{
+				onEntry("");
+			}
+			else
+			{
+				onEntry(std::string(GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT()));
+			}
+		});
+	});
 }
 
 

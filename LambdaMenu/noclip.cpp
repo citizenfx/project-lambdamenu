@@ -57,7 +57,7 @@ void process_noclip_menu()
 
 	const float lineWidth = 264.0;
 	const int lineCount = 1;
-	bool loadedAnims = false;
+	static bool loadedAnims = false;
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	bool inVehicle = PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0) ? true : false;
@@ -65,11 +65,13 @@ void process_noclip_menu()
 	if (!inVehicle)
 	{
 		STREAMING::REQUEST_ANIM_DICT(noclip_ANIM_A);
-		while (!STREAMING::HAS_ANIM_DICT_LOADED(noclip_ANIM_A))
+		submit_call_on_result([]()
 		{
-			WAIT(0);
-		}
-		loadedAnims = true;
+			return STREAMING::HAS_ANIM_DICT_LOADED(noclip_ANIM_A);
+		}, [=]()
+		{
+			loadedAnims = true;
+		});
 	}
 
 	curLocation = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
@@ -102,7 +104,7 @@ void process_noclip_menu()
 
 		noclip(inVehicle);
 
-		WAIT(0);
+		//WAIT(0);
 	}
 
 	if (!inVehicle)
