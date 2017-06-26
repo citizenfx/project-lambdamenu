@@ -395,7 +395,6 @@ bool onconfirm_teleport_location(MenuItem<int> choice)
 
 	Vector3 coords;
 
-#if 0
 	if ((value->scenery_required.size() > 0 || value->scenery_toremove.size() > 0) && !value->isLoaded)
 	{
 		set_status_text("Loading scenery...");
@@ -419,24 +418,7 @@ bool onconfirm_teleport_location(MenuItem<int> choice)
 		}
 
 		value->isLoaded = true;
-
-		DWORD time = GetTickCount() + 1000;
-		while (GetTickCount() < time)
-		{
-			make_periodic_feature_call();
-			WAIT(0);
-		}
-
-		set_status_text("Scenery loaded");
-
-		time = GetTickCount() + 1000;
-		while (GetTickCount() < time)
-		{
-			make_periodic_feature_call();
-			WAIT(0);
-		}
 	}
-#endif
 
 	coords.x = value->x;
 	coords.y = value->y;
