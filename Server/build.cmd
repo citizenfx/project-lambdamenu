@@ -17,5 +17,5 @@ popd
 :: cat whitelist.tmp | tr '\n' '\r' | sed 's/.*WHITELIST=.\(.*\)\'.*/\1/' > whitelist.txt
 :: del whitelist.tmp
 
-call emcc bin\lambdamenu.bc -o "bin\\lambdamenu.html" -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=41943040 -s EMTERPRETIFY_FILE='Bin/data.binary' -O2 -g --js-library lib.js --memory-init-file 1
+call emcc bin\lambdamenu.bc -o "bin\\lambdamenu.html" -s NO_EXIT_RUNTIME=1 -s TOTAL_MEMORY=41943040 -s EMTERPRETIFY_FILE='Bin/data.binary' -O2 -g --js-library lib.js --memory-init-file 1 -s EXPORTED_FUNCTIONS=['_main','_invoke_event_handler']
 :: del whitelist.txt

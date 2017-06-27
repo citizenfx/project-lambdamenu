@@ -46,7 +46,7 @@ void update_centre_screen_status_text();
 
 void menu_beep();
 
-void show_keyboard(char* title_id, char* prepopulated_text, const std::function<void(const std::string&)>& onEntry);
+void show_keyboard(char* title_id, const std::string& prepopulated_text, const std::function<void(const std::string&)>& onEntry);
 
 extern void(*periodic_feature_call)(void);
 
@@ -61,6 +61,8 @@ public:
 	T value;
 	int currentMenuIndex = 0;
 	bool isLeaf = true;
+	std::string toggle_name;
+
 	void(*onConfirmFunction)(const MenuItem<T> choice) = NULL;
 
 	virtual void onConfirm();
@@ -145,6 +147,8 @@ public:
 	virtual void handleRightPress();
 };
 
+#define FT(x) x
+
 enum MenuItemType { STANDARD, TOGGLE, WANTED };
 
 struct StandardOrToggleMenuDef {
@@ -153,6 +157,33 @@ struct StandardOrToggleMenuDef {
 	bool *pUpdated;
 	bool isLeaf;
 	MenuItemType itemType;
+	std::string toggle_name;
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, true, STANDARD, "")
+	{
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, STANDARD, "")
+	{
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, const std::string& toggleName)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, STANDARD, toggleName)
+	{
+
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, MenuItemType itemType)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, itemType, "")
+	{
+	}
+	
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, MenuItemType itemType, const std::string& toggle_name)
+		: text(text), pState(pState), pUpdated(pUpdated), isLeaf(isLeaf), itemType(itemType), toggle_name(toggle_name)
+	{
+	}
 };
 
 struct StringStandardOrToggleMenuDef {
@@ -515,6 +546,8 @@ void set_menu_processor(const std::function<bool()>& process, const std::functio
 */
 static DWORD waitTime = 150;
 
+bool toggle_allowed(const std::string& toggle_name);
+
 template<typename T>
 bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::string headerText,
 	bool(*onConfirmation)(MenuItem<T> value),
@@ -528,15 +561,44 @@ bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::str
 		return false;
 	}
 
+	//populate the menu items' indices
+	for (int i = 0; i < items.size(); i++)
+	{
+		items[i]->currentMenuIndex = i;
+	}
+
+	auto removedIt = std::remove_if(items.begin(), items.end(), [](const std::shared_ptr<MenuItem<T>>& item)
+	{
+		if (!item->toggle_name.empty())
+		{
+			return !toggle_allowed(item->toggle_name);
+		}
+
+		return false;
+	});
+
+	if (removedIt != items.end())
+	{
+		items.resize(removedIt - items.begin());
+	}
+
 	bool result = false;
 	int totalItems = (int)items.size();
 	const int itemsPerLine = 10;
 	int lineCount = (int)(ceil((double)totalItems / (double)itemsPerLine));
 
-	int currentSelectionIndex;
+	int currentSelectionIndex = 0;
 	if (menuSelectionPtr != 0)
 	{
-		if (*menuSelectionPtr >= totalItems)
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (*menuSelectionPtr == items[i]->currentMenuIndex)
+			{
+				currentSelectionIndex = i;
+			}
+		}
+
+		/*if (*menuSelectionPtr >= totalItems)
 		{
 			*menuSelectionPtr = 0;
 		}
@@ -544,7 +606,7 @@ bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::str
 		{
 			*menuSelectionPtr = 0;
 		}
-		currentSelectionIndex = *menuSelectionPtr;
+		currentSelectionIndex = *menuSelectionPtr;*/
 	}
 	else
 	{
@@ -554,12 +616,6 @@ bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::str
 	if (onHighlight != NULL)
 	{
 		onHighlight(*items[currentSelectionIndex]);
-	}
-
-	//populate the menu items' indices
-	for (int i = 0; i < totalItems; i++)
-	{
-		items[i]->currentMenuIndex = i;
 	}
 
 	set_menu_processor([=] () mutable
@@ -760,7 +816,7 @@ bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::str
 
 				if (menuSelectionPtr != 0)
 				{
-					*menuSelectionPtr = currentSelectionIndex;
+					*menuSelectionPtr = items[currentSelectionIndex]->currentMenuIndex;
 				}
 			}
 		}

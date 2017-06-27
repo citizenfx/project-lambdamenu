@@ -746,9 +746,9 @@ void ERDatabaseKVS::populate_saved_skin(SavedSkinDBRow *entry)
 	for (auto& stmt : j["components"])
 	{
 		auto row = new SavedSkinComponentDBRow();
-		row->slotID = sqlite3_column_int(stmt, 2);
-		row->drawable = sqlite3_column_int(stmt, 3);
-		row->texture = sqlite3_column_int(stmt, 4);
+		row->slotID = sqlite3_column_int(stmt, 3);
+		row->drawable = sqlite3_column_int(stmt, 4);
+		row->texture = sqlite3_column_int(stmt, 5);
 		
 		entry->components.push_back(row);
 	}
@@ -756,9 +756,9 @@ void ERDatabaseKVS::populate_saved_skin(SavedSkinDBRow *entry)
 	for (auto& stmt : j["props"])
 	{
 		auto row = new SavedSkinPropDBRow();
-		row->propID = sqlite3_column_int(stmt, 2);
-		row->drawable = sqlite3_column_int(stmt, 3);
-		row->texture = sqlite3_column_int(stmt, 4);
+		row->propID = sqlite3_column_int(stmt, 3);
+		row->drawable = sqlite3_column_int(stmt, 4);
+		row->texture = sqlite3_column_int(stmt, 5);
 		entry->props.push_back(row);
 	}
 }

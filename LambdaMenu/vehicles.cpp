@@ -18,6 +18,8 @@
 #include "config_io.h"
 #include "debuglog.h"
 
+using namespace std::string_literals;
+
 #pragma warning(disable : 4244 4305) // double <-> float conversions
 
 bool ownedvehlocked = false;
@@ -2841,26 +2843,26 @@ void process_veh_menu()
 	std::string caption = "Vehicle Options";
 
 	StandardOrToggleMenuDef lines[lineCount] = {
-		{ "Vehicle Spawner", NULL, NULL, false },
+		{ "Vehicle Spawner", NULL, NULL, false, FT("vehicle_spawn") },
 		{ "Spawn Options", NULL, NULL, false },
-		{ "Saved Vehicles", NULL, NULL, false },
-		{ "Owned Vehicle", NULL, NULL, false },
-		{ "Modifications", NULL, NULL, false },
-		{ "Paint Options", NULL, NULL, false },
-		{ "Damage Settings", NULL, NULL, false },
-		{ "Power Boost Options", NULL, NULL, false },
-		{ "Torque Boost Options", NULL, NULL, false },
-		{ "Suspension Options", NULL, NULL, false },
-		{ "Repair & Set Properly", NULL, NULL, true },
-		{ "No Drag Out", &featureNoVehDragOut, &featureNoVehDragOutUpdated, true },
-		{ "No Fall Off", &featureNoVehFallOff, &featureNoVehFallOffUpdated, true },
-		{ "No Helmet", &featureNoHelmet, NULL, true },
-		{ "Speed Boost", &featureVehSpeedBoost, NULL, true },
-		{ "Drift Mode", &featureDriftMode, NULL, true },
-		{ "Vehicle Controls", &featureVehControls, NULL, true },
-		{ "Speedometer", NULL, NULL, false },
-		{ "Door Controls", NULL, NULL, false },
-		{ "Rainbow Options", NULL, NULL, false }
+		{ "Saved Vehicles", NULL, NULL, false, FT("vehicle_spawn") },
+		{ "Owned Vehicle", NULL, NULL, false, FT("vehicle_owned_vehicles") },
+		{ "Modifications", NULL, NULL, false, FT("vehicle_spawn") },
+		{ "Paint Options", NULL, NULL, false, FT("vehicle_paint") },
+		{ "Damage Settings", NULL, NULL, false, FT("vehicle_damage") },
+		{ "Power Boost Options", NULL, NULL, false, FT("vehicle_power_boost") },
+		{ "Torque Boost Options", NULL, NULL, false, FT("vehicle_torque_boost") },
+		{ "Suspension Options", NULL, NULL, false, FT("vehicle_suspension") },
+		{ "Repair & Set Properly", NULL, NULL, true, FT("vehicle_repair") },
+		{ "No Drag Out", &featureNoVehDragOut, &featureNoVehDragOutUpdated, true, FT("vehicle_no_drag_out") },
+		{ "No Fall Off", &featureNoVehFallOff, &featureNoVehFallOffUpdated, true, FT("vehicle_no_fall_off") },
+		{ "No Helmet", &featureNoHelmet, NULL, true, FT("vehicle_no_helmet") },
+		{ "Speed Boost", &featureVehSpeedBoost, NULL, true, FT("vehicle_speed_boost") },
+		{ "Drift Mode", &featureDriftMode, NULL, true, FT("vehicle_drift_mode") },
+		{ "Vehicle Controls", &featureVehControls, NULL, true, FT("vehicle_controls") },
+		{ "Speedometer", NULL, NULL, false, FT("vehicle_speedo") },
+		{ "Door Controls", NULL, NULL, false, FT("vehicle_doors") },
+		{ "Rainbow Options", NULL, NULL, false, FT("vehicle_rainbow") }
 	};
 	draw_menu_from_struct_def(lines, lineCount, &activeLineIndexVeh, caption, onconfirm_veh_menu);
 }
@@ -2872,135 +2874,143 @@ void process_veh_menu()
 
 void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 {
-	if (featureLimVehCosDamage)
+	if (toggle_allowed("vehicle_damage"))
 	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureLimVehCosDamage)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_STRONG(veh, 1);
-						//ENTITY::SET_ENTITY_PROOFS(veh, 0, 0, 0, 1, 0, 0, 0, 0);
-						ENTITY::SET_ENTITY_CAN_BE_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
-						for (int i = 0; i < 6; i++)
-						{
-							VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (featureVehCosDamage)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_STRONG(veh, 1);
-						if (VEHICLE::_0xBCDC5017D3CE1E9E(veh)) //damage check
-						{
-							VEHICLE::SET_VEHICLE_FIXED(veh);
-					//		VEHICLE::SET_VEHICLE_DEFORMATION_FIXED(veh);
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
+							VEHICLE::SET_VEHICLE_STRONG(veh, 1);
+							//ENTITY::SET_ENTITY_PROOFS(veh, 0, 0, 0, 1, 0, 0, 0, 0);
+							ENTITY::SET_ENTITY_CAN_BE_DAMAGED(veh, 0);
 							VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
+							for (int i = 0; i < 6; i++)
+							{
+								VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+							}
 						}
-						for (int i = 0; i < 6; i++)
-						{
-							VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+					}
+				}
+			}
+		}
+
+		if (featureVehCosDamage)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
+							VEHICLE::SET_VEHICLE_STRONG(veh, 1);
+							if (VEHICLE::_0xBCDC5017D3CE1E9E(veh)) //damage check
+							{
+								VEHICLE::SET_VEHICLE_FIXED(veh);
+								//		VEHICLE::SET_VEHICLE_DEFORMATION_FIXED(veh);
+								VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
+							}
+							for (int i = 0; i < 6; i++)
+							{
+								VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		if (featureVehMechDamage)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_ENGINE_CAN_DEGRADE(veh, 0);
+							VEHICLE::SET_VEHICLE_CAN_BREAK(veh, 0);
+							VEHICLE::SET_VEHICLE_WHEELS_CAN_BREAK(veh, 0);
+							VEHICLE::SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(veh, 1);
+							//	VEHICLE::SET_VEHICLE_EXPLODES_ON_HIGH_EXPLOSION_DAMAGE(veh, 1)
+						}
+					}
+				}
+			}
+		}
+
+
+		// player's vehicle invincible
+		if (featureVehInvincible)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							ENTITY::SET_ENTITY_INVINCIBLE(veh, TRUE);
+							//	VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(veh, 0);
+							//	ENTITY::SET_ENTITY_PROOFS(veh, 1, 1, 1, 1, 1, 1, 1, 1);
 						}
 					}
 				}
 			}
 		}
 	}
-
-
-	if (featureVehMechDamage)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_ENGINE_CAN_DEGRADE(veh, 0);
-						VEHICLE::SET_VEHICLE_CAN_BREAK(veh, 0);
-						VEHICLE::SET_VEHICLE_WHEELS_CAN_BREAK(veh, 0);
-						VEHICLE::SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(veh, 1);
-						//	VEHICLE::SET_VEHICLE_EXPLODES_ON_HIGH_EXPLOSION_DAMAGE(veh, 1)
-					}
-				}
-			}
-		}
-	}
-
-
-	// player's vehicle invincible
-	if (featureVehInvincible)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						ENTITY::SET_ENTITY_INVINCIBLE(veh, TRUE);
-						//	VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(veh, 0);
-						//	ENTITY::SET_ENTITY_PROOFS(veh, 1, 1, 1, 1, 1, 1, 1, 1);
-					}
-				}
-			}
-		}
-	}
-
 
 
 
 
 	// no drag out
-	if (bPlayerExists && featureNoVehDragOutUpdated && !featureNoVehDragOut)
+	if (toggle_allowed("vehicle_no_drag_out"))
 	{
-		PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 1);
-		featureNoVehDragOutUpdated = false;
-	}
-	else if (bPlayerExists && featureNoVehDragOut)
-	{
-		PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 0);
+		if (bPlayerExists && featureNoVehDragOutUpdated && !featureNoVehDragOut)
+		{
+			PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 1);
+			featureNoVehDragOutUpdated = false;
+		}
+		else if (bPlayerExists && featureNoVehDragOut)
+		{
+			PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 0);
+		}
 	}
 
 	// no fall off
-	if (bPlayerExists && featureNoVehFallOffUpdated && !featureNoVehFallOff)
+	if (toggle_allowed("vehicle_no_fall_off"))
 	{
+		if (bPlayerExists && featureNoVehFallOffUpdated && !featureNoVehFallOff)
+		{
 
-		PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 0);
-		featureNoVehFallOffUpdated = false;
-	}
-	else if (bPlayerExists && featureNoVehFallOff)
-	{
+			PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 0);
+			featureNoVehFallOffUpdated = false;
+		}
+		else if (bPlayerExists && featureNoVehFallOff)
+		{
 
-		PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 1);
+			PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 1);
+		}
 	}
 
 	//Prevents player from wearing a helmet
-	if (bPlayerExists && featureNoHelmet)
+	if (bPlayerExists && featureNoHelmet && toggle_allowed("vehicle_no_helmet"))
 	{
 		PED::SET_PED_HELMET(playerPed, 0);
 	}
 
 
 	// player's vehicle boost
-	if (featureVehSpeedBoost && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+	if (featureVehSpeedBoost && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0) && toggle_allowed("vehicle_speed_boost"))
 	{
 		Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
@@ -3034,484 +3044,490 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
-	if (featureVehPower75)
+	if (toggle_allowed("vehicle_power_boost"))
 	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehPower75)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 75);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 75);
+						}
+					}
+				}
+			}
+		}
+
+		if (featureVehPower100)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 100);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower150)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 150);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower200)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 200);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower250)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 250);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower300)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 300);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower350)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 350);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower400)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 400);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower450)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 450);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower500)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 500);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	if (featureVehPower100)
+	if (toggle_allowed("vehicle_torque_boost"))
 	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////	
+		if (featureVehTorque2)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 100);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 2);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower150)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque5)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 150);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 5);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower200)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque10)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 200);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 10);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower250)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque15)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 250);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 15);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower300)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque25)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 300);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 25);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower350)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque50)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 350);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 50);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower400)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque75)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 400);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 75);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower450)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque100)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 450);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 100);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower500)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque150)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 500);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 150);
+						}
 					}
 				}
 			}
 		}
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	if (featureVehTorque2)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque200)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 2);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 200);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque5)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque250)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 5);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 250);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque10)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque300)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 10);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 300);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque15)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque350)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 15);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 350);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque25)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque400)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 25);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 400);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque50)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque450)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 50);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 450);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque75)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque500)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 75);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 500);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque100)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque600)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 100);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 600);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque150)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque700)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 150);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 700);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque200)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque800)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 200);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 800);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque250)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque900)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 250);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque300)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 300);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque350)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 350);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque400)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 400);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque450)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 450);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque500)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 500);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque600)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 600);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque700)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 700);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque800)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 800);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque900)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 900);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 900);
+						}
 					}
 				}
 			}
@@ -4240,6 +4256,13 @@ bool onconfirm_carspawn_menu(MenuItem<int> choice)
 			{
 				lastCustomVehicleSpawn = result;
 				Hash hash = GAMEPLAY::GET_HASH_KEY((char*)result.c_str());
+
+				if (!toggle_allowed("vehicle_spawn_hash_" + std::to_string(hash)))
+				{
+					set_status_text("That vehicle isn't allowed!");
+					return;
+				}
+
 				if (!STREAMING::IS_MODEL_IN_CDIMAGE(hash) || !STREAMING::IS_MODEL_A_VEHICLE(hash))
 				{
 					std::ostringstream ss;
@@ -4295,6 +4318,7 @@ bool onconfirm_spawn_menu_cars(MenuItem<int> choice)
 		MenuItem<std::string> item;
 		item.caption = VOV_CAR_CAPTIONS[choice.value][i];
 		item.value = VOV_CAR_VALUES[choice.value][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str()));
 		menuItems.push_back(item);
 	}
 
@@ -4340,6 +4364,7 @@ bool onconfirm_spawn_menu_indus(MenuItem<int> choice)
 		MenuItem<std::string> item;
 		item.caption = VOV_INDUS_CAPTIONS[selection][i];
 		item.value = VOV_INDUS_VALUES[selection][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str())); // FT("vehicle_spawn_hash_HASH")
 		menuItems.push_back(item);
 	}
 
@@ -4379,6 +4404,7 @@ bool process_spawn_menu_generic(int topMenuSelection)
 		MenuItem<std::string> item;
 		item.caption = VOV_SHALLOW_CAPTIONS[selection][i];
 		item.value = VOV_SHALLOW_VALUES[selection][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str()));
 		menuItems.push_back(item);
 	}
 
@@ -4929,6 +4955,7 @@ bool process_savedveh_menu()
 			item.isLeaf = false;
 			item.value = sv->rowID;
 			item.caption = sv->saveName;
+			item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(sv->model); // FT("vehicle_spawn_hash_[uint hash]")
 			menuItems.push_back(item);
 		}
 

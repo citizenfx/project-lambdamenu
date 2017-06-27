@@ -24,6 +24,7 @@
     <ClCompile Include="menu_functions.cpp" />
     <ClCompile Include="paintmenu.cpp" />
     <ClCompile Include="script.cpp" />
+    <ClCompile Include="server_events.cpp" />
     <ClCompile Include="skins.cpp" />
     <ClCompile Include="teleportation.cpp" />
     <ClCompile Include="vehicles.cpp" />
@@ -33,6 +34,7 @@
     <ClCompile Include="weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="event_handler.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\natives.h" />
     <ClInclude Include="inc\types.h" />
@@ -117,7 +119,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NativeTrainer_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\msgpack-c\include;$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,7 +139,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\msgpack-c\include;$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

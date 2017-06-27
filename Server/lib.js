@@ -180,6 +180,24 @@ var library = {
 		setValue(pX, vector[0], 'float');
 		setValue(pY, vector[1], 'float');
 		setValue(pZ, vector[2], 'float');
+	},
+
+	'add_event_handler': function(eventName, handlerPtr, cxt)
+	{
+		const wrap = Module.cwrap('invoke_event_handler', null, ['number', 'number', 'string', 'array', 'number']);
+
+		eventName = Pointer_stringify(eventName);
+
+		window.addRawEventHandler(eventName, (payload) =>
+		{
+			wrap(handlerPtr, cxt, eventName, payload, payload.length);
+		});
+	},
+
+	'trigger_event': function(eventName, eventPayload, size)
+	{
+		const payloadBuffer = new Uint8Array(Module.HEAPU8.buffer, eventPayload, size);
+		Citizen.invokeNative('91310870', Pointer_stringify(eventName), payloadBuffer, size);
 	}
 };
 

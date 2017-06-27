@@ -16,6 +16,8 @@
 #include "weapons.h"
 #include "config_io.h"
 
+using namespace std::string_literals;
+
 constexpr const char* MENU_WEAPON_CATEGORIES[] = { "Melee", "Handguns", "Submachine Guns", "Assault Rifles", "Shotguns", "Sniper Rifles", "Heavy Weapons", "Thrown Weapons", "Spawn Weapon By Name", "Spawn Component By Name" };
 
 constexpr const char* CAPTIONS_MELEE[] = { "Knife", "Knuckleduster", "Nightstick", "Hammer", "Baseball Bat", "Golf Club", "Crowbar", "Bottle", "Antique Dagger", "Hatchet", "Machete", "Flashlight", "Switchblade"/*, "Pool Cue", "Pipe Wrench", "Battle Axe"*/ }; //13
@@ -405,6 +407,7 @@ bool process_weapons_in_category_menu(int category)
 
 		item.value = i;
 		item.isLeaf = false;
+		item.toggle_name = "weapon_"s + value; // FT("weapon_WEAPON_GRENADE")
 		menuItems.push_back(item);
 	}
 
@@ -494,9 +497,10 @@ bool process_weaponlist_menu()
 		item.caption = MENU_WEAPON_CATEGORIES[i];
 		item.value = i;
 		item.isLeaf = item.isLeaf = (i == std::extent<decltype(MENU_WEAPON_CATEGORIES)>::value - 1 || i == std::extent<decltype(MENU_WEAPON_CATEGORIES)>::value - 2);
+		item.toggle_name = "weapon_"s + MENU_WEAPON_CATEGORIES[i]; // FT(weapon_CATEGORY)
 		menuItems.push_back(item);
 
-		if (weaponSelectionIndex == 0)
+		if (weaponSelectionIndex == 0 && !item.isLeaf)
 		{
 			for (int j = 0; j < VOV_WEAPON_SIZES[i]; j++)
 			{
@@ -543,7 +547,11 @@ bool onconfirm_weapon_menu(MenuItem<int> choice)
 			for (int j = 0; j < VOV_WEAPON_SIZES[i]; j++)
 			{
 				char *weaponName = (char*) VOV_WEAPON_VALUES[i][j];
-				WEAPON::GIVE_DELAYED_WEAPON_TO_PED(playerPed, GAMEPLAY::GET_HASH_KEY(weaponName), 1000, 0);
+
+				if (toggle_allowed("weapon_"s + weaponName))
+				{
+					WEAPON::GIVE_DELAYED_WEAPON_TO_PED(playerPed, GAMEPLAY::GET_HASH_KEY(weaponName), 1000, 0);
+				}
 			}
 		}
 
@@ -585,12 +593,12 @@ void process_weapon_menu()
 
 	StandardOrToggleMenuDef lines[lineCount] = {
 		{ "Weapon Options", NULL, NULL, false },
-		{ "Give All Weapons", NULL, NULL, true },
-		{ "Remove All Weapons", NULL, NULL, true },
-		{ "Infinite Ammo", &featureWeaponInfiniteAmmo, NULL },
-		{ "Infinite Parachutes", &featureWeaponInfiniteParachutes, NULL },
-		{ "No Reload", &featureWeaponNoReload, NULL },	
-		{ "Rainbow Flare Gun", &featureRainbowFlare, NULL }
+		{ "Give All Weapons", NULL, NULL, true, FT("weapons_give_all") },
+		{ "Remove All Weapons", NULL, NULL, true, FT("weapons_remove_all") },
+		{ "Infinite Ammo", &featureWeaponInfiniteAmmo, NULL, FT("weapons_infinite_ammo") },
+		{ "Infinite Parachutes", &featureWeaponInfiniteParachutes, NULL, FT("weapons_infinite_parachutes") },
+		{ "No Reload", &featureWeaponNoReload, NULL, FT("weapons_no_reload") },
+		{ "Rainbow Flare Gun", &featureRainbowFlare, NULL, FT("weapons_rainbow_flares") }
 //		{ "Fire Ammo", &featureWeaponFireAmmo, NULL },
 //		{ "Explosive Ammo", &featureWeaponExplosiveAmmo, NULL },
 //		{ "Explosive Melee", &featureWeaponExplosiveMelee, NULL }
@@ -638,7 +646,7 @@ void update_weapon_features(BOOL bPlayerExists, Player player)
 //	}
 
 	// infinite ammo
-	if (bPlayerExists && featureWeaponInfiniteAmmo)
+	if (bPlayerExists && featureWeaponInfiniteAmmo && toggle_allowed("weapons_infinite_ammo"))
 	{
 		for (int i = 0; i < sizeof(VOV_WEAPON_VALUES) / sizeof(VOV_WEAPON_VALUES[0]); i++)
 		{
@@ -661,7 +669,7 @@ void update_weapon_features(BOOL bPlayerExists, Player player)
 	}
 
 	// infinite parachutes
-	if (bPlayerExists && featureWeaponInfiniteParachutes)
+	if (bPlayerExists && featureWeaponInfiniteParachutes && toggle_allowed("weapons_infinite_parachutes"))
 	{
 		int pState = PED::GET_PED_PARACHUTE_STATE(playerPed);
 		//unarmed or falling - don't try and give p/chute to player already using one, crashes game
@@ -673,7 +681,7 @@ void update_weapon_features(BOOL bPlayerExists, Player player)
 	}
 
 	// weapon no reload
-	if (bPlayerExists && featureWeaponNoReload)
+	if (bPlayerExists && featureWeaponNoReload && toggle_allowed("weapons_no_reload"))
 	{
 		int fGun = WEAPON::GET_SELECTED_PED_WEAPON(playerPed);
 		if (fGun == 0x47757124)
@@ -703,7 +711,7 @@ void update_weapon_features(BOOL bPlayerExists, Player player)
 	}
 
 	//rainbow flares
-	if (bPlayerExists && featureRainbowFlare)
+	if (bPlayerExists && featureRainbowFlare && toggle_allowed("weapons_rainbow_flares"))
 	{
 		WEAPON::SET_PED_WEAPON_TINT_INDEX(playerPed, 0x47757124, rand() % 9);
 	}

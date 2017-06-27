@@ -64,13 +64,15 @@ void reset_skin_globals()
 * =================
 */
 
-bool applyChosenSkin(std::string skinName)
+bool applyChosenSkin(DWORD model, const std::function<void()>& onDone);
+
+bool applyChosenSkin(std::string skinName, const std::function<void()>& onDone)
 {
 	DWORD model = GAMEPLAY::GET_HASH_KEY((char *)skinName.c_str());
-	return applyChosenSkin(model);
+	return applyChosenSkin(model, onDone);
 }
 
-bool applyChosenSkin(DWORD model)
+bool applyChosenSkin(DWORD model, const std::function<void()>& onDone)
 {
 	if (STREAMING::IS_MODEL_IN_CDIMAGE(model) && STREAMING::IS_MODEL_VALID(model))
 	{
@@ -114,6 +116,11 @@ bool applyChosenSkin(DWORD model)
 			skinDetailMenuValue = 0;
 
 			STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+
+			if (onDone)
+			{
+				onDone();
+			}
 
 			//chosenSkinName = skinName;
 		});
@@ -429,7 +436,7 @@ bool process_skinchanger_detail_menu()
 bool onconfirm_skinchanger_choices_players(MenuItem<std::string> choice)
 {
 	skinTypesMenuPositionMemory[0] = choice.currentMenuIndex;
-	applyChosenSkin(choice.value);
+	applyChosenSkin(choice.value, {});
 	return false;
 }
 
@@ -457,7 +464,7 @@ bool process_skinchanger_choices_players()
 bool onconfirm_skinchanger_choices_animals(MenuItem<std::string> choice)
 {
 	skinTypesMenuPositionMemory[1] = choice.currentMenuIndex;
-	applyChosenSkin(choice.value);
+	applyChosenSkin(choice.value, {});
 	return false;
 }
 
@@ -485,7 +492,7 @@ bool process_skinchanger_choices_animals()
 bool onconfirm_skinchanger_choices_misc(MenuItem<std::string> choice)
 {
 	skinTypesMenuPositionMemory[2] = choice.currentMenuIndex;
-	applyChosenSkin(choice.value);
+	applyChosenSkin(choice.value, {});
 	return false;
 }
 
@@ -533,7 +540,7 @@ bool onconfirm_skinchanger_menu(MenuItem<int> choice)
 				}
 				else
 				{
-					applyChosenSkin(hash);
+					applyChosenSkin(hash, {});
 				}
 			}
 		});
@@ -934,26 +941,27 @@ bool spawn_saved_skin(int slot, std::string caption)
 	SavedSkinDBRow* savedSkin = savedSkins.at(0);
 	database->populate_saved_skin(savedSkin);
 
-	applyChosenSkin(savedSkin->model);
-
-	Ped ped = PLAYER::PLAYER_PED_ID();
-
-	for (SavedSkinComponentDBRow *comp : savedSkin->components)
+	applyChosenSkin(savedSkin->model, [=]() mutable
 	{
-		PED::SET_PED_COMPONENT_VARIATION( ped, comp->slotID, comp->drawable, comp->texture, 0);
-	}
+		Ped ped = PLAYER::PLAYER_PED_ID();
 
-	PED::CLEAR_ALL_PED_PROPS(ped);
-	for (SavedSkinPropDBRow *prop : savedSkin->props)
-	{
-		PED::SET_PED_PROP_INDEX(ped, prop->propID, prop->drawable, prop->texture, 0);
-	}
+		for (SavedSkinComponentDBRow *comp : savedSkin->components)
+		{
+			PED::SET_PED_COMPONENT_VARIATION(ped, comp->slotID, comp->drawable, comp->texture, 0);
+		}
 
-	for (std::vector<SavedSkinDBRow*>::iterator it = savedSkins.begin(); it != savedSkins.end(); ++it)
-	{
-		delete (*it);
-	}
-	savedSkins.clear();
+		PED::CLEAR_ALL_PED_PROPS(ped);
+		for (SavedSkinPropDBRow *prop : savedSkin->props)
+		{
+			PED::SET_PED_PROP_INDEX(ped, prop->propID, prop->drawable, prop->texture, 0);
+		}
+
+		for (std::vector<SavedSkinDBRow*>::iterator it = savedSkins.begin(); it != savedSkins.end(); ++it)
+		{
+			delete (*it);
+		}
+		savedSkins.clear();
+	});
 
 	return false;
 }
@@ -977,7 +985,7 @@ void save_current_skin(int slot)
 		}
 
 		auto existingText = ss.str();
-		show_keyboard(NULL, (char*)existingText.c_str(), [=](const std::string& result)
+		show_keyboard(NULL, existingText, [=](const std::string& result)
 		{
 			if (!result.empty())
 			{
