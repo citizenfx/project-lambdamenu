@@ -17,6 +17,7 @@
 #include <sstream>
 
 #include <vector>
+#include <functional>
 
 #ifndef _MSC_VER
 #include <experimental/string_view>
