@@ -16,6 +16,8 @@
 #include "script.h"
 #include "event_handler.h"
 
+void add_custom_vehicle(const std::string& name, const std::string& model);
+
 EventHandler spawnedHandler("playerSpawned", [](std::map<std::string, msgpack::object> spawn)
 {
 });
@@ -45,6 +47,11 @@ EventHandler togglesHandler("lambdamenu:setFeatures", [](std::map<std::string, b
 	{
 		set_toggle_allowed(pair.first, pair.second);
 	}
+});
+
+EventHandler customVehicleHandler("lambdamenu:addVehicle", [](std::string name, std::string model)
+{
+	add_custom_vehicle(name, model);
 });
 
 bool toggle_allowed(const std::string& toggle_name)

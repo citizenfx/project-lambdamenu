@@ -145,7 +145,7 @@ int doorOptionsMenuIndex = 0;
 
 //Top Level
 
-constexpr const char* MENU_VEHICLE_CATEGORIES[] = { "Cars", "Industrial", "Emergency and Military", "Motorcycles", "Planes", "Helicopters", "Boats", "Bicycles", "Spawn Vehicle By Name" };
+constexpr const char* MENU_VEHICLE_CATEGORIES[] = { "Cars", "Industrial", "Emergency and Military", "Motorcycles", "Planes", "Helicopters", "Boats", "Bicycles", "Server Vehicles", "Spawn Vehicle By Name" };
 
 //Cars
 
@@ -4245,9 +4245,43 @@ void reset_vehicle_globals()
 	featureVehTorque900 = false;
 }
 
+std::vector<std::tuple<std::string, std::string>> g_customVehicles;
+
+void add_custom_vehicle(const std::string& name, const std::string& model)
+{
+	g_customVehicles.push_back({ name, model });
+}
+
+bool process_spawn_menu_server()
+{
+	MenuItemVector<std::string> menuItems;
+	for (int i = 0; i < g_customVehicles.size(); i++)
+	{
+		MenuItem<std::string> item;
+		item.caption = std::get<0>(g_customVehicles[i]);
+		item.value = std::get<1>(g_customVehicles[i]);
+		menuItems.push_back(item);
+	}
+
+	if (g_customVehicles.size() == 0)
+	{
+		MenuItem<std::string> item;
+		item.caption = "No custom vehicles";
+		item.value = "nope";
+		menuItems.push_back(item);
+	}
+
+	return draw_generic_menu<std::string>(menuItems, 0, "Server Vehicles", onconfirm_spawn_menu_vehicle_selection, NULL, NULL);
+}
 
 bool onconfirm_carspawn_menu(MenuItem<int> choice)
 {
+	if (choice.value == std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value - 2) //server spawn
+	{
+		process_spawn_menu_server();
+		return false;
+	}
+
 	if (choice.value == std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value - 1) //custom spawn
 	{
 		show_keyboard(NULL, (char*)lastCustomVehicleSpawn.c_str(), [=](const std::string& result)
