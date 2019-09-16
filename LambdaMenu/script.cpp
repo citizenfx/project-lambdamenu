@@ -18,8 +18,8 @@
 
 #pragma comment(lib, "Shlwapi.lib")
 
-#define TRAINER_VERSION "5"
-#define MAX_PLAYERS 32
+#define TRAINER_VERSION "6"
+#define MAX_PLAYERS 128
 
 #include "io.h"
 #include "config_io.h"
@@ -177,6 +177,7 @@ bool featureChannel3 = false;
 bool featureChannel4 = false;
 bool featureChannel5 = false;
 bool featureVoiceChat = true;
+bool featureVoiceControl = true;
 bool featureWantedLevelFrozen = false;
 bool featureWantedLevelFrozenUpdated = false;
 int frozenWantedLevel = 0;
@@ -1188,80 +1189,82 @@ void toggle_watch()
 	}
 
 	// voice settings
-	if (featureVPVeryClose)
-	{
-		NETWORK::NETWORK_SET_TALKER_PROXIMITY(25.01f);
+	if (featureVoiceControl) {
+		if (featureVPVeryClose)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(25.01f);
+		}
+
+		if (featureVPClose)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(75.01f);
+		}
+
+		if (featureVPNearby)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(200.01f);
+		}
+
+		if (featureVPDistant)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(500.01f);
+		}
+
+		if (featureVPFar)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(2500.01f);
+		}
+
+		if (featureVPVeryFar)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(8000.01f);
+		}
+
+		if (featureVPAllPlayers)
+		{
+			NETWORK::NETWORK_SET_TALKER_PROXIMITY(0.00f);
+		}
+
+
+		if (featureChannelDefault)
+		{
+			NETWORK::NETWORK_CLEAR_VOICE_CHANNEL();
+		}
+
+		if (featureChannel1)
+		{
+			NETWORK::NETWORK_SET_VOICE_CHANNEL(1);
+		}
+
+		if (featureChannel2)
+		{
+			NETWORK::NETWORK_SET_VOICE_CHANNEL(2);
+		}
+
+		if (featureChannel3)
+		{
+			NETWORK::NETWORK_SET_VOICE_CHANNEL(3);
+		}
+
+		if (featureChannel4)
+		{
+			NETWORK::NETWORK_SET_VOICE_CHANNEL(4);
+		}
+
+		if (featureChannel5)
+		{
+			NETWORK::NETWORK_SET_VOICE_CHANNEL(5);
+		}
+
+		if (featureVoiceChat)
+		{
+			NETWORK::NETWORK_SET_VOICE_ACTIVE(1);
+		}
+		else
+		{
+			NETWORK::NETWORK_SET_VOICE_ACTIVE(0);
+		}
 	}
-
-	if (featureVPClose)
-	{
-		NETWORK::NETWORK_SET_TALKER_PROXIMITY(75.01f);
-	}
-
-	if (featureVPNearby)
-	{
-		NETWORK::NETWORK_SET_TALKER_PROXIMITY(200.01f);
-	}
-
-	 if (featureVPDistant)
-	 {
-		 NETWORK::NETWORK_SET_TALKER_PROXIMITY(500.01f);
-	 }
-
-	 if (featureVPFar)
-	 {
-		 NETWORK::NETWORK_SET_TALKER_PROXIMITY(2500.01f);
-	 }
-
-	 if (featureVPVeryFar)
-	 {
-		 NETWORK::NETWORK_SET_TALKER_PROXIMITY(8000.01f);
-	 }
-
-	 if (featureVPAllPlayers)
-	 {
-		 NETWORK::NETWORK_SET_TALKER_PROXIMITY(0.00f);
-	 }
-
-
-	 if (featureChannelDefault)
-	 {
-		 NETWORK::NETWORK_CLEAR_VOICE_CHANNEL();
-	 }
-
-	 if (featureChannel1)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_CHANNEL(1);
-	 }
-
-	 if (featureChannel2)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_CHANNEL(2);
-	 }
-
-	 if (featureChannel3)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_CHANNEL(3);
-	 }
-
-	 if (featureChannel4)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_CHANNEL(4);
-	 }
-
-	 if (featureChannel5)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_CHANNEL(5);
-	 }
-
-	 if (featureVoiceChat)
-	 {
-		 NETWORK::NETWORK_SET_VOICE_ACTIVE(1);
-	 }
-	 else
-	 {
-		 NETWORK::NETWORK_SET_VOICE_ACTIVE(0);
-	 }
 }
 
 //=============================
@@ -3764,7 +3767,7 @@ bool onconfirm_voice_menu(MenuItem<int> choice)
 {
 	switch (activeLineIndexVoice)
 	{
-	case 0:
+	case 1:
 		if (featureVoiceChat)
 		{
 			NETWORK::NETWORK_SET_VOICE_ACTIVE(1);
@@ -3776,10 +3779,10 @@ bool onconfirm_voice_menu(MenuItem<int> choice)
 			set_status_text("Voice chat: ~r~Disabled");
 		}
 		break;
-	case 2:
+	case 3:
 		process_voicechannel_menu();
 		break;
-	case 3:
+	case 4:
 		process_voiceproximity_menu();
 		break;
 	default:
@@ -3789,11 +3792,12 @@ bool onconfirm_voice_menu(MenuItem<int> choice)
 }
 void process_voice_menu()
 {
-	const int lineCount = 4;
+	const int lineCount = 5;
 
 	std::string caption = "Voice Options";
 
 	StandardOrToggleMenuDef lines[lineCount] = {
+		{ "Enable Voice Control", &featureVoiceControl, NULL, true },
 		{ "Voice Chat", &featureVoiceChat, NULL, true },
 		{ "Show Voice Chat Speaker", &featureShowVoiceChatSpeaker, NULL, true },
 		{ "Voice Channel", NULL, NULL, false },
