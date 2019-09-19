@@ -28,6 +28,7 @@
 
 #include <string>
 #include <sstream> 
+#include <algorithm>
 
 #include <ctime>
 #include <vector>

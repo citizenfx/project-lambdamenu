@@ -15,6 +15,7 @@
 #pragma once
 
 #include <sstream>
+#include <functional>
 
 #include <vector>
 

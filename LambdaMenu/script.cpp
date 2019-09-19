@@ -4499,12 +4499,14 @@ void process_current_menu()
 	}
 }
 
-#include <msgpack.hpp>
+//#include <msgpack.hpp>
 
-IMPORT void trigger_event(const char* eventName, const void* dataPtr, uint32_t size);
+
+//IMPORT void trigger_event(const char* eventName, const void* dataPtr, uint32_t size);
 
 void main_loop()
 {
+#if false
 	static bool initializedLM = false;
 
 	if (!initializedLM)
@@ -4517,6 +4519,7 @@ void main_loop()
 
 		initializedLM = true;
 	}
+#endif
 
 	if (trainer_switch_pressed())
 	{

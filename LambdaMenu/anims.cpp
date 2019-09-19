@@ -17,6 +17,7 @@
 #include "debuglog.h";
 
 #include <sstream>
+#include <functional>
 
 #include <vector>
 
