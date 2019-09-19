@@ -3335,7 +3335,7 @@ namespace UI
 	static void CLEAR_FLOATING_HELP(Any p0, BOOL p1) { invoke<Void>(0x50085246ABD3FEFA, p0, p1); } // 0x50085246ABD3FEFA 0xB181F88F
 	static void _0x6DD05E9D83EFA4C9(Any p0, char* p1, BOOL p2, BOOL p3, Any* p4, Any p5, Any p6, Any p7, Any p8) { invoke<Void>(0x6DD05E9D83EFA4C9, p0, p1, p2, p3, p4, p5, p6, p7, p8); } // 0x6DD05E9D83EFA4C9 0xC969F2D0
 	static Any _0x6E0EB3EB47C8D7AA() { return invoke<Any>(0x6E0EB3EB47C8D7AA); } // 0x6E0EB3EB47C8D7AA 0xEFD2564A
-	static Any _0xBFEFE3321A3F5015(Any p0, Any* p1, BOOL p2, BOOL p3, Any* p4, Any p5) { return invoke<Any>(0xBFEFE3321A3F5015, p0, p1, p2, p3, p4, p5); } // 0xBFEFE3321A3F5015 0xF5CD2AA4
+	static Any _0xBFEFE3321A3F5015(Any p0, char* p1, BOOL p2, BOOL p3, char* p4, Any p5) { return invoke<Any>(0xBFEFE3321A3F5015, p0, p1, p2, p3, p4, p5); } // 0xBFEFE3321A3F5015 0xF5CD2AA4
 	static void _0x31698AA80E0223F8(Any p0) { invoke<Void>(0x31698AA80E0223F8, p0); } // 0x31698AA80E0223F8 0x3D081FE4
 	static BOOL _0x4E929E7A5796FD26(Any p0) { return invoke<BOOL>(0x4E929E7A5796FD26, p0); } // 0x4E929E7A5796FD26 0x60118951
 	static BOOL ADD_TREVOR_RANDOM_MODIFIER(Any p0) { return invoke<BOOL>(0x595B5178E412E199, p0); } // 0x595B5178E412E199 0x63959059

@@ -397,7 +397,7 @@ bool process_paint_menu_liveries()
 		set_status_text("No liveries for this vehicle");
 	}
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	for (int i = 0; i < count; i++)
 	{
@@ -415,10 +415,10 @@ bool process_paint_menu_liveries()
 			modItemNameStr = std::string(modItemNameChr);
 		}
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = modItemNameStr;
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = modItemNameStr;
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -452,7 +452,7 @@ bool process_paint_menu_special()
 {
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int primary, secondary, pearl, wheel;
 	VEHICLE::GET_VEHICLE_COLOURS(veh, &primary, &secondary);
@@ -506,9 +506,9 @@ bool process_paint_menu_special()
 
 	for (int i = 0; i < paints.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = paints[i].name;
-		item->value = i;
+		MenuItem<int> item;
+		item.caption = paints[i].name;
+		item.value = i;
 		menuItems.push_back(item);
 	}
 
@@ -536,14 +536,14 @@ bool process_paint_menu()
 	Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 	int liveryCount = VEHICLE::GET_VEHICLE_LIVERY_COUNT(veh);
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	for (int i = 0; i < MENU_PAINT_WHAT.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_PAINT_WHAT[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_PAINT_WHAT[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -551,10 +551,10 @@ bool process_paint_menu()
 	{
 		std::ostringstream ss;
 		ss << "Liveries (" << liveryCount << ")";
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = ss.str();
-		item->value = -1;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = ss.str();
+		item.value = -1;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -607,12 +607,12 @@ bool onconfirm_paint_menu_type(MenuItem<int> choice)
 		return false;
 	}
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < paints.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = paints[i].name;
-		item->value = i;
+		MenuItem<int> item;
+		item.caption = paints[i].name;
+		item.value = i;
 		menuItems.push_back(item);
 	}
 
@@ -653,13 +653,13 @@ bool process_paint_menu_type()
 	Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 	int index = 0;
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < MENU_PAINT_TYPE.size(); i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_PAINT_TYPE[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_PAINT_TYPE[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 

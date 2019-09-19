@@ -14,11 +14,13 @@
 
 #pragma once
 
-#include "inc\natives.h"
-#include "inc\types.h"
+#include <natives.h>
+#include <types.h>
 #include "inc\enums.h"
 
-#include "inc\main.h"
+#include <main.h>
+
+#include <math.h>
 
 #include "script.h"
 #include "io.h"
@@ -30,7 +32,21 @@
 #include <ctime>
 #include <vector>
 
+#include <memory>
+
+#include <functional>
+
 #pragma warning(disable : 4244 4305) // double <-> float conversions
+
+void set_status_text(std::string str, bool isGxtEntry = false);
+
+void set_status_text_centre_screen(std::string str, DWORD time = 2500, bool isGxtEntry = false);
+
+void update_centre_screen_status_text();
+
+void menu_beep();
+
+void show_keyboard(char* title_id, const std::string& prepopulated_text, const std::function<void(const std::string&)>& onEntry);
 
 extern void(*periodic_feature_call)(void);
 
@@ -45,6 +61,8 @@ public:
 	T value;
 	int currentMenuIndex = 0;
 	bool isLeaf = true;
+	std::string toggle_name;
+
 	void(*onConfirmFunction)(const MenuItem<T> choice) = NULL;
 
 	virtual void onConfirm();
@@ -57,6 +75,17 @@ public:
 
 protected:
 
+};
+
+template<class T>
+class MenuItemVector : public std::vector<std::shared_ptr<MenuItem<T>>>
+{
+public:
+       template<class TItem>
+       void push_back(const TItem& item)
+       {
+               std::vector<std::shared_ptr<MenuItem<T>>>::push_back(std::make_shared<TItem>(item));
+       }
 };
 
 template<class T>
@@ -118,6 +147,8 @@ public:
 	virtual void handleRightPress();
 };
 
+#define FT(x) x
+
 enum MenuItemType { STANDARD, TOGGLE, WANTED };
 
 struct StandardOrToggleMenuDef {
@@ -126,6 +157,33 @@ struct StandardOrToggleMenuDef {
 	bool *pUpdated;
 	bool isLeaf;
 	MenuItemType itemType;
+	std::string toggle_name;
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, true, STANDARD, "")
+	{
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, STANDARD, "")
+	{
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, const std::string& toggleName)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, STANDARD, toggleName)
+	{
+
+	}
+
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, MenuItemType itemType)
+		: StandardOrToggleMenuDef(text, pState, pUpdated, isLeaf, itemType, "")
+	{
+	}
+	
+	StandardOrToggleMenuDef(const std::string& text, bool* pState, bool* pUpdated, bool isLeaf, MenuItemType itemType, const std::string& toggle_name)
+		: text(text), pState(pState), pUpdated(pUpdated), isLeaf(isLeaf), itemType(itemType), toggle_name(toggle_name)
+	{
+	}
 };
 
 struct StringStandardOrToggleMenuDef {
@@ -167,8 +225,8 @@ void draw_rect(float A_0, float A_1, float A_2, float A_3, int A_4, int A_5, int
 inline void draw_menu_header_line(std::string caption, float lineWidth, float lineHeight, float lineTop, float lineLeft, float textLeft, bool active, bool rescaleText = true, int curPage = 1, int pageCount = 1)
 {
 	// default values
-	int text_col[4] = { 255, 255, 255, 255.0f },
-		rect_col[4] = { 0, 0, 0, 200.0f };
+	int text_col[4] = { 255, 255, 255, 255 },
+		rect_col[4] = { 0, 0, 0, 200 };
 
 	float text_scale = rescaleText ? 0.60 : 0.35;
 
@@ -263,9 +321,9 @@ template<typename T>
 void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, float lineTop, float lineLeft, float textLeft, bool active, bool rescaleText)
 {
 	// default values
-	int text_col[4] = { 255, 255, 255, 255.0f },
+	int text_col[4] = { 255, 255, 255, 255 },
 	//	rect_col[4] = { 255, 255, 255, 80.f };
-		rect_col[4] = { 0, 0, 0, 50.f };
+		rect_col[4] = { 0, 0, 0, 50 };
 	float text_scale = 0.33;
 	int font = 0;
 	bool outline = false;
@@ -284,7 +342,7 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 		rect_col[0] = 93;
 		rect_col[1] = 182;
 		rect_col[2] = 229;
-		rect_col[3] = 200.0f;
+		rect_col[3] = 200;
 
 		if (rescaleText) text_scale = 0.33;
 	}
@@ -380,7 +438,7 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 		UI::SET_TEXT_CENTRE(1);
 		UI::SET_TEXT_WRAP(0, lineLeftScaled + lineWidthScaled - leftMarginScaled);
 		UI::_SET_TEXT_ENTRY("STRING");
-		UI::_ADD_TEXT_COMPONENT_STRING(toggleItem->get_toggle_value() ? "ON" : "OFF");
+		UI::_ADD_TEXT_COMPONENT_STRING(const_cast<char*>(toggleItem->get_toggle_value() ? "ON" : "OFF"));
 		UI::_DRAW_TEXT(lineLeftScaled + lineWidthScaled - rightMarginScaled, textY);
 	}	
 	else if (WantedSymbolItem<T>* wantedItem = dynamic_cast<WantedSymbolItem<T>*>(item))
@@ -465,6 +523,8 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 	}
 }
 
+void set_menu_processor(const std::function<bool()>& process, const std::function<void(bool)>& onExit);
+
 /**This is in the header rather than the CPP because of the use of templates. There's probably a better way.
 *
 * This draws a generic menu that supports key navigation and pagination. It's here so you don't have to replicate it in every usage,
@@ -484,11 +544,15 @@ void draw_menu_item_line(MenuItem<T> *item, float lineWidth, float lineHeight, f
 * - onExit: an optional method that allows you to insert behaviour on closing a menu, i.e. pressing back, in case you want to save positions etc. Supply NULL if you don't care.
 * - interruptCheck: an optional method that will be called to see if the menu should be aborted
 */
+static DWORD waitTime = 150;
+
+bool toggle_allowed(const std::string& toggle_name);
+
 template<typename T>
-bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, std::string headerText,
+bool draw_generic_menu(MenuItemVector<T>& items, int *menuSelectionPtr, std::string headerText,
 	bool(*onConfirmation)(MenuItem<T> value),
 	void(*onHighlight)(MenuItem<T> value),
-	void(*onExit)(bool returnValue),
+	const std::function<void(bool)>& onExit,
 	bool(*interruptCheck)(void) = NULL)
 {
 	if (items.size() == 0)
@@ -497,16 +561,44 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 		return false;
 	}
 
-	bool result = false;
-	DWORD waitTime = 150;
-	const int totalItems = (int)items.size();
-	const int itemsPerLine = 10;
-	const int lineCount = (int)(ceil((double)totalItems / (double)itemsPerLine));
+	//populate the menu items' indices
+	for (int i = 0; i < items.size(); i++)
+	{
+		items[i]->currentMenuIndex = i;
+	}
 
-	int currentSelectionIndex;
+	auto removedIt = std::remove_if(items.begin(), items.end(), [](const std::shared_ptr<MenuItem<T>>& item)
+	{
+		if (!item->toggle_name.empty())
+		{
+			return !toggle_allowed(item->toggle_name);
+		}
+
+		return false;
+	});
+
+	if (removedIt != items.end())
+	{
+		items.resize(removedIt - items.begin());
+	}
+
+	bool result = false;
+	int totalItems = (int)items.size();
+	const int itemsPerLine = 10;
+	int lineCount = (int)(ceil((double)totalItems / (double)itemsPerLine));
+
+	int currentSelectionIndex = 0;
 	if (menuSelectionPtr != 0)
 	{
-		if (*menuSelectionPtr >= totalItems)
+		for (int i = 0; i < items.size(); i++)
+		{
+			if (*menuSelectionPtr == items[i]->currentMenuIndex)
+			{
+				currentSelectionIndex = i;
+			}
+		}
+
+		/*if (*menuSelectionPtr >= totalItems)
 		{
 			*menuSelectionPtr = 0;
 		}
@@ -514,7 +606,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 		{
 			*menuSelectionPtr = 0;
 		}
-		currentSelectionIndex = *menuSelectionPtr;
+		currentSelectionIndex = *menuSelectionPtr;*/
 	}
 	else
 	{
@@ -526,13 +618,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 		onHighlight(*items[currentSelectionIndex]);
 	}
 
-	//populate the menu items' indices
-	for (int i = 0; i < totalItems; i++)
-	{
-		items[i]->currentMenuIndex = i;
-	}
-
-	while (true)
+	set_menu_processor([=] () mutable
 	{
 		if (trainer_switch_pressed())
 		{
@@ -540,12 +626,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 
 			set_menu_showing(!is_menu_showing());
 
-			//avoid repeat of key press
-			DWORD maxTickCount = GetTickCount() + 200;
-			do
-			{
-				WAIT(0);
-			} while (GetTickCount() < maxTickCount);
+			// TODO(cfx): avoid key repeat
 		}
 		else if (noclip_switch_pressed())
 		{
@@ -566,67 +647,59 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 			}
 
 			make_periodic_feature_call();
-			WAIT(0);
-			continue;
+			return true;
 		}
 
-		const int currentLine = floor((double)currentSelectionIndex / (double)itemsPerLine);
+		int currentLine = floor((double)currentSelectionIndex / (double)itemsPerLine);
 
-		const int originalIndex = currentSelectionIndex;
+		int originalIndex = currentSelectionIndex;
 
 		int positionOnThisLine = currentSelectionIndex % itemsPerLine;
 		int lineStartPosition = currentSelectionIndex - positionOnThisLine;
 		int itemsOnThisLine = (lineStartPosition + itemsPerLine > totalItems) ? (totalItems - lineStartPosition) : itemsPerLine;
 
 		// timed menu draw, used for pause after active line switch
-		DWORD maxTickCount = GetTickCount() + waitTime;
-		do
+		draw_menu_header_line(headerText,
+			264.0f,//line W
+			35.0f,//line H
+			0.0f,//line T
+			1016.0f,//line L
+			1026.0f,//text X offset //10
+			false,
+			true,
+			(currentLine + 1),
+			lineCount
+			);
+
+		for (int i = 0; i < itemsOnThisLine; i++)
 		{
-			draw_menu_header_line(headerText,
-				264.0f,//line W
-				35.0f,//line H
-				0.0f,//line T
-				1016.0f,//line L
-				1026.0f,//text X offset //10
-				false,
-				true,
-				(currentLine + 1),
-				lineCount
-				);
+			float lineSpacingY = 0.0f;
 
-			for (int i = 0; i < itemsOnThisLine; i++)
-			{
-				float lineSpacingY = 0.0f;
+			float lineWidth = 264.0f;
+			float lineHeight = 25.0f;
 
-				float lineWidth = 264.0f;
-				float lineHeight = 25.0f;
+			float lineTop = 35.0 + (i * (lineHeight + lineSpacingY));
+			float lineLeft = 1016.0f;
+			float textOffset = 10.0f;
 
-				float lineTop = 35.0 + (i * (lineHeight + lineSpacingY));
-				float lineLeft = 1016.0f;
-				float textOffset = 10.0f;
-
-				draw_menu_item_line(items[lineStartPosition + i], lineWidth, lineHeight, lineTop, lineLeft, textOffset, i == positionOnThisLine, false);
-			}
-
-			if (periodic_feature_call != NULL)
-			{
-				periodic_feature_call();
-			}
-
-			WAIT(0);
-		} while (GetTickCount() < maxTickCount);
-		waitTime = 0;
+			draw_menu_item_line(items[lineStartPosition + i].get(), lineWidth, lineHeight, lineTop, lineLeft, textOffset, i == positionOnThisLine, false);
+		}
 
 		bool bSelect, bBack, bUp, bDown, bLeft, bRight;
 		get_button_state(&bSelect, &bBack, &bUp, &bDown, &bLeft, &bRight);
 
-		MenuItem<T> *choice = items[currentSelectionIndex];
+		MenuItem<T> *choice = items[currentSelectionIndex].get();
 
 		if (bSelect)
 		{
+			if (GetTickCount() < waitTime)
+			{
+				return true;
+			}
+
 			menu_beep();
 
-			waitTime = 200;
+			waitTime = GetTickCount() + 200;
 
 			choice->onConfirm();
 
@@ -639,17 +712,22 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 			if (result)
 			{
 				//result = false; //to avoid cascading upwards
-				break;
+				return false;
 			}
 		}
 		else
 		{
+			if (GetTickCount() < waitTime)
+			{
+				return true;
+			}
+
 			if (bBack)
 			{
 				menu_beep();
-				waitTime = 200;
+				waitTime = GetTickCount() + 200;
 				result = false;
-				break;
+				return false;
 			}
 			else
 			{
@@ -661,7 +739,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 					{
 						currentSelectionIndex = lineStartPosition;
 					}
-					waitTime = 150;
+					waitTime = GetTickCount() + 150;
 				}
 				else
 					if (bUp)
@@ -672,7 +750,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 						{
 							currentSelectionIndex = lineStartPosition + itemsOnThisLine - 1;
 						}
-						waitTime = 150;
+						waitTime = GetTickCount() + 150;
 					}
 					else
 						if (bLeft)
@@ -696,7 +774,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 									}
 								}
 							}
-							waitTime = 200;
+							waitTime = GetTickCount() + 200;
 						}
 						else
 							if (bRight)
@@ -728,7 +806,7 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 									}
 								}
 
-								waitTime = 200;
+								waitTime = GetTickCount() + 200;
 							}
 
 				if (onHighlight != NULL && originalIndex != currentSelectionIndex)
@@ -738,48 +816,28 @@ bool draw_generic_menu(std::vector<MenuItem<T>*> items, int *menuSelectionPtr, s
 
 				if (menuSelectionPtr != 0)
 				{
-					*menuSelectionPtr = currentSelectionIndex;
+					*menuSelectionPtr = items[currentSelectionIndex]->currentMenuIndex;
 				}
 			}
 		}
-	}
 
-	if (onExit != NULL)
-	{
-		onExit(result);
-	}
-
-	// wait before exit
-	if (waitTime > 0)
-	{
-		DWORD maxTickCount = GetTickCount() + waitTime;
-		do
-		{
-			WAIT(0);
-		} while (GetTickCount() < maxTickCount);
-		waitTime = 0;
-	}
+		return true;
+	}, onExit);
 
 	//clean up the items memory
-	for (int i = 0; i< items.size(); i++)
+	/*for (int i = 0; i< items.size(); i++)
 	{
 		delete (items[i]);
 	}
-	items.clear();
+	items.clear();*/
 
-	return result;
+	return false;
 }
-
-void set_status_text(std::string str, bool isGxtEntry = false);
-
-void set_status_text_centre_screen(std::string str, DWORD time = 2500, bool isGxtEntry = false);
-
-void update_centre_screen_status_text();
-
-void menu_beep();
 
 void draw_menu_from_struct_def(StandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<int> value));
 
 void draw_menu_from_struct_def(StringStandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<std::string> value));
 
-std::string show_keyboard(char* title_id, char* prepopulated_text);
+#include <functional>
+
+void submit_call_on_result(const std::function<bool()>& result, const std::function<void()>& call);

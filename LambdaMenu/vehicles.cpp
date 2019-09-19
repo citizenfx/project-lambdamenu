@@ -18,6 +18,8 @@
 #include "config_io.h"
 #include "debuglog.h"
 
+using namespace std::string_literals;
+
 #pragma warning(disable : 4244 4305) // double <-> float conversions
 
 bool ownedvehlocked = false;
@@ -122,11 +124,11 @@ Vehicle ownedveh;
 
 //Door Options list + struct
 struct struct_door_options {
-	std::string text;
+	const char* text;
 	bool *pState;
 };
 
-std::vector<struct_door_options> DOOR_OPTIONS = {
+constexpr struct_door_options DOOR_OPTIONS[] = {
 	{ "Toggle Open Instantly", &featureVehicleDoorInstant },
 	{ "Front Left", NULL }, //INDEX 0
 	{ "Front Right", NULL }, //INDEX 1
@@ -143,125 +145,157 @@ int doorOptionsMenuIndex = 0;
 
 //Top Level
 
-const std::vector<std::string> MENU_VEHICLE_CATEGORIES{ "Cars", "Industrial", "Emergency and Military", "Motorcycles", "Planes", "Helicopters", "Boats", "Bicycles", "Spawn Vehicle By Name" };
+constexpr const char* MENU_VEHICLE_CATEGORIES[] = { "Cars", "Industrial", "Emergency and Military", "Motorcycles", "Planes", "Helicopters", "Boats", "Bicycles", "Server Vehicles", "Spawn Vehicle By Name" };
 
 //Cars
 
-const std::vector<std::string> MENU_CAR_CATEGORIES{ "Supercars", "Sports", "Sport Classics", "Muscle", "Lowriders", "Coupes", "Sedans", "Compacts", "SUVs", "Offroad", "VIP" };
+constexpr const char* MENU_CAR_CATEGORIES[] = { "Supercars", "Sports", "Sport Classics", "Muscle", "Lowriders", "Coupes", "Sedans", "Compacts", "SUVs", "Offroad", "VIP" };
 
-const std::vector<std::string> CAPTIONS_SUPERCARS{ "Annis RE-7B", "Bravado Banshee 900R", "Coil Voltic", "Emperor ETR1", "Grotti Cheetah", "Grotti X80 Proto", "Grotti Turismo R", "Karin Sultan RS", "Overflod Entity XF", "Pegassi Infernus", "Pegassi Osiris", "Pegassi Reaper", "Pegassi Vacca", "Pegassi Zentorno", "Pfister 811", "Progen T20", "Progen Tyrus", "Truffade Adder", "Vapid Bullet", "Vapid FMJ" };
+constexpr const char* CAPTIONS_SUPERCARS[] = { "Annis RE-7B", "Bravado Banshee 900R", "Coil Voltic", "Emperor ETR1", "Grotti Cheetah", "Grotti X80 Proto", "Grotti Turismo R", "Karin Sultan RS", "Overflod Entity XF", "Pegassi Infernus", "Pegassi Osiris", "Pegassi Reaper", "Pegassi Vacca", "Pegassi Zentorno", "Pfister 811", "Progen T20", "Progen Tyrus", "Truffade Adder", "Vapid Bullet", "Vapid FMJ" };
 
-const std::vector<std::string> CAPTIONS_SPORTS{ "Albany Alpha", "Annis Elegy RH8", "Benefactor Feltzer", "Benefactor Schwartzer", "Benefactor Surano", "BF Raptor", "Bravado Banshee", "Bravado Buffalo", "Bravado Buffalo S", "Bravado Buffalo S (Race)", "Bravado Verlierer", "Declasse Drift Tampa", "Dewbauchee Massacro", "Dewbauchee Massacro (Race)", "Dewbauchee Rapid GT", "Dewbauchee Rapid GT Cabrio", "Dewbauchee Seven-70", "Dinka Blista Compact", "Dinka Blista Compact (Race)", "Dinka Jester", "Dinka Jester (Race)", "Grotti Bestia GTS", "Grotti Carbonizzare", "Hijak Khamelion", "Invetero Coquette", "Karin Futo", "Karin Kuruma", "Karin Kuruma (Armoured)", "Karin Sultan", "Lampadati Furore GT", "Lampadati Tropos Rallye", "Maibatsu Penumbra", "Obey 9F", "Obey 9F Cabrio", "Obey Omnis", "Ocelot Lynx", "Phister Comet", "Schyster Fusilade" };
+constexpr const char* CAPTIONS_SPORTS[] = { "Albany Alpha", "Annis Elegy RH8", "Benefactor Feltzer", "Benefactor Schwartzer", "Benefactor Surano", "BF Raptor", "Bravado Banshee", "Bravado Buffalo", "Bravado Buffalo S", "Bravado Buffalo S (Race)", "Bravado Verlierer", "Declasse Drift Tampa", "Dewbauchee Massacro", "Dewbauchee Massacro (Race)", "Dewbauchee Rapid GT", "Dewbauchee Rapid GT Cabrio", "Dewbauchee Seven-70", "Dinka Blista Compact", "Dinka Blista Compact (Race)", "Dinka Jester", "Dinka Jester (Race)", "Grotti Bestia GTS", "Grotti Carbonizzare", "Hijak Khamelion", "Invetero Coquette", "Karin Futo", "Karin Kuruma", "Karin Kuruma (Armoured)", "Karin Sultan", "Lampadati Furore GT", "Lampadati Tropos Rallye", "Maibatsu Penumbra", "Obey 9F", "Obey 9F Cabrio", "Obey Omnis", "Ocelot Lynx", "Phister Comet", "Schyster Fusilade" };
 
-const std::vector<std::string> CAPTIONS_SPORTCLASSICS{ "Albany Manana", "Albany Roosevelt 1", "Albany Roosevelt 2", "Benefactor Stirling GT", "Declasse Tornado", "Declasse Tornado (Rusty)", "Declasse Tornado Cabrio", "Declasse Tornado Cabrio (Rusty)", "Declasse Tornado Rat Rod", "Dewbauchee JB 700", "Grotti Stinger", "Grotti Stinger GT", "Invetero Coquette Classic", "Lampadati Casco", "Lampadati Pigalle", "Pegassi Monroe", "Truffade Z-Type", "Vapid Peyote" };
+constexpr const char* CAPTIONS_SPORTCLASSICS[] = { "Albany Manana", "Albany Roosevelt 1", "Albany Roosevelt 2", "Benefactor Stirling GT", "Declasse Tornado", "Declasse Tornado (Rusty)", "Declasse Tornado Cabrio", "Declasse Tornado Cabrio (Rusty)", "Declasse Tornado Rat Rod", "Dewbauchee JB 700", "Grotti Stinger", "Grotti Stinger GT", "Invetero Coquette Classic", "Lampadati Casco", "Lampadati Pigalle", "Pegassi Monroe", "Truffade Z-Type", "Vapid Peyote" };
 
-const std::vector<std::string> CAPTIONS_MUSCLE{ "Albany Buccaneer", "Albany Franken Strange", "Albany Lurcher", "Albany Virgo", "Bravado Gauntlet", "Bravado Gauntlet (Race)", "Cheval Picador", "Declasse Mamba", "Declasse Tampa", "Declasse Sabre Turbo", "Declasse Stallion", "Declasse Stallion (Race)", "Declasse Vigero", "Declasse Voodoo", "Dundreary Virgo Classic", "Imponte Duke O' Death", "Imponte Dukes", "Imponte Nightshade", "Imponte Phoenix", "Imponte Ruiner", "Invetero Coquette BlackFin", "Vapid Blade", "Vapid Chino", "Vapid Dominator", "Vapid Dominator (Race)", "Vapid Hotknife", "Vapid Slamvan", "Vapid Slamvan (Lost MC)", "Willard Faction" };
+constexpr const char* CAPTIONS_MUSCLE[] = { "Albany Buccaneer", "Albany Franken Strange", "Albany Lurcher", "Albany Virgo", "Bravado Gauntlet", "Bravado Gauntlet (Race)", "Cheval Picador", "Declasse Mamba", "Declasse Tampa", "Declasse Sabre Turbo", "Declasse Stallion", "Declasse Stallion (Race)", "Declasse Vigero", "Declasse Voodoo", "Dundreary Virgo Classic", "Imponte Duke O' Death", "Imponte Dukes", "Imponte Nightshade", "Imponte Phoenix", "Imponte Ruiner", "Invetero Coquette BlackFin", "Vapid Blade", "Vapid Chino", "Vapid Dominator", "Vapid Dominator (Race)", "Vapid Hotknife", "Vapid Slamvan", "Vapid Slamvan (Lost MC)", "Willard Faction" };
 
-const std::vector<std::string> CAPTIONS_LOWRIDERS{ "Albany Buccaneer", "Albany Primo", "Declasse Moonbeam", "Declasse Sabre Turbo", "Declasse Tornado", "Declasse Voodoo", "Dundreary Virgo Classic", "Vapid Chino", "Vapid Minivan", "Vapid Slamvan", "Willard Faction", "Willard Faction Donk" };
+constexpr const char* CAPTIONS_LOWRIDERS[] = { "Albany Buccaneer", "Albany Primo", "Declasse Moonbeam", "Declasse Sabre Turbo", "Declasse Tornado", "Declasse Voodoo", "Dundreary Virgo Classic", "Vapid Chino", "Vapid Minivan", "Vapid Slamvan", "Willard Faction", "Willard Faction Donk" };
 
-const std::vector<std::string> CAPTIONS_COUPES{ "Dewbauchee Exemplar", "Enus Cognoscenti Cabrio", "Enus Windsor", "Enus Windsor Drop", "Lampadati Felon", "Lampadati Felon GT", "Ocelot F620", "Ocelot Jackal", "Ubermacht Sentinel", "Ubermacht Sentinel XS", "Ubermacht Zion", "Ubermacht Zion Cabrio" };
+constexpr const char* CAPTIONS_COUPES[] = { "Dewbauchee Exemplar", "Enus Cognoscenti Cabrio", "Enus Windsor", "Enus Windsor Drop", "Lampadati Felon", "Lampadati Felon GT", "Ocelot F620", "Ocelot Jackal", "Ubermacht Sentinel", "Ubermacht Sentinel XS", "Ubermacht Zion", "Ubermacht Zion Cabrio" };
 
-const std::vector<std::string> CAPTIONS_SEDANS{ "Albany Emperor", "Albany Emperor (Rusty)", "Albany Emperor (Snow)", "Albany Primo", "Albany Washington", "Benefactor Glendale", "Benefactor Schafter", "Chariot Romero Hearse", "Cheval Fugitive", "Cheval Surge", "Declasse Asea", "Declasse Asea (Snow)", "Declasse Premier", "Dundreary Regina", "Dundreary Stretch", "Enus Super Diamond", "Karin Asterope", "Karin Intruder", "Obey Tailgater", "Ubermacht Oracle", "Ubermacht Oracle Mk2", "Vapid Stanier", "Vapid Stanier (Taxi)", "Vulcan Ingot", "Vulcar Warrener", "Zirconium Stratum" };
+constexpr const char* CAPTIONS_SEDANS[] = { "Albany Emperor", "Albany Emperor (Rusty)", "Albany Emperor (Snow)", "Albany Primo", "Albany Washington", "Benefactor Glendale", "Benefactor Schafter", "Chariot Romero Hearse", "Cheval Fugitive", "Cheval Surge", "Declasse Asea", "Declasse Asea (Snow)", "Declasse Premier", "Dundreary Regina", "Dundreary Stretch", "Enus Super Diamond", "Karin Asterope", "Karin Intruder", "Obey Tailgater", "Ubermacht Oracle", "Ubermacht Oracle Mk2", "Vapid Stanier", "Vapid Stanier (Taxi)", "Vulcan Ingot", "Vulcar Warrener", "Zirconium Stratum" };
 
-const std::vector<std::string> CAPTIONS_COMPACTS{ "Benefactor Panto", "Bollokan Prairie", "Declasse Rhapsody", "Dinka Blista", "Grotti Brioso R/A", "Karin Dilettante", "Karin Dilettante (FlyUS)", "Weeny Issi" };
+constexpr const char* CAPTIONS_COMPACTS[] = { "Benefactor Panto", "Bollokan Prairie", "Declasse Rhapsody", "Dinka Blista", "Grotti Brioso R/A", "Karin Dilettante", "Karin Dilettante (FlyUS)", "Weeny Issi" };
 
-const std::vector<std::string> CAPTIONS_SUVS{ "Albany Cavalcade", "Albany Cavalcade Mk2", "Benefactor Dubsta", "Benefactor Dubsta (Flat Black)", "Benefactor Serrano", "Bravado Gresley", "Canis Mesa", "Canis Mesa (Snow)", "Canis Seminole", "Declasse Granger", "Dundreary Landstalker", "Emperor Habanero", "Enus Huntley S", "Fathom FQ 2", "Gallivanter Baller (Large)", "Gallivanter Baller (Small)", "Karin BeeJay XL", "Mammoth Patriot", "Obey Rocoto", "Vapid Contender", "Vapid Radius" };
+constexpr const char* CAPTIONS_SUVS[] = { "Albany Cavalcade", "Albany Cavalcade Mk2", "Benefactor Dubsta", "Benefactor Dubsta (Flat Black)", "Benefactor Serrano", "Bravado Gresley", "Canis Mesa", "Canis Mesa (Snow)", "Canis Seminole", "Declasse Granger", "Dundreary Landstalker", "Emperor Habanero", "Enus Huntley S", "Fathom FQ 2", "Gallivanter Baller (Large)", "Gallivanter Baller (Small)", "Karin BeeJay XL", "Mammoth Patriot", "Obey Rocoto", "Vapid Contender", "Vapid Radius" };
 
-const std::vector<std::string> CAPTIONS_OFFROAD{ "Benefactor Dubsta 6x6", "BF Bifta", "BF Injection", "Bravado Dune", "Bravado Duneloader", "Bravado Space Docker", "Canis Bodhi", "Canis Kalahari", "Canis Mesa (Off-Road)", "Cheval Marshall", "Coil Brawler", "Declasse Rancher XL", "Declasse Rancher XL (Snow)", "Insurgent", "Insurgent (Gun Mount)", "Karin Rebel", "Karin Rebel (Rusty)", "Karin Technical", "Nagasaki Blazer", "Nagasaki Blazer (Hot Rod)", "Nagasaki Blazer (Lifeguard)", "Nagasaki Blazer (Street)", "Vapid Desert Raid", "Vapid Guardian", "Vapid Liberator", "Vapid Sandking", "Vapid Sandking XL", "Vapid Trophy Truck" };
+constexpr const char* CAPTIONS_OFFROAD[] = { "Benefactor Dubsta 6x6", "BF Bifta", "BF Injection", "Bravado Dune", "Bravado Duneloader", "Bravado Space Docker", "Canis Bodhi", "Canis Kalahari", "Canis Mesa (Off-Road)", "Cheval Marshall", "Coil Brawler", "Declasse Rancher XL", "Declasse Rancher XL (Snow)", "Insurgent", "Insurgent (Gun Mount)", "Karin Rebel", "Karin Rebel (Rusty)", "Karin Technical", "Nagasaki Blazer", "Nagasaki Blazer (Hot Rod)", "Nagasaki Blazer (Lifeguard)", "Nagasaki Blazer (Street)", "Vapid Desert Raid", "Vapid Guardian", "Vapid Liberator", "Vapid Sandking", "Vapid Sandking XL", "Vapid Trophy Truck" };
 
-const std::vector<std::string> CAPTIONS_VIP{ "Benefactor Schafter V12", "Benefactor Schafter V12 (Armored)", "Benefactor Schafter LWB", "Benefactor Schafter LWB (Armored)", "Benefactor Turreted Limo", "Benefactor XLS", "Benefactor XLS (Armored)", "Enus Cognoscenti", "Enus Cognoscenti (Armored)", "Enus Cognoscenti 55", "Enus Cognoscenti 55 (Armored)", "Gallivanter Baller LE", "Gallivanter Baller LE (Armored)", "Gallivanter Baller LE LWB", "Gallivanter Baller LE LWB (Armored)" };
-
-
-
-const std::vector<std::string> VALUES_SUPERCARS{ "LE7B", "BANSHEE2", "VOLTIC", "SHEAVA", "CHEETAH", "PROTOTIPO", "TURISMOR", "SULTANRS", "ENTITYXF", "INFERNUS", "OSIRIS", "REAPER", "VACCA", "ZENTORNO", "PFISTER811", "T20", "TYRUS", "ADDER", "BULLET", "FMJ" };
-
-const std::vector<std::string> VALUES_SPORTS{ "ALPHA", "ELEGY2", "FELTZER2", "SCHWARZER", "SURANO", "RAPTOR",  "BANSHEE", "BUFFALO", "BUFFALO2", "BUFFALO3", "VERLIERER2", "TAMPA2", "MASSACRO", "MASSACRO2", "RAPIDGT", "RAPIDGT2", "SEVEN70", "BLISTA2", "BLISTA3", "JESTER", "JESTER2", "BESTIAGTS", "CARBONIZZARE", "KHAMELION", "COQUETTE", "FUTO", "KURUMA", "KURUMA2", "SULTAN", "FUROREGT", "TROPOS", "PENUMBRA", "NINEF", "NINEF2", "OMNIS", "LYNX", "COMET2", "FUSILADE" };
-
-const std::vector<std::string> VALUES_SPORTCLASSICS{ "MANANA", "BTYPE", "BTYPE3", "FELTZER3", "TORNADO", "TORNADO3", "TORNADO2", "TORNADO4", "TORNADO6", "JB700", "STINGER", "STINGERGT", "COQUETTE2", "CASCO", "PIGALLE", "MONROE", "ZTYPE", "PEYOTE" };
-
-const std::vector<std::string> VALUES_MUSCLE{ "BUCCANEER", "BTYPE2", "LURCHER", "VIRGO", "GAUNTLET", "GAUNTLET2", "PICADOR", "MAMBA", "TAMPA", "SABREGT", "STALION", "STALION2", "VIGERO", "VOODOO2", "VIRGO3", "DUKES2", "DUKES", "NIGHTSHADE", "PHOENIX", "RUINER", "COQUETTE3", "BLADE", "CHINO", "DOMINATOR", "DOMINATOR2", "HOTKNIFE", "SLAMVAN", "SLAMVAN2", "FACTION" };
-
-const std::vector<std::string> VALUES_LOWRIDERS{ "BUCCANEER2", "PRIMO2", "MOONBEAM2", "SABREGT2", "TORNADO5", "VOODOO", "VIRGO2", "CHINO2", "MINIVAN2", "SLAMVAN3", "FACTION2", "FACTION3" };
-
-const std::vector<std::string> VALUES_COUPES{ "EXEMPLAR", "COGCABRIO", "WINDSOR", "WINDSOR2", "FELON", "FELON2", "F620", "JACKAL", "SENTINEL2", "SENTINEL", "ZION", "ZION2" };
-
-const std::vector<std::string> VALUES_SEDANS{ "EMPEROR", "EMPEROR2", "EMPEROR3", "PRIMO", "WASHINGTON", "GLENDALE", "SCHAFTER2", "ROMERO", "FUGITIVE", "SURGE", "ASEA", "ASEA2", "PREMIER", "REGINA", "STRETCH", "SUPERD", "ASTEROPE", "INTRUDER", "TAILGATER", "ORACLE", "ORACLE2", "STANIER", "TAXI", "INGOT", "WARRENER", "STRATUM" };
-
-const std::vector<std::string> VALUES_COMPACTS{ "PANTO", "PRAIRIE", "RHAPSODY", "BLISTA", "BRIOSO", "DILETTANTE", "DILETTANTE2", "ISSI2" };
-
-const std::vector<std::string> VALUES_SUVS{ "CAVALCADE", "CAVALCADE2", "DUBSTA", "DUBSTA2", "SERRANO", "GRESLEY", "MESA", "MESA2", "SEMINOLE", "GRANGER", "LANDSTALKER", "HABANERO", "HUNTLEY", "FQ2", "BALLER", "BALLER2", "BJXL", "PATRIOT", "ROCOTO", "CONTENDER", "RADI" };
-
-const std::vector<std::string> VALUES_OFFROAD{ "DUBSTA3", "BIFTA", "BFINJECTION", "DUNE", "DLOADER", "DUNE2", "BODHI2", "KALAHARI", "MESA3", "MARSHALL", "BRAWLER", "RANCHERXL", "RANCHERXL2", "INSURGENT2", "INSURGENT", "REBEL2", "REBEL", "TECHNICAL", "BLAZER", "BLAZER3", "BLAZER2", "BLAZER4", "TROPHYTRUCK2", "GUARDIAN", "MONSTER", "SANDKING2", "SANDKING", "TROPHYTRUCK" };
-
-const std::vector<std::string> VALUES_VIP{ "SCHAFTER3", "SCHAFTER5", "SCHAFTER4", "SCHAFTER6", "LIMO2", "XLS", "XLS2", "COGNOSCENTI", "COGNOSCENTI2", "COG55", "COG552", "BALLER3", "BALLER5", "BALLER4", "BALLER6" };
+constexpr const char* CAPTIONS_VIP[] = { "Benefactor Schafter V12", "Benefactor Schafter V12 (Armored)", "Benefactor Schafter LWB", "Benefactor Schafter LWB (Armored)", "Benefactor Turreted Limo", "Benefactor XLS", "Benefactor XLS (Armored)", "Enus Cognoscenti", "Enus Cognoscenti (Armored)", "Enus Cognoscenti 55", "Enus Cognoscenti 55 (Armored)", "Gallivanter Baller LE", "Gallivanter Baller LE (Armored)", "Gallivanter Baller LE LWB", "Gallivanter Baller LE LWB (Armored)" };
 
 
 
-const std::vector<std::string> VOV_CAR_CAPTIONS[] = { CAPTIONS_SUPERCARS, CAPTIONS_SPORTS, CAPTIONS_SPORTCLASSICS, CAPTIONS_MUSCLE, CAPTIONS_LOWRIDERS, CAPTIONS_COUPES, CAPTIONS_SEDANS, CAPTIONS_COMPACTS, CAPTIONS_SUVS, CAPTIONS_OFFROAD, CAPTIONS_VIP };
+constexpr const char* VALUES_SUPERCARS[] = { "LE7B", "BANSHEE2", "VOLTIC", "SHEAVA", "CHEETAH", "PROTOTIPO", "TURISMOR", "SULTANRS", "ENTITYXF", "INFERNUS", "OSIRIS", "REAPER", "VACCA", "ZENTORNO", "PFISTER811", "T20", "TYRUS", "ADDER", "BULLET", "FMJ" };
 
-const std::vector<std::string> VOV_CAR_VALUES[] = { VALUES_SUPERCARS, VALUES_SPORTS, VALUES_SPORTCLASSICS, VALUES_MUSCLE, VALUES_LOWRIDERS, VALUES_COUPES, VALUES_SEDANS, VALUES_COMPACTS, VALUES_SUVS, VALUES_OFFROAD, VALUES_VIP };
+constexpr const char* VALUES_SPORTS[] = { "ALPHA", "ELEGY2", "FELTZER2", "SCHWARZER", "SURANO", "RAPTOR",  "BANSHEE", "BUFFALO", "BUFFALO2", "BUFFALO3", "VERLIERER2", "TAMPA2", "MASSACRO", "MASSACRO2", "RAPIDGT", "RAPIDGT2", "SEVEN70", "BLISTA2", "BLISTA3", "JESTER", "JESTER2", "BESTIAGTS", "CARBONIZZARE", "KHAMELION", "COQUETTE", "FUTO", "KURUMA", "KURUMA2", "SULTAN", "FUROREGT", "TROPOS", "PENUMBRA", "NINEF", "NINEF2", "OMNIS", "LYNX", "COMET2", "FUSILADE" };
+
+constexpr const char* VALUES_SPORTCLASSICS[] = { "MANANA", "BTYPE", "BTYPE3", "FELTZER3", "TORNADO", "TORNADO3", "TORNADO2", "TORNADO4", "TORNADO6", "JB700", "STINGER", "STINGERGT", "COQUETTE2", "CASCO", "PIGALLE", "MONROE", "ZTYPE", "PEYOTE" };
+
+constexpr const char* VALUES_MUSCLE[] = { "BUCCANEER", "BTYPE2", "LURCHER", "VIRGO", "GAUNTLET", "GAUNTLET2", "PICADOR", "MAMBA", "TAMPA", "SABREGT", "STALION", "STALION2", "VIGERO", "VOODOO2", "VIRGO3", "DUKES2", "DUKES", "NIGHTSHADE", "PHOENIX", "RUINER", "COQUETTE3", "BLADE", "CHINO", "DOMINATOR", "DOMINATOR2", "HOTKNIFE", "SLAMVAN", "SLAMVAN2", "FACTION" };
+
+constexpr const char* VALUES_LOWRIDERS[] = { "BUCCANEER2", "PRIMO2", "MOONBEAM2", "SABREGT2", "TORNADO5", "VOODOO", "VIRGO2", "CHINO2", "MINIVAN2", "SLAMVAN3", "FACTION2", "FACTION3" };
+
+constexpr const char* VALUES_COUPES[] = { "EXEMPLAR", "COGCABRIO", "WINDSOR", "WINDSOR2", "FELON", "FELON2", "F620", "JACKAL", "SENTINEL2", "SENTINEL", "ZION", "ZION2" };
+
+constexpr const char* VALUES_SEDANS[] = { "EMPEROR", "EMPEROR2", "EMPEROR3", "PRIMO", "WASHINGTON", "GLENDALE", "SCHAFTER2", "ROMERO", "FUGITIVE", "SURGE", "ASEA", "ASEA2", "PREMIER", "REGINA", "STRETCH", "SUPERD", "ASTEROPE", "INTRUDER", "TAILGATER", "ORACLE", "ORACLE2", "STANIER", "TAXI", "INGOT", "WARRENER", "STRATUM" };
+
+constexpr const char* VALUES_COMPACTS[] = { "PANTO", "PRAIRIE", "RHAPSODY", "BLISTA", "BRIOSO", "DILETTANTE", "DILETTANTE2", "ISSI2" };
+
+constexpr const char* VALUES_SUVS[] = { "CAVALCADE", "CAVALCADE2", "DUBSTA", "DUBSTA2", "SERRANO", "GRESLEY", "MESA", "MESA2", "SEMINOLE", "GRANGER", "LANDSTALKER", "HABANERO", "HUNTLEY", "FQ2", "BALLER", "BALLER2", "BJXL", "PATRIOT", "ROCOTO", "CONTENDER", "RADI" };
+
+constexpr const char* VALUES_OFFROAD[] = { "DUBSTA3", "BIFTA", "BFINJECTION", "DUNE", "DLOADER", "DUNE2", "BODHI2", "KALAHARI", "MESA3", "MARSHALL", "BRAWLER", "RANCHERXL", "RANCHERXL2", "INSURGENT2", "INSURGENT", "REBEL2", "REBEL", "TECHNICAL", "BLAZER", "BLAZER3", "BLAZER2", "BLAZER4", "TROPHYTRUCK2", "GUARDIAN", "MONSTER", "SANDKING2", "SANDKING", "TROPHYTRUCK" };
+
+constexpr const char* VALUES_VIP[] = { "SCHAFTER3", "SCHAFTER5", "SCHAFTER4", "SCHAFTER6", "LIMO2", "XLS", "XLS2", "COGNOSCENTI", "COGNOSCENTI2", "COG55", "COG552", "BALLER3", "BALLER5", "BALLER4", "BALLER6" };
+
+
+
+constexpr const char* const* VOV_CAR_CAPTIONS[] = { CAPTIONS_SUPERCARS, CAPTIONS_SPORTS, CAPTIONS_SPORTCLASSICS, CAPTIONS_MUSCLE, CAPTIONS_LOWRIDERS, CAPTIONS_COUPES, CAPTIONS_SEDANS, CAPTIONS_COMPACTS, CAPTIONS_SUVS, CAPTIONS_OFFROAD, CAPTIONS_VIP };
+
+constexpr const char* const* VOV_CAR_VALUES[] = { VALUES_SUPERCARS, VALUES_SPORTS, VALUES_SPORTCLASSICS, VALUES_MUSCLE, VALUES_LOWRIDERS, VALUES_COUPES, VALUES_SEDANS, VALUES_COMPACTS, VALUES_SUVS, VALUES_OFFROAD, VALUES_VIP };
+
+constexpr size_t VOV_CAR_SIZES[] = {
+	std::extent<decltype(CAPTIONS_SUPERCARS)>::value,
+	std::extent<decltype(CAPTIONS_SPORTS)>::value,
+	std::extent<decltype(CAPTIONS_SPORTCLASSICS)>::value,
+	std::extent<decltype(CAPTIONS_MUSCLE)>::value,
+	std::extent<decltype(CAPTIONS_LOWRIDERS)>::value,
+	std::extent<decltype(CAPTIONS_COUPES)>::value,
+	std::extent<decltype(CAPTIONS_SEDANS)>::value,
+	std::extent<decltype(CAPTIONS_COMPACTS)>::value,
+	std::extent<decltype(CAPTIONS_SUVS)>::value,
+	std::extent<decltype(CAPTIONS_OFFROAD)>::value,
+	std::extent<decltype(CAPTIONS_VIP)>::value,
+};
 
 //Industrial
 
-const std::vector<std::string> MENU_INDUS_CATEGORIES{ "Pickups", "Vans", "Trucks", "Service/Utility", "Trailers", "Trains (Undriveable)" };
+constexpr const char* MENU_INDUS_CATEGORIES[] = { "Pickups", "Vans", "Trucks", "Service/Utility", "Trailers", "Trains (Undriveable)" };
 
-const std::vector<std::string> CAPTIONS_PICKUPS{ "Bravado Bison", "Bravado Bison (Backrack)", "Bravado Bison (Construction)", "Bravado Ratloader", "Bravado Ratloader (Rusty)", "Vapid Bobcat", "Vapid Sadler", "Vapid Sadler (Snow)" };
+constexpr const char* CAPTIONS_PICKUPS[] = { "Bravado Bison", "Bravado Bison (Backrack)", "Bravado Bison (Construction)", "Bravado Ratloader", "Bravado Ratloader (Rusty)", "Vapid Bobcat", "Vapid Sadler", "Vapid Sadler (Snow)" };
 
-const std::vector<std::string> CAPTIONS_VANS{ "BF Surfer", "BF Surfer (Rusty)", "Bravado Paradise", "Bravado Rumpo Custom", "Bravado Rumpo (Deludamol)", "Bravado Rumpo (Weazel News)", "Bravado Youga", "Bravado Youga Classic", "Brute Camper", "Brute Pony (Business)", "Brute Pony (Cannibus Shop)", "Brute Taco Van", "Declasse Burrito", "Declasse Burrito (Bug Stars)", "Declasse Burrito (Construction)", "Declasse Burrito (Gang)", "Declasse Burrito (Graphics)", "Declasse Burrito (Snow)", "Declasse Burrito (The Lost)", "Declasse Moonbeam", "Vapid Minivan", "Vapid Speedo", "Vapid Speedo (Clown)", "Zirconium Journey" };
+constexpr const char* CAPTIONS_VANS[] = { "BF Surfer", "BF Surfer (Rusty)", "Bravado Paradise", "Bravado Rumpo Custom", "Bravado Rumpo (Deludamol)", "Bravado Rumpo (Weazel News)", "Bravado Youga", "Bravado Youga Classic", "Brute Camper", "Brute Pony (Business)", "Brute Pony (Cannibus Shop)", "Brute Taco Van", "Declasse Burrito", "Declasse Burrito (Bug Stars)", "Declasse Burrito (Construction)", "Declasse Burrito (Gang)", "Declasse Burrito (Graphics)", "Declasse Burrito (Snow)", "Declasse Burrito (The Lost)", "Declasse Moonbeam", "Vapid Minivan", "Vapid Speedo", "Vapid Speedo (Clown)", "Zirconium Journey" };
 
-const std::vector<std::string> CAPTIONS_TRUCKS{ "Brute Boxville (Go Postal)", "Brute Boxville (Humane Labs)", "Brute Boxville (Post OP)", "Brute Boxville (Water & Power)", "Brute Stockade", "Brute Stockade (Snow)", "Brute Tipper (2 Axle)", "Brute Tipper (3 Axle)", "Cutter", "Dock Handler", "Dock Tug", "Dump Truck", "HVY Biff", "Jobuilt Hauler", "Jobuilt Phantom", "Jobuilt Rubble", "Maibatsu Mule (Graphics 1)", "Maibatsu Mule (Graphics 2)", "Maibatsu Mule (Plain)", "Mixer", "Mixer (Support Wheel)", "MTL Flatbed Truck", "MTL Packer", "MTL Pounder", "Vapid Benson", "Vapid Scrap Truck", "Vapid Tow Truck", "Vapid Tow Truck (Old)" };
+constexpr const char* CAPTIONS_TRUCKS[] = { "Brute Boxville (Go Postal)", "Brute Boxville (Humane Labs)", "Brute Boxville (Post OP)", "Brute Boxville (Water & Power)", "Brute Stockade", "Brute Stockade (Snow)", "Brute Tipper (2 Axle)", "Brute Tipper (3 Axle)", "Cutter", "Dock Handler", "Dock Tug", "Dump Truck", "HVY Biff", "Jobuilt Hauler", "Jobuilt Phantom", "Jobuilt Rubble", "Maibatsu Mule (Graphics 1)", "Maibatsu Mule (Graphics 2)", "Maibatsu Mule (Plain)", "Mixer", "Mixer (Support Wheel)", "MTL Flatbed Truck", "MTL Packer", "MTL Pounder", "Vapid Benson", "Vapid Scrap Truck", "Vapid Tow Truck", "Vapid Tow Truck (Old)" };
 
-const std::vector<std::string> CAPTIONS_SERVICES{ "Airtug", "Brute Airport Bus", "Brute Bus (City Bus)", "Brute Rental Shuttle Bus", "Brute Tourbus", "Cable Car (Mt. Chilliad)", "Dashound Dashound Coach", "Dozer", "Forklift", "HVY Brickade", "Jobuilt Trashmaster", "Jobuilt Trashmaster (Rusty)", "MTL Dune", "Nagasaki Caddy", "Nagasaki Caddy (Golf)", "Ripley (Airport Tug)", "Stanley Fieldmaster Tractor", "Stanley Fieldmaster Tractor (Snow)", "Stanley Lawn Mower", "Stanley Tractor (Rusty)", "Vapid Pickup Utility", "Vapid Plumbing Utility", "Vapid Telephone Utility" };
+constexpr const char* CAPTIONS_SERVICES[] = { "Airtug", "Brute Airport Bus", "Brute Bus (City Bus)", "Brute Rental Shuttle Bus", "Brute Tourbus", "Cable Car (Mt. Chilliad)", "Dashound Dashound Coach", "Dozer", "Forklift", "HVY Brickade", "Jobuilt Trashmaster", "Jobuilt Trashmaster (Rusty)", "MTL Dune", "Nagasaki Caddy", "Nagasaki Caddy (Golf)", "Ripley (Airport Tug)", "Stanley Fieldmaster Tractor", "Stanley Fieldmaster Tractor (Snow)", "Stanley Lawn Mower", "Stanley Tractor (Rusty)", "Vapid Pickup Utility", "Vapid Plumbing Utility", "Vapid Telephone Utility" };
 
-const std::vector<std::string> CAPTIONS_TRAILERS{ "Army Flatbed Trailer (Empty)", "Army Flatbed Trailer (With Drill)", "Army Fuel Tanker", "Boat Trailer", "Boat Trailer", "Car Transport Trailer", "Car Transport Trailer (Empty)", "Commercial Trailer (Graphics 1)", "Commercial Trailer (Graphics 2)", "Container Trailer", "Fame or Shame Trailer", "Flatbed Trailer", "Flatbed Trailer", "Grain Trailer", "Hay Bale Trailer", "Logging Trailer", "Meth Lab Trailer", "Petrol Tanker Trailer (Plain)", "Petrol Tanker Trailer (RON)", "Plain Trailer", "Rake Trailer", "Small Trailer" };
+constexpr const char* CAPTIONS_TRAILERS[] = { "Army Flatbed Trailer (Empty)", "Army Flatbed Trailer (With Drill)", "Army Fuel Tanker", "Boat Trailer", "Boat Trailer", "Car Transport Trailer", "Car Transport Trailer (Empty)", "Commercial Trailer (Graphics 1)", "Commercial Trailer (Graphics 2)", "Container Trailer", "Fame or Shame Trailer", "Flatbed Trailer", "Flatbed Trailer", "Grain Trailer", "Hay Bale Trailer", "Logging Trailer", "Meth Lab Trailer", "Petrol Tanker Trailer (Plain)", "Petrol Tanker Trailer (RON)", "Plain Trailer", "Rake Trailer", "Small Trailer" };
 
-const std::vector<std::string> CAPTIONS_TRAINS{ "Container Car 1", "Container Car 2", "Flatbed Car", "Freight Train Cab", "Grain Car", "Metro Train (Half)", "Oil Tanker Car" };
+constexpr const char* CAPTIONS_TRAINS[] = { "Container Car 1", "Container Car 2", "Flatbed Car", "Freight Train Cab", "Grain Car", "Metro Train (Half)", "Oil Tanker Car" };
 
-const std::vector<std::string> VALUES_PICKUPS{ "BISON", "BISON3", "BISON2", "RATLOADER2", "RATLOADER", "BOBCATXL", "SADLER", "SADLER2" };
+constexpr const char* VALUES_PICKUPS[] = { "BISON", "BISON3", "BISON2", "RATLOADER2", "RATLOADER", "BOBCATXL", "SADLER", "SADLER2" };
 
-const std::vector<std::string> VALUES_VANS{ "SURFER", "SURFER2", "PARADISE", "RUMPO3", "RUMPO2", "RUMPO", "YOUGA", "YOUGA2", "CAMPER", "PONY", "PONY2", "TACO", "BURRITO3", "BURRITO2", "BURRITO4", "GBURRITO2", "BURRITO", "BURRITO5", "GBURRITO", "MOONBEAM", "MINIVAN", "SPEEDO", "SPEEDO2", "JOURNEY" };
+constexpr const char* VALUES_VANS[] = { "SURFER", "SURFER2", "PARADISE", "RUMPO3", "RUMPO2", "RUMPO", "YOUGA", "YOUGA2", "CAMPER", "PONY", "PONY2", "TACO", "BURRITO3", "BURRITO2", "BURRITO4", "GBURRITO2", "BURRITO", "BURRITO5", "GBURRITO", "MOONBEAM", "MINIVAN", "SPEEDO", "SPEEDO2", "JOURNEY" };
 
-const std::vector<std::string> VALUES_TRUCKS{ "BOXVILLE2", "BOXVILLE3", "BOXVILLE4", "BOXVILLE", "STOCKADE", "STOCKADE3", "TIPTRUCK", "TIPTRUCK2", "CUTTER", "HANDLER", "DOCKTUG", "DUMP", "BIFF", "HAULER", "PHANTOM", "RUBBLE", "MULE", "MULE2", "MULE3", "MIXER", "MIXER2", "FLATBED", "PACKER", "POUNDER", "BENSON", "SCRAP", "TOWTRUCK", "TOWTRUCK2" };
+constexpr const char* VALUES_TRUCKS[] = { "BOXVILLE2", "BOXVILLE3", "BOXVILLE4", "BOXVILLE", "STOCKADE", "STOCKADE3", "TIPTRUCK", "TIPTRUCK2", "CUTTER", "HANDLER", "DOCKTUG", "DUMP", "BIFF", "HAULER", "PHANTOM", "RUBBLE", "MULE", "MULE2", "MULE3", "MIXER", "MIXER2", "FLATBED", "PACKER", "POUNDER", "BENSON", "SCRAP", "TOWTRUCK", "TOWTRUCK2" };
 
-const std::vector<std::string> VALUES_SERVICES{ "AIRTUG", "AIRBUS", "BUS", "RENTALBUS", "TOURBUS", "CABLECAR", "COACH", "BULLDOZER", "FORKLIFT", "BRICKADE", "TRASH2", "TRASH", "RALLYTRUCK", "CADDY2", "CADDY", "RIPLEY", "TRACTOR2", "TRACTOR3", "MOWER", "TRACTOR", "UTILLITRUCK3", "UTILLITRUCK2", "UTILLITRUCK" };
+constexpr const char* VALUES_SERVICES[] = { "AIRTUG", "AIRBUS", "BUS", "RENTALBUS", "TOURBUS", "CABLECAR", "COACH", "BULLDOZER", "FORKLIFT", "BRICKADE", "TRASH2", "TRASH", "RALLYTRUCK", "CADDY2", "CADDY", "RIPLEY", "TRACTOR2", "TRACTOR3", "MOWER", "TRACTOR", "UTILLITRUCK3", "UTILLITRUCK2", "UTILLITRUCK" };
 
-const std::vector<std::string> VALUES_TRAILERS{ "ARMYTRAILER", "ARMYTRAILER2", "ARMYTANKER", "BOATTRAILER", "TR3", "TR4", "TR2", "TRAILERS2", "TRAILERS3", "DOCKTRAILER", "TVTRAILER", "FREIGHTTRAILER", "TRFLAT", "GRAINTRAILER", "BALETRAILER", "TRAILERLOGS", "PROPTRAILER", "TANKER2", "TANKER", "TRAILERS", "RAKETRAILER", "TRAILERSMALL" };
+constexpr const char* VALUES_TRAILERS[] = { "ARMYTRAILER", "ARMYTRAILER2", "ARMYTANKER", "BOATTRAILER", "TR3", "TR4", "TR2", "TRAILERS2", "TRAILERS3", "DOCKTRAILER", "TVTRAILER", "FREIGHTTRAILER", "TRFLAT", "GRAINTRAILER", "BALETRAILER", "TRAILERLOGS", "PROPTRAILER", "TANKER2", "TANKER", "TRAILERS", "RAKETRAILER", "TRAILERSMALL" };
 
-const std::vector<std::string> VALUES_TRAINS{ "FREIGHTCONT1", "FREIGHTCONT2", "FREIGHTCAR", "FREIGHT", "FREIGHTGRAIN", "METROTRAIN", "TANKERCAR" };
+constexpr const char* VALUES_TRAINS[] = { "FREIGHTCONT1", "FREIGHTCONT2", "FREIGHTCAR", "FREIGHT", "FREIGHTGRAIN", "METROTRAIN", "TANKERCAR" };
 
-const std::vector<std::string> VOV_INDUS_CAPTIONS[] = { CAPTIONS_PICKUPS, CAPTIONS_VANS, CAPTIONS_TRUCKS, CAPTIONS_SERVICES, CAPTIONS_TRAILERS, CAPTIONS_TRAINS };
+constexpr const char* const * VOV_INDUS_CAPTIONS[] = { CAPTIONS_PICKUPS, CAPTIONS_VANS, CAPTIONS_TRUCKS, CAPTIONS_SERVICES, CAPTIONS_TRAILERS, CAPTIONS_TRAINS };
 
-const std::vector<std::string> VOV_INDUS_VALUES[] = { VALUES_PICKUPS, VALUES_VANS, VALUES_TRUCKS, VALUES_SERVICES, VALUES_TRAILERS, VALUES_TRAINS };
+constexpr const char* const * VOV_INDUS_VALUES[] = { VALUES_PICKUPS, VALUES_VANS, VALUES_TRUCKS, VALUES_SERVICES, VALUES_TRAILERS, VALUES_TRAINS };
+
+constexpr size_t VOV_INDUS_SIZES[] = {
+	std::extent<decltype(CAPTIONS_PICKUPS)>::value,
+	std::extent<decltype(CAPTIONS_VANS)>::value,
+	std::extent<decltype(CAPTIONS_TRUCKS)>::value,
+	std::extent<decltype(CAPTIONS_SERVICES)>::value,
+	std::extent<decltype(CAPTIONS_TRAILERS)>::value,
+	std::extent<decltype(CAPTIONS_TRAINS)>::value
+};
 
 //Everything else
 
-const std::vector<std::string> CAPTIONS_EMERGENCY{ "Albany Police Roadcruiser (Snow)", "Ambulance", "Army Barracks Truck", "Army Truck Cab", "Bravado Buffalo (FIB)", "Brute Police Riot Van", "Canis Crusader (Army Mesa)", "Declasse Granger (FIB)", "Declasse Lifeguard", "Declasse Park Ranger", "Declasse Police Rancher (Snow)", "Declasse Police Transporter", "Declasse Sheriff SUV", "Firetruck", "Prison Bus", "Rhino Tank", "Vapid Police Buffalo", "Vapid Police Cruiser", "Vapid Police Interceptor", "Vapid Sheriff Cruiser", "Vapid Unmarked Police Cruiser", "Western Police Bike" };
+constexpr const char* CAPTIONS_EMERGENCY[] = { "Albany Police Roadcruiser (Snow)", "Ambulance", "Army Barracks Truck", "Army Truck Cab", "Bravado Buffalo (FIB)", "Brute Police Riot Van", "Canis Crusader (Army Mesa)", "Declasse Granger (FIB)", "Declasse Lifeguard", "Declasse Park Ranger", "Declasse Police Rancher (Snow)", "Declasse Police Transporter", "Declasse Sheriff SUV", "Firetruck", "Prison Bus", "Rhino Tank", "Vapid Police Buffalo", "Vapid Police Cruiser", "Vapid Police Interceptor", "Vapid Sheriff Cruiser", "Vapid Unmarked Police Cruiser", "Western Police Bike" };
 
-const std::vector<std::string> CAPTIONS_MOTORCYCLES{ "Dinka Akuma", "Dinka Double-T", "Dinka Enduro", "Dinka Thrust", "Dinka Vindicator", "LCC Avarus", "LCC Hexer", "LCC Innovation", "LCC Sanctus", "Maibatsu Manchez", "Maibatsu Sanchez", "Maibatsu Sanchez(Graphics)", "Nagasaki BF400", "Nagasaki Carbon RS", "Nagasaki Chimera", "Nagasaki Shotaro", "Pegassi Bati", "Pegassi Bati(Race)", "Pegassi Esskey", "Pegassi Faggio Mod", "Pegassi Faggio Sport", "Pegassi Ruffian", "Pegassi Vortex", "Principe Lectro", "Principe Nemesis", "Principe Phaggio", "Shitzu Defiler", "Shitzu Hakuchou", "Shitzu Hakuchou Drag", "Shitzu PCJ 600", "Shitzu Vader", "Western Bagger", "Western Cliffhanger", "Western Daemon", "Western Daemon Custom", "Western Gargoyle", "Western Nightblade", "Western Rat Bike", "Western Sovereign", "Western Wolfsbane", "Western Zombie Bobber", "Western Zombie Chopper" };
+constexpr const char* CAPTIONS_MOTORCYCLES[] = { "Dinka Akuma", "Dinka Double-T", "Dinka Enduro", "Dinka Thrust", "Dinka Vindicator", "LCC Avarus", "LCC Hexer", "LCC Innovation", "LCC Sanctus", "Maibatsu Manchez", "Maibatsu Sanchez", "Maibatsu Sanchez(Graphics)", "Nagasaki BF400", "Nagasaki Carbon RS", "Nagasaki Chimera", "Nagasaki Shotaro", "Pegassi Bati", "Pegassi Bati(Race)", "Pegassi Esskey", "Pegassi Faggio Mod", "Pegassi Faggio Sport", "Pegassi Ruffian", "Pegassi Vortex", "Principe Lectro", "Principe Nemesis", "Principe Phaggio", "Shitzu Defiler", "Shitzu Hakuchou", "Shitzu Hakuchou Drag", "Shitzu PCJ 600", "Shitzu Vader", "Western Bagger", "Western Cliffhanger", "Western Daemon", "Western Daemon Custom", "Western Gargoyle", "Western Nightblade", "Western Rat Bike", "Western Sovereign", "Western Wolfsbane", "Western Zombie Bobber", "Western Zombie Chopper" };
 
-const std::vector<std::string> CAPTIONS_PLANES{ "Buckingham Cargo Plane (An-225)", "Buckingham Jet (B747)", "Buckingham Luxor", "Buckingham Luxor Deluxe", "Buckingham Miljet", "Buckingham Nimbus", "Buckingham Shamal", "Buckingham Vestra", "Jobuilt Mammatus", "Jobuilt P-996 Lazer", "Jobuilt Velum (4 Seater)", "Jobuilt Velum (5 Seater)", "Mammoth Dodo", "Mammoth Hydra", "Mammoth Titan", "Western Besra", "Western Cuban 800", "Western Duster", "Western Mallard Stunt Plane" };
+constexpr const char* CAPTIONS_PLANES[] = { "Buckingham Cargo Plane (An-225)", "Buckingham Jet (B747)", "Buckingham Luxor", "Buckingham Luxor Deluxe", "Buckingham Miljet", "Buckingham Nimbus", "Buckingham Shamal", "Buckingham Vestra", "Jobuilt Mammatus", "Jobuilt P-996 Lazer", "Jobuilt Velum (4 Seater)", "Jobuilt Velum (5 Seater)", "Mammoth Dodo", "Mammoth Hydra", "Mammoth Titan", "Western Besra", "Western Cuban 800", "Western Duster", "Western Mallard Stunt Plane" };
 
-const std::vector<std::string> CAPTIONS_HELOS{ "Blimp (Atomic)", "Blimp (Xero Gas)", "Buckingham Savage", "Buckingham SuperVolito", "Buckingham SuperVolito Carbon", "Buckingham Swift", "Buckingham Swift Deluxe", "Buckingham Valkyrie", "Buckingham Volatus", "HVY Skylift", "Maibatsu Frogger", "Maibatsu Frogger (TPE/FIB)", "Nagasaki Buzzard (Unarmed)", "Nagasaki Buzzard Attack Chopper", "Western Annihilator", "Western Cargobob (Desert Camo)", "Western Cargobob (Jetsam)", "Western Cargobob (TPE)", "Western Maverick", "Western Maverick (Police)" };
+constexpr const char* CAPTIONS_HELOS[] = { "Blimp (Atomic)", "Blimp (Xero Gas)", "Buckingham Savage", "Buckingham SuperVolito", "Buckingham SuperVolito Carbon", "Buckingham Swift", "Buckingham Swift Deluxe", "Buckingham Valkyrie", "Buckingham Volatus", "HVY Skylift", "Maibatsu Frogger", "Maibatsu Frogger (TPE/FIB)", "Nagasaki Buzzard (Unarmed)", "Nagasaki Buzzard Attack Chopper", "Western Annihilator", "Western Cargobob (Desert Camo)", "Western Cargobob (Jetsam)", "Western Cargobob (TPE)", "Western Maverick", "Western Maverick (Police)" };
 
-const std::vector<std::string> CAPTIONS_BOATS{ "Buckingham Tug", "Dinka Marquis", "Kraken Sub", "Lampadati Toro", "Nagasaki Dinghy (2 Seater)", "Nagasaki Dinghy (4 Seater, Black)", "Nagasaki Dinghy (4 Seater, Red)", "Pegassi Speeder", "Shitzu Jetmax", "Shitzu Predator (Police)", "Shitzu Squalo", "Shitzu Suntrap", "Shitzu Tropic", "Speedophile Seashark", "Speedophile Seashark (Lifeguard)", "Submersible" };
+constexpr const char* CAPTIONS_BOATS[] = { "Buckingham Tug", "Dinka Marquis", "Kraken Sub", "Lampadati Toro", "Nagasaki Dinghy (2 Seater)", "Nagasaki Dinghy (4 Seater, Black)", "Nagasaki Dinghy (4 Seater, Red)", "Pegassi Speeder", "Shitzu Jetmax", "Shitzu Predator (Police)", "Shitzu Squalo", "Shitzu Suntrap", "Shitzu Tropic", "Speedophile Seashark", "Speedophile Seashark (Lifeguard)", "Submersible" };
 
-const std::vector<std::string> CAPTIONS_BICYCLES{ "BMX", "Cruiser", "Endurex Race", "Fixter", "Scorcher", "Tri-Cycles Race", "Whippet Race" };
+constexpr const char* CAPTIONS_BICYCLES[] = { "BMX", "Cruiser", "Endurex Race", "Fixter", "Scorcher", "Tri-Cycles Race", "Whippet Race" };
 
-const std::vector<std::string> VALUES_EMERGENCY{ "POLICEOLD2", "AMBULANCE", "BARRACKS", "BARRACKS2", "FBI", "RIOT", "CRUSADER", "FBI2", "LGUARD", "PRANGER", "POLICEOLD1", "POLICET", "SHERIFF2", "FIRETRUK", "PBUS", "RHINO", "POLICE2", "POLICE", "POLICE3", "SHERIFF", "POLICE4", "POLICEB" };
+constexpr const char* VALUES_EMERGENCY[] = { "POLICEOLD2", "AMBULANCE", "BARRACKS", "BARRACKS2", "FBI", "RIOT", "CRUSADER", "FBI2", "LGUARD", "PRANGER", "POLICEOLD1", "POLICET", "SHERIFF2", "FIRETRUK", "PBUS", "RHINO", "POLICE2", "POLICE", "POLICE3", "SHERIFF", "POLICE4", "POLICEB" };
 
-const std::vector<std::string> VALUES_MOTORCYCLES{ "AKUMA", "DOUBLE", "ENDURO", "THRUST", "VINDICATOR", "AVARUS", "HEXER", "INNOVATION", "SANCTUS", "MANCHEZ", "SANCHEZ2", "SANCHEZ", "BF400", "CARBONRS", "CHIMERA", "SHOTARO", "BATI", "BATI2", "ESSKEY", "FAGGIO3", "FAGGIO", "RUFFIAN", "VORTEX", "LECTRO", "NEMESIS", "FAGGIO2", "DEFILER", "HAKUCHOU", "HAKUCHOU2", "PCJ", "VADER", "BAGGER", "CLIFFHANGER", "DAEMON", "DAEMON2", "GARGOYLE", "NIGHTBLADE", "RATBIKE", "SOVEREIGN", "WOLFSBANE", "ZOMBIEA", "ZOMBIEB" };
+constexpr const char* VALUES_MOTORCYCLES[] = { "AKUMA", "DOUBLE", "ENDURO", "THRUST", "VINDICATOR", "AVARUS", "HEXER", "INNOVATION", "SANCTUS", "MANCHEZ", "SANCHEZ2", "SANCHEZ", "BF400", "CARBONRS", "CHIMERA", "SHOTARO", "BATI", "BATI2", "ESSKEY", "FAGGIO3", "FAGGIO", "RUFFIAN", "VORTEX", "LECTRO", "NEMESIS", "FAGGIO2", "DEFILER", "HAKUCHOU", "HAKUCHOU2", "PCJ", "VADER", "BAGGER", "CLIFFHANGER", "DAEMON", "DAEMON2", "GARGOYLE", "NIGHTBLADE", "RATBIKE", "SOVEREIGN", "WOLFSBANE", "ZOMBIEA", "ZOMBIEB" };
 
-const std::vector<std::string> VALUES_PLANES{ "CARGOPLANE", "JET", "LUXOR", "LUXOR2", "MILJET", "NIMBUS", "SHAMAL", "VESTRA", "MAMMATUS", "LAZER", "VELUM", "VELUM2", "DODO", "HYDRA", "TITAN", "BESRA", "CUBAN800", "DUSTER", "STUNT" };
+constexpr const char* VALUES_PLANES[] = { "CARGOPLANE", "JET", "LUXOR", "LUXOR2", "MILJET", "NIMBUS", "SHAMAL", "VESTRA", "MAMMATUS", "LAZER", "VELUM", "VELUM2", "DODO", "HYDRA", "TITAN", "BESRA", "CUBAN800", "DUSTER", "STUNT" };
 
-const std::vector<std::string> VALUES_HELOS{ "BLIMP", "BLIMP2", "SAVAGE", "SUPERVOLITO", "SUPERVOLITO2", "SWIFT", "SWIFT2", "VALKYRIE", "VOLATUS", "SKYLIFT", "FROGGER", "FROGGER2", "BUZZARD2", "BUZZARD", "ANNIHILATOR", "CARGOBOB", "CARGOBOB2", "CARGOBOB3", "MAVERICK", "POLMAV" };
+constexpr const char* VALUES_HELOS[] = { "BLIMP", "BLIMP2", "SAVAGE", "SUPERVOLITO", "SUPERVOLITO2", "SWIFT", "SWIFT2", "VALKYRIE", "VOLATUS", "SKYLIFT", "FROGGER", "FROGGER2", "BUZZARD2", "BUZZARD", "ANNIHILATOR", "CARGOBOB", "CARGOBOB2", "CARGOBOB3", "MAVERICK", "POLMAV" };
 
-const std::vector<std::string> VALUES_BOATS{ "TUG", "MARQUIS", "SUBMERSIBLE2", "TORO", "DINGHY2", "DINGHY3", "DINGHY", "SPEEDER", "JETMAX", "PREDATOR", "SQUALO", "SUNTRAP", "TROPIC", "SEASHARK", "SEASHARK2", "SUBMERSIBLE" };
+constexpr const char* VALUES_BOATS[] = { "TUG", "MARQUIS", "SUBMERSIBLE2", "TORO", "DINGHY2", "DINGHY3", "DINGHY", "SPEEDER", "JETMAX", "PREDATOR", "SQUALO", "SUNTRAP", "TROPIC", "SEASHARK", "SEASHARK2", "SUBMERSIBLE" };
 
-const std::vector<std::string> VALUES_BICYCLES{ "BMX", "CRUISER", "TRIBIKE2", "FIXTER", "SCORCHER", "TRIBIKE3", "TRIBIKE" };
+constexpr const char* VALUES_BICYCLES[] = { "BMX", "CRUISER", "TRIBIKE2", "FIXTER", "SCORCHER", "TRIBIKE3", "TRIBIKE" };
 
-const std::vector<std::string> VOV_SHALLOW_CAPTIONS[] = { CAPTIONS_EMERGENCY, CAPTIONS_MOTORCYCLES, CAPTIONS_PLANES, CAPTIONS_HELOS, CAPTIONS_BOATS, CAPTIONS_BICYCLES };
+constexpr const char* const * VOV_SHALLOW_CAPTIONS[] = { CAPTIONS_EMERGENCY, CAPTIONS_MOTORCYCLES, CAPTIONS_PLANES, CAPTIONS_HELOS, CAPTIONS_BOATS, CAPTIONS_BICYCLES };
 
-const std::vector<std::string> VOV_SHALLOW_VALUES[] = { VALUES_EMERGENCY, VALUES_MOTORCYCLES, VALUES_PLANES, VALUES_HELOS, VALUES_BOATS, VALUES_BICYCLES };
+constexpr const char* const * VOV_SHALLOW_VALUES[] = { VALUES_EMERGENCY, VALUES_MOTORCYCLES, VALUES_PLANES, VALUES_HELOS, VALUES_BOATS, VALUES_BICYCLES };
+
+constexpr size_t VOV_SHALLOW_SIZES[] = {
+	std::extent<decltype(CAPTIONS_EMERGENCY)>::value,
+	std::extent<decltype(CAPTIONS_MOTORCYCLES)>::value,
+	std::extent<decltype(CAPTIONS_PLANES)>::value,
+	std::extent<decltype(CAPTIONS_HELOS)>::value,
+	std::extent<decltype(CAPTIONS_BOATS)>::value,
+	std::extent<decltype(CAPTIONS_BICYCLES)>::value
+};
 
 std::string lastCustomVehicleSpawn;
 
@@ -331,18 +365,17 @@ bool onconfirm_vehdoor_menu(MenuItem<int> choice) {
 	{
 		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
 		{
-			int i = 0; i < 8; i++;
-			float doorAngle = VEHICLE::GET_VEHICLE_DOOR_ANGLE_RATIO(veh, i);
-			if (doorAngle < 0.01) 
+			for (int i = 0; i < 8; i++)
 			{
-				for (int i = 0; i < 8; i++)
+				float doorAngle = VEHICLE::GET_VEHICLE_DOOR_ANGLE_RATIO(veh, i);
+				if (doorAngle < 0.01)
 				{
 					VEHICLE::SET_VEHICLE_DOOR_OPEN(veh, i, false, featureVehicleDoorInstant);
 				}
-			}
-			else 
-			{
-				VEHICLE::SET_VEHICLE_DOORS_SHUT(veh, featureVehicleDoorInstant);
+				else
+				{
+					VEHICLE::SET_VEHICLE_DOOR_SHUT(veh, i, featureVehicleDoorInstant);
+				}
 			}
 		}
 		else
@@ -376,20 +409,20 @@ bool onconfirm_vehdoor_menu(MenuItem<int> choice) {
 bool process_veh_door_menu() {
 	std::string caption = "Door Options";
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	std::vector<int>menuIndexes;
 
-	ToggleMenuItem<int> *immediateToggle = new ToggleMenuItem<int>();
-	immediateToggle->value = 0;
-	immediateToggle->caption = DOOR_OPTIONS[0].text;
-	immediateToggle->toggleValue = DOOR_OPTIONS[0].pState;
+	ToggleMenuItem<int> immediateToggle;
+	immediateToggle.value = 0;
+	immediateToggle.caption = DOOR_OPTIONS[0].text;
+	immediateToggle.toggleValue = DOOR_OPTIONS[0].pState;
 	menuItems.push_back(immediateToggle);
 
-	for (int i = 1; i < DOOR_OPTIONS.size(); i++) {
+	for (int i = 1; i < std::extent<decltype(DOOR_OPTIONS)>::value; i++) {
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->value = i;
-		item->caption = DOOR_OPTIONS[i].text;
+		MenuItem<int> item;
+		item.value = i;
+		item.caption = DOOR_OPTIONS[i].text;
 		menuItems.push_back(item);
 	}
 
@@ -427,7 +460,9 @@ bool onconfirm_remote_menu(MenuItem<int> choice)
 						VEHICLE::SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(ownedveh, 1);
 						VEHICLE::SET_VEHICLE_ALARM(ownedveh, 1);
 						VEHICLE::START_VEHICLE_ALARM(ownedveh);
+#if 0
 						WAIT(1000);
+#endif
 					}
 					VEHICLE::SET_VEHICLE_ALARM(ownedveh, 0);
 					ownedvehlocked = true;
@@ -450,7 +485,9 @@ bool onconfirm_remote_menu(MenuItem<int> choice)
 					if (VEHICLE::IS_VEHICLE_SEAT_FREE(ownedveh, -1)) {
 						VEHICLE::SET_VEHICLE_ALARM(ownedveh, 1);
 						VEHICLE::START_VEHICLE_ALARM(ownedveh);
+#if 0
 						WAIT(2200);
+#endif
 					}
 					VEHICLE::SET_VEHICLE_ALARM(ownedveh, 0);
 					ownedvehlocked = false;
@@ -1047,13 +1084,11 @@ bool onconfirm_ownedvehicle_menu(MenuItem<int> choice)
 			}
 			if (ownedveh != NULL && ENTITY::DOES_ENTITY_EXIST(ownedveh)) {
 				if (ENTITY::DOES_ENTITY_EXIST(driver)) {
-					if (driver == driver) {
-						Vector3 mypos = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
-						AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
-						AI::TASK_WARP_PED_INTO_VEHICLE(playerPed, ownedveh, 0);
-						set_status_text("Teleported into vehicle as passenger.");
-						return false;
-					}
+					Vector3 mypos = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
+					AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
+					AI::TASK_WARP_PED_INTO_VEHICLE(playerPed, ownedveh, 0);
+					set_status_text("Teleported into vehicle as passenger.");
+					return false;
 				}
 			}
 			Vector3 mypos = ENTITY::GET_ENTITY_COORDS(playerPed, 0);
@@ -2808,26 +2843,26 @@ void process_veh_menu()
 	std::string caption = "Vehicle Options";
 
 	StandardOrToggleMenuDef lines[lineCount] = {
-		{ "Vehicle Spawner", NULL, NULL, false },
+		{ "Vehicle Spawner", NULL, NULL, false, FT("vehicle_spawn") },
 		{ "Spawn Options", NULL, NULL, false },
-		{ "Saved Vehicles", NULL, NULL, false },
-		{ "Owned Vehicle", NULL, NULL, false },
-		{ "Modifications", NULL, NULL, false },
-		{ "Paint Options", NULL, NULL, false },
-		{ "Damage Settings", NULL, NULL, false },
-		{ "Power Boost Options", NULL, NULL, false },
-		{ "Torque Boost Options", NULL, NULL, false },
-		{ "Suspension Options", NULL, NULL, false },
-		{ "Repair & Set Properly", NULL, NULL, true },
-		{ "No Drag Out", &featureNoVehDragOut, &featureNoVehDragOutUpdated, true },
-		{ "No Fall Off", &featureNoVehFallOff, &featureNoVehFallOffUpdated, true },
-		{ "No Helmet", &featureNoHelmet, NULL, true },
-		{ "Speed Boost", &featureVehSpeedBoost, NULL, true },
-		{ "Drift Mode", &featureDriftMode, NULL, true },
-		{ "Vehicle Controls", &featureVehControls, NULL, true },
-		{ "Speedometer", NULL, NULL, false },
-		{ "Door Controls", NULL, NULL, false },
-		{ "Rainbow Options", NULL, NULL, false }
+		{ "Saved Vehicles", NULL, NULL, false, FT("vehicle_spawn") },
+		{ "Owned Vehicle", NULL, NULL, false, FT("vehicle_owned_vehicles") },
+		{ "Modifications", NULL, NULL, false, FT("vehicle_spawn") },
+		{ "Paint Options", NULL, NULL, false, FT("vehicle_paint") },
+		{ "Damage Settings", NULL, NULL, false, FT("vehicle_damage") },
+		{ "Power Boost Options", NULL, NULL, false, FT("vehicle_power_boost") },
+		{ "Torque Boost Options", NULL, NULL, false, FT("vehicle_torque_boost") },
+		{ "Suspension Options", NULL, NULL, false, FT("vehicle_suspension") },
+		{ "Repair & Set Properly", NULL, NULL, true, FT("vehicle_repair") },
+		{ "No Drag Out", &featureNoVehDragOut, &featureNoVehDragOutUpdated, true, FT("vehicle_no_drag_out") },
+		{ "No Fall Off", &featureNoVehFallOff, &featureNoVehFallOffUpdated, true, FT("vehicle_no_fall_off") },
+		{ "No Helmet", &featureNoHelmet, NULL, true, FT("vehicle_no_helmet") },
+		{ "Speed Boost", &featureVehSpeedBoost, NULL, true, FT("vehicle_speed_boost") },
+		{ "Drift Mode", &featureDriftMode, NULL, true, FT("vehicle_drift_mode") },
+		{ "Vehicle Controls", &featureVehControls, NULL, true, FT("vehicle_controls") },
+		{ "Speedometer", NULL, NULL, false, FT("vehicle_speedo") },
+		{ "Door Controls", NULL, NULL, false, FT("vehicle_doors") },
+		{ "Rainbow Options", NULL, NULL, false, FT("vehicle_rainbow") }
 	};
 	draw_menu_from_struct_def(lines, lineCount, &activeLineIndexVeh, caption, onconfirm_veh_menu);
 }
@@ -2839,140 +2874,149 @@ void process_veh_menu()
 
 void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 {
-	if (featureLimVehCosDamage)
+	if (toggle_allowed("vehicle_damage"))
 	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureLimVehCosDamage)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_STRONG(veh, 1);
-						//ENTITY::SET_ENTITY_PROOFS(veh, 0, 0, 0, 1, 0, 0, 0, 0);
-						ENTITY::SET_ENTITY_CAN_BE_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
-						for (int i = 0; i < 6; i++)
-						{
-							VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
-						}
-					}
-				}
-			}
-		}
-	}
-
-	if (featureVehCosDamage)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
-						VEHICLE::SET_VEHICLE_STRONG(veh, 1);
-						if (VEHICLE::_0xBCDC5017D3CE1E9E(veh)) //damage check
-						{
-							VEHICLE::SET_VEHICLE_FIXED(veh);
-					//		VEHICLE::SET_VEHICLE_DEFORMATION_FIXED(veh);
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
+							VEHICLE::SET_VEHICLE_STRONG(veh, 1);
+							//ENTITY::SET_ENTITY_PROOFS(veh, 0, 0, 0, 1, 0, 0, 0, 0);
+							ENTITY::SET_ENTITY_CAN_BE_DAMAGED(veh, 0);
 							VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
+							for (int i = 0; i < 6; i++)
+							{
+								VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+							}
 						}
-						for (int i = 0; i < 6; i++)
-						{
-							VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+					}
+				}
+			}
+		}
+
+		if (featureVehCosDamage)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_CAN_BE_VISIBLY_DAMAGED(veh, 0);
+							VEHICLE::SET_VEHICLE_STRONG(veh, 1);
+							if (VEHICLE::_0xBCDC5017D3CE1E9E(veh)) //damage check
+							{
+								VEHICLE::SET_VEHICLE_FIXED(veh);
+								//		VEHICLE::SET_VEHICLE_DEFORMATION_FIXED(veh);
+								VEHICLE::SET_VEHICLE_DIRT_LEVEL(veh, 0);
+							}
+							for (int i = 0; i < 6; i++)
+							{
+								VEHICLE::_SET_VEHICLE_DOOR_BREAKABLE(veh, i, 0); //(Vehicle, doorIndex, isBreakable)
+							}
+						}
+					}
+				}
+			}
+		}
+
+
+		if (featureVehMechDamage)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							VEHICLE::SET_VEHICLE_ENGINE_CAN_DEGRADE(veh, 0);
+							VEHICLE::SET_VEHICLE_CAN_BREAK(veh, 0);
+							VEHICLE::SET_VEHICLE_WHEELS_CAN_BREAK(veh, 0);
+							VEHICLE::SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(veh, 1);
+							//	VEHICLE::SET_VEHICLE_EXPLODES_ON_HIGH_EXPLOSION_DAMAGE(veh, 1)
+						}
+					}
+				}
+			}
+		}
+
+
+		// player's vehicle invincible
+		if (featureVehInvincible)
+		{
+			if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							ENTITY::SET_ENTITY_INVINCIBLE(veh, TRUE);
+							//	VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(veh, 0);
+							//	ENTITY::SET_ENTITY_PROOFS(veh, 1, 1, 1, 1, 1, 1, 1, 1);
 						}
 					}
 				}
 			}
 		}
 	}
-
-
-	if (featureVehMechDamage)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						VEHICLE::SET_VEHICLE_ENGINE_CAN_DEGRADE(veh, 0);
-						VEHICLE::SET_VEHICLE_CAN_BREAK(veh, 0);
-						VEHICLE::SET_VEHICLE_WHEELS_CAN_BREAK(veh, 0);
-						VEHICLE::SET_DISABLE_VEHICLE_PETROL_TANK_DAMAGE(veh, 1);
-						//	VEHICLE::SET_VEHICLE_EXPLODES_ON_HIGH_EXPLOSION_DAMAGE(veh, 1)
-					}
-				}
-			}
-		}
-	}
-
-
-	// player's vehicle invincible
-	if (featureVehInvincible)
-	{
-		if (bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						ENTITY::SET_ENTITY_INVINCIBLE(veh, TRUE);
-						//	VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(veh, 0);
-						//	ENTITY::SET_ENTITY_PROOFS(veh, 1, 1, 1, 1, 1, 1, 1, 1);
-					}
-				}
-			}
-		}
-	}
-
 
 
 
 
 	// no drag out
-	if (bPlayerExists && featureNoVehDragOutUpdated && !featureNoVehDragOut)
+	if (toggle_allowed("vehicle_no_drag_out"))
 	{
-		PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 1);
-		featureNoVehDragOutUpdated = false;
-	}
-	else if (bPlayerExists && featureNoVehDragOut)
-	{
-		PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 0);
+		if (bPlayerExists && featureNoVehDragOutUpdated && !featureNoVehDragOut)
+		{
+			PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 1);
+			featureNoVehDragOutUpdated = false;
+		}
+		else if (bPlayerExists && featureNoVehDragOut)
+		{
+			PED::SET_PED_CAN_BE_DRAGGED_OUT(playerPed, 0);
+		}
 	}
 
 	// no fall off
-	if (bPlayerExists && featureNoVehFallOffUpdated && !featureNoVehFallOff)
+	if (toggle_allowed("vehicle_no_fall_off"))
 	{
+		if (bPlayerExists && featureNoVehFallOffUpdated && !featureNoVehFallOff)
+		{
 
-		PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 0);
-		featureNoVehFallOffUpdated = false;
-	}
-	else if (bPlayerExists && featureNoVehFallOff)
-	{
+			PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 0);
+			featureNoVehFallOffUpdated = false;
+		}
+		else if (bPlayerExists && featureNoVehFallOff)
+		{
 
-		PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 1);
+			PED::SET_PED_CAN_BE_KNOCKED_OFF_VEHICLE(playerPed, 1);
+		}
 	}
 
 	//Prevents player from wearing a helmet
-	if (bPlayerExists && featureNoHelmet)
+	if (bPlayerExists && featureNoHelmet && toggle_allowed("vehicle_no_helmet"))
 	{
 		PED::SET_PED_HELMET(playerPed, 0);
 	}
 
 
 	// player's vehicle boost
-	if (featureVehSpeedBoost && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+	if (featureVehSpeedBoost && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0) && toggle_allowed("vehicle_speed_boost"))
 	{
 		Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
 
+#ifndef SERVER_SIDED
 		bool bUp = get_key_pressed(get_config()->get_key_config()->key_veh_boost);
 		bool bDown = get_key_pressed(get_config()->get_key_config()->key_veh_stop);
 
@@ -2995,488 +3039,495 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////	
 
-	if (featureVehPower75)
+	if (toggle_allowed("vehicle_power_boost"))
 	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehPower75)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 75);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 75);
+						}
+					}
+				}
+			}
+		}
+
+		if (featureVehPower100)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 100);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower150)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 150);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower200)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 200);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower250)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 250);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower300)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 300);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower350)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 350);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower400)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 400);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower450)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 450);
+						}
+					}
+				}
+			}
+		}
+		if (featureVehPower500)
+		{
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 500);
+						}
 					}
 				}
 			}
 		}
 	}
 
-	if (featureVehPower100)
+	if (toggle_allowed("vehicle_torque_boost"))
 	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		/////////////////////////////////////////////////////////////////////////////////////////////////////////	
+		if (featureVehTorque2)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 100);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 2);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower150)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque5)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 150);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 5);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower200)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque10)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 200);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 10);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower250)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque15)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 250);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 15);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower300)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque25)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 300);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 25);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower350)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque50)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 350);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 50);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower400)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque75)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 400);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 75);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower450)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque100)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 450);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 100);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehPower500)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque150)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_POWER_MULTIPLIER(playerVeh, 500);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 150);
+						}
 					}
 				}
 			}
 		}
-	}
-
-	/////////////////////////////////////////////////////////////////////////////////////////////////////////	
-	if (featureVehTorque2)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque200)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 2);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 200);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque5)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque250)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 5);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 250);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque10)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque300)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 10);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 300);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque15)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque350)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 15);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 350);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque25)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque400)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 25);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 400);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque50)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque450)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 50);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 450);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque75)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque500)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 75);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 500);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque100)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque600)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 100);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 600);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque150)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque700)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 150);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 700);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque200)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque800)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 200);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 800);
+						}
 					}
 				}
 			}
 		}
-	}
-	if (featureVehTorque250)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+		if (featureVehTorque900)
 		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 250);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque300)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 300);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque350)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 350);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque400)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 400);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque450)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 450);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque500)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 500);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque600)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 600);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque700)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 700);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque800)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 800);
-					}
-				}
-			}
-		}
-	}
-	if (featureVehTorque900)
-	{
-		if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
-		{
-			Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
-			Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
-			if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)){
-				if (ENTITY::DOES_ENTITY_EXIST(driver)){
-					if (driver == playerPed){
-						Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
-						VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 900);
+			if (PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
+			{
+				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
+				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
+				if (ENTITY::DOES_ENTITY_EXIST(veh) && !ENTITY::IS_ENTITY_DEAD(veh)) {
+					if (ENTITY::DOES_ENTITY_EXIST(driver)) {
+						if (driver == playerPed) {
+							Vehicle playerVeh = PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID());
+							VEHICLE::_SET_VEHICLE_ENGINE_TORQUE_MULTIPLIER(playerVeh, 900);
+						}
 					}
 				}
 			}
@@ -3492,6 +3543,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
 
+#ifndef SERVER_SIDED
 		KeyInputConfig* keyConfig = get_config()->get_key_config();
 
 		bool bSelect = get_key_pressed(keyConfig->drift_mode);
@@ -3509,6 +3561,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 
@@ -3526,12 +3579,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3541,12 +3594,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 
 				char speedKph_text[50];
 
-				sprintf_s(speedKph_text, "%.0f", speedKph);
+				snprintf(speedKph_text, 50, "%.0f", speedKph);
 
 				draw_text1(speedKph_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "KPH");
+				snprintf(speed_text, 50, "KPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 		}
@@ -3565,12 +3618,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3580,12 +3633,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 
 				char speedMph_text[50];
 
-				sprintf_s(speedMph_text, "%.0f", speedMph);
+				snprintf(speedMph_text, 50, "%.0f", speedMph);
 
 				draw_text1(speedMph_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "MPH");
+				snprintf(speed_text, 50, "MPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 		}
@@ -3604,12 +3657,12 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 				float speedKnot = ENTITY::GET_ENTITY_SPEED(veh) * 1.94384;
 				char speedKnot_text[50];
-				sprintf_s(speedKnot_text, "%.0f", speedKnot);
+				snprintf(speedKnot_text, 50, "%.0f", speedKnot);
 
 				draw_text1(speedKnot_text, 0.857, 0.91, 2.8);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "kn~b~/~s~kt");
+				snprintf(speed_text, 50, "kn~b~/~s~kt");
 				draw_text3(speed_text, 0.935, 0.855, 1.2);
 			}
 			else
@@ -3621,18 +3674,18 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				char speedMph_text[50];
 				char speedKph_text[50];
 
-				sprintf_s(speedKph_text, "~b~%.0f", speedKph);
-				sprintf_s(speedMph_text, "%.0f", speedMph);
+				snprintf(speedKph_text, 50, "~b~%.0f", speedKph);
+				snprintf(speedMph_text, 50, "%.0f", speedMph);
 
 				draw_text2(speedKph_text, 0.798, 0.914, 1.8);
 				draw_text1(speedMph_text, 0.857, 0.91, 2.8);
 
 				char kphspeed_text[50];
-				sprintf_s(kphspeed_text, "~b~KPH");
+				snprintf(kphspeed_text,50,  "~b~KPH");
 				draw_text4(kphspeed_text, 0.902, 0.856, 0.9);
 
 				char speed_text[50];
-				sprintf_s(speed_text, "MPH");
+				snprintf(speed_text, 50, "MPH");
 				draw_text3(speed_text, 0.935, 0.855, 1.2); 
 			}
 		}
@@ -3888,6 +3941,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 	//vehicle controls
 	if (featureVehControls && bPlayerExists && PED::IS_PED_IN_ANY_VEHICLE(playerPed, 0))
 	{
+#ifndef SERVER_SIDED
 		Vehicle veh = PED::GET_VEHICLE_PED_IS_USING(playerPed);
 		Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(veh, -1);
 		DWORD model = ENTITY::GET_ENTITY_MODEL(veh);
@@ -4093,6 +4147,7 @@ void update_vehicle_features(BOOL bPlayerExists, Ped playerPed)
 				}
 			}
 		}
+#endif
 	}
 
 	if (ownedveh != NULL && ENTITY::DOES_ENTITY_EXIST(ownedveh) && !VEHICLE::_IS_VEHICLE_ENGINE_ON(ownedveh) && !featureRemoteEngine)
@@ -4190,28 +4245,70 @@ void reset_vehicle_globals()
 	featureVehTorque900 = false;
 }
 
+std::vector<std::tuple<std::string, std::string>> g_customVehicles;
+
+void add_custom_vehicle(const std::string& name, const std::string& model)
+{
+	g_customVehicles.push_back({ name, model });
+}
+
+bool process_spawn_menu_server()
+{
+	MenuItemVector<std::string> menuItems;
+	for (int i = 0; i < g_customVehicles.size(); i++)
+	{
+		MenuItem<std::string> item;
+		item.caption = std::get<0>(g_customVehicles[i]);
+		item.value = std::get<1>(g_customVehicles[i]);
+		menuItems.push_back(item);
+	}
+
+	if (g_customVehicles.size() == 0)
+	{
+		MenuItem<std::string> item;
+		item.caption = "No custom vehicles";
+		item.value = "nope";
+		menuItems.push_back(item);
+	}
+
+	return draw_generic_menu<std::string>(menuItems, 0, "Server Vehicles", onconfirm_spawn_menu_vehicle_selection, NULL, NULL);
+}
 
 bool onconfirm_carspawn_menu(MenuItem<int> choice)
 {
-	if (choice.value == MENU_VEHICLE_CATEGORIES.size() - 1) //custom spawn
+	if (choice.value == std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value - 2) //server spawn
 	{
-		std::string result = show_keyboard(NULL, (char*)lastCustomVehicleSpawn.c_str());
-		if (!result.empty())
+		process_spawn_menu_server();
+		return false;
+	}
+
+	if (choice.value == std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value - 1) //custom spawn
+	{
+		show_keyboard(NULL, (char*)lastCustomVehicleSpawn.c_str(), [=](const std::string& result)
 		{
-			lastCustomVehicleSpawn = result;
-			Hash hash = GAMEPLAY::GET_HASH_KEY((char*)result.c_str());
-			if (!STREAMING::IS_MODEL_IN_CDIMAGE(hash) || !STREAMING::IS_MODEL_A_VEHICLE(hash))
+			if (!result.empty())
 			{
-				std::ostringstream ss;
-				ss << "Could not find vehicle model '" << result << "'";
-				set_status_text(ss.str());
-				return false;
+				lastCustomVehicleSpawn = result;
+				Hash hash = GAMEPLAY::GET_HASH_KEY((char*)result.c_str());
+
+				if (!toggle_allowed("vehicle_spawn_hash_" + std::to_string(hash)))
+				{
+					set_status_text("That vehicle isn't allowed!");
+					return;
+				}
+
+				if (!STREAMING::IS_MODEL_IN_CDIMAGE(hash) || !STREAMING::IS_MODEL_A_VEHICLE(hash))
+				{
+					std::ostringstream ss;
+					ss << "Could not find vehicle model '" << result << "'";
+					set_status_text(ss.str());
+				}
+				else
+				{
+					do_spawn_vehicle(result, result, [](Vehicle v) {});
+				}
 			}
-			else
-			{
-				do_spawn_vehicle(result, result);
-			}
-		}
+		});
 		return false;
 	}
 
@@ -4232,13 +4329,13 @@ bool onconfirm_carspawn_menu(MenuItem<int> choice)
 
 bool process_carspawn_menu()
 {
-	std::vector<MenuItem<int>*> menuItems;
-	for (int i = 0; i < MENU_VEHICLE_CATEGORIES.size(); i++)
+	MenuItemVector<int> menuItems;
+	for (int i = 0; i < std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value; i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_VEHICLE_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = (i == MENU_VEHICLE_CATEGORIES.size() - 1);
+		MenuItem<int> item;
+		item.caption = MENU_VEHICLE_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = (i == std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value - 1);
 		menuItems.push_back(item);
 	}
 
@@ -4249,12 +4346,13 @@ bool onconfirm_spawn_menu_cars(MenuItem<int> choice)
 {
 	std::string category = choice.caption;
 
-	std::vector<MenuItem<std::string>*> menuItems;
-	for (int i = 0; i < VOV_CAR_VALUES[choice.value].size(); i++)
+	MenuItemVector<std::string> menuItems;
+	for (int i = 0; i < VOV_CAR_SIZES[choice.value]; i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_CAR_CAPTIONS[choice.value][i];
-		item->value = VOV_CAR_VALUES[choice.value][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_CAR_CAPTIONS[choice.value][i];
+		item.value = VOV_CAR_VALUES[choice.value][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str()));
 		menuItems.push_back(item);
 	}
 
@@ -4263,13 +4361,13 @@ bool onconfirm_spawn_menu_cars(MenuItem<int> choice)
 
 bool process_spawn_menu_cars()
 {
-	std::vector<MenuItem<int>*> menuItems;
-	for (int i = 0; i < MENU_CAR_CATEGORIES.size(); i++)
+	MenuItemVector<int> menuItems;
+	for (int i = 0; i < std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value; i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_CAR_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_CAR_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -4294,12 +4392,13 @@ bool onconfirm_spawn_menu_indus(MenuItem<int> choice)
 		category = choice.caption;
 	}
 
-	std::vector<MenuItem<std::string>*> menuItems;
-	for (int i = 0; i < VOV_INDUS_CAPTIONS[selection].size(); i++)
+	MenuItemVector<std::string> menuItems;
+	for (int i = 0; i < VOV_INDUS_SIZES[selection]; i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_INDUS_CAPTIONS[selection][i];
-		item->value = VOV_INDUS_VALUES[selection][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_INDUS_CAPTIONS[selection][i];
+		item.value = VOV_INDUS_VALUES[selection][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str())); // FT("vehicle_spawn_hash_HASH")
 		menuItems.push_back(item);
 	}
 
@@ -4308,13 +4407,13 @@ bool onconfirm_spawn_menu_indus(MenuItem<int> choice)
 
 bool process_spawn_menu_indus()
 {
-	std::vector<MenuItem<int>*> menuItems;
-	for (int i = 0; i < MENU_INDUS_CATEGORIES.size(); i++)
+	MenuItemVector<int> menuItems;
+	for (int i = 0; i < std::extent<decltype(MENU_VEHICLE_CATEGORIES)>::value; i++)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
-		item->caption = MENU_INDUS_CATEGORIES[i];
-		item->value = i;
-		item->isLeaf = false;
+		MenuItem<int> item;
+		item.caption = MENU_INDUS_CATEGORIES[i];
+		item.value = i;
+		item.isLeaf = false;
 		menuItems.push_back(item);
 	}
 
@@ -4323,7 +4422,7 @@ bool process_spawn_menu_indus()
 
 bool onconfirm_spawn_menu_vehicle_selection(MenuItem<std::string> choice)
 {
-	do_spawn_vehicle(choice.value, choice.caption);
+	do_spawn_vehicle(choice.value, choice.caption, [](Vehicle v) {});
 	return false;
 }
 
@@ -4333,132 +4432,145 @@ bool process_spawn_menu_generic(int topMenuSelection)
 
 	std::string category = MENU_VEHICLE_CATEGORIES[topMenuSelection];
 
-	std::vector<MenuItem<std::string>*> menuItems;
-	for (int i = 0; i < VOV_SHALLOW_CAPTIONS[selection].size(); i++)
+	MenuItemVector<std::string> menuItems;
+	for (int i = 0; i < VOV_SHALLOW_SIZES[selection]; i++)
 	{
-		MenuItem<std::string> *item = new MenuItem<std::string>();
-		item->caption = VOV_SHALLOW_CAPTIONS[selection][i];
-		item->value = VOV_SHALLOW_VALUES[selection][i];
+		MenuItem<std::string> item;
+		item.caption = VOV_SHALLOW_CAPTIONS[selection][i];
+		item.value = VOV_SHALLOW_VALUES[selection][i];
+		item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(GAMEPLAY::GET_HASH_KEY((char*)item.value.c_str()));
 		menuItems.push_back(item);
 	}
 
 	return draw_generic_menu<std::string>(menuItems, 0, category, onconfirm_spawn_menu_vehicle_selection, NULL, NULL);
 }
 
-bool do_spawn_vehicle(std::string modelName, std::string modelTitle)
+bool do_spawn_vehicle(std::string modelName, std::string modelTitle, const std::function<void(Vehicle)>& onSpawn)
 {
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	DWORD model = GAMEPLAY::GET_HASH_KEY((char *)modelName.c_str());
 	preveh = rveh;
-	rveh = do_spawn_vehicle(model, modelTitle);
-	if (rveh != -1)
+	do_spawn_vehicle(model, modelTitle, [=](Vehicle rv)
 	{
-		if (featureSpawnDelete)
+		rveh = rv;
+		if (rveh != -1)
 		{
-			if (!featureVehSpawnInto)
+			if (featureSpawnDelete)
 			{
-				Ped playerPed = PLAYER::PLAYER_PED_ID();
-				if (VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1) == playerPed)
+				if (!featureVehSpawnInto)
 				{
-					AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
+					Ped playerPed = PLAYER::PLAYER_PED_ID();
+					if (VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1) == playerPed)
+					{
+						AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
+					}
 				}
-			}
-			if (ownedveh == preveh && ownedveh != NULL)
-			{
-				set_status_text("Previous vehicle is owned and must be deleted manually from the Owned Vehicle menu.");
-			}
-			else
-			{
-				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1);
-				if (ENTITY::DOES_ENTITY_EXIST(driver))
+				if (ownedveh == preveh && ownedveh != NULL)
 				{
-					set_status_text("Driver in vehicle, can't delete.");
+					set_status_text("Previous vehicle is owned and must be deleted manually from the Owned Vehicle menu.");
 				}
-				else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+				else
 				{
-					set_status_text("Passenger(s) in vehicle, can't delete.");
-				}
-				else if (ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
-				{
-					set_status_text("Driver & passenger(s) in vehicle, can't delete.");
-				}
-				else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) == 0)
-				{
-					VEHICLE::DELETE_VEHICLE(&preveh);
+					Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1);
+					if (ENTITY::DOES_ENTITY_EXIST(driver))
+					{
+						set_status_text("Driver in vehicle, can't delete.");
+					}
+					else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+					{
+						set_status_text("Passenger(s) in vehicle, can't delete.");
+					}
+					else if (ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+					{
+						set_status_text("Driver & passenger(s) in vehicle, can't delete.");
+					}
+					else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) == 0)
+					{
+						VEHICLE::DELETE_VEHICLE(&preveh);
+					}
 				}
 			}
 		}
-		return true;
-	}
-return false;
+
+		onSpawn(rv);
+	});
+
+	return false;
 }
 
-Vehicle do_spawn_vehicle(DWORD model, std::string modelTitle) //, bool cleanup)
+void do_spawn_vehicle(DWORD model, std::string modelTitle, const std::function<void(Vehicle)>& onSpawn) //, bool cleanup)
 {
 	if (STREAMING::IS_MODEL_IN_CDIMAGE(model) && STREAMING::IS_MODEL_A_VEHICLE(model))
 	{
 		STREAMING::REQUEST_MODEL(model);
-		while (!STREAMING::HAS_MODEL_LOADED(model)) WAIT(0);
-		FLOAT lookDir = ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
-		Vector3 coords = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER::PLAYER_PED_ID(), 0.0, 5.0, 0.0);
-		Vehicle rveh = VEHICLE::CREATE_VEHICLE(model, coords.x, coords.y, coords.z, lookDir, 1, 0);
-		VEHICLE::SET_VEHICLE_DIRT_LEVEL(rveh, 0);
-		VEHICLE::SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(rveh, 0);
-
-		if (featureSpawnMaxed)
+		submit_call_on_result([=]()
 		{
-			VEHICLE::SET_VEHICLE_MOD_KIT(rveh, 0); //needs to be 0 for set_vehicle_mod to work
-			if (!VEHICLE::IS_THIS_MODEL_A_BIKE(ENTITY::GET_ENTITY_MODEL(rveh)))
-			{
-				VEHICLE::SET_VEHICLE_MOD(rveh, 4, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 4) - 1, 1); //exhaust
-				VEHICLE::SET_VEHICLE_MOD(rveh, 11, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 11) - 1, 1); //engine
-				VEHICLE::SET_VEHICLE_MOD(rveh, 12, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 12) - 1, 1); //brakes
-				VEHICLE::SET_VEHICLE_MOD(rveh, 13, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 13) - 1, 1); //transmission
-				VEHICLE::SET_VEHICLE_MOD(rveh, 15, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 15) - 1, 1); //suspension
-				VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 18, 1); //turbo
-				VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 22, 1); //xenon
-				VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, 1);
-				VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, "FIVE M");
-			}
-			else
-			{
-				VEHICLE::SET_VEHICLE_MOD(rveh, 4, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 4) - 1, 1); //exhaust
-				VEHICLE::SET_VEHICLE_MOD(rveh, 11, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 11) - 1, 1); //engine
-				VEHICLE::SET_VEHICLE_MOD(rveh, 12, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 12) - 1, 1); //brakes
-				VEHICLE::SET_VEHICLE_MOD(rveh, 13, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 13) - 1, 1); //transmission
-				VEHICLE::SET_VEHICLE_MOD(rveh, 15, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 15) - 1, 1); //suspension
-				VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 18, 1); //turbo
-				VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 22, 1); //xenon
-				VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, 1);
-				VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, "FIVE M");
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 1, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 2, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 3, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 4, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 5, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 6, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 7, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 8, -1);
-				VEHICLE::SET_VEHICLE_EXTRA(rveh, 9, -1);
-			}
-
-		}
-
-		if (featureVehSpawnInto)
+			return STREAMING::HAS_MODEL_LOADED(model);
+		}, [=]()
 		{
-			PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), rveh, -1);
-			if (VEHICLE::IS_THIS_MODEL_A_HELI(ENTITY::GET_ENTITY_MODEL(rveh)) || VEHICLE::IS_THIS_MODEL_A_PLANE(ENTITY::GET_ENTITY_MODEL(rveh)))
+			float lookDir = ENTITY::GET_ENTITY_HEADING(PLAYER::PLAYER_PED_ID());
+			Vector3 coords = ENTITY::GET_OFFSET_FROM_ENTITY_IN_WORLD_COORDS(PLAYER::PLAYER_PED_ID(), 0.0, 5.0, 0.0);
+			Vehicle rveh = VEHICLE::CREATE_VEHICLE(model, coords.x, coords.y, coords.z, lookDir, 1, 0);
+			VEHICLE::SET_VEHICLE_DIRT_LEVEL(rveh, 0);
+			VEHICLE::SET_VEHICLE_NEEDS_TO_BE_HOTWIRED(rveh, 0);
+
+			if (featureSpawnMaxed)
 			{
-				VEHICLE::SET_HELI_BLADES_FULL_SPEED(PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID()));
+				VEHICLE::SET_VEHICLE_MOD_KIT(rveh, 0); //needs to be 0 for set_vehicle_mod to work
+				if (!VEHICLE::IS_THIS_MODEL_A_BIKE(ENTITY::GET_ENTITY_MODEL(rveh)))
+				{
+					VEHICLE::SET_VEHICLE_MOD(rveh, 4, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 4) - 1, 1); //exhaust
+					VEHICLE::SET_VEHICLE_MOD(rveh, 11, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 11) - 1, 1); //engine
+					VEHICLE::SET_VEHICLE_MOD(rveh, 12, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 12) - 1, 1); //brakes
+					VEHICLE::SET_VEHICLE_MOD(rveh, 13, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 13) - 1, 1); //transmission
+					VEHICLE::SET_VEHICLE_MOD(rveh, 15, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 15) - 1, 1); //suspension
+					VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 18, 1); //turbo
+					VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 22, 1); //xenon
+					VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, 1);
+					VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, "FIVE M");
+				}
+				else
+				{
+					VEHICLE::SET_VEHICLE_MOD(rveh, 4, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 4) - 1, 1); //exhaust
+					VEHICLE::SET_VEHICLE_MOD(rveh, 11, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 11) - 1, 1); //engine
+					VEHICLE::SET_VEHICLE_MOD(rveh, 12, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 12) - 1, 1); //brakes
+					VEHICLE::SET_VEHICLE_MOD(rveh, 13, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 13) - 1, 1); //transmission
+					VEHICLE::SET_VEHICLE_MOD(rveh, 15, VEHICLE::GET_NUM_VEHICLE_MODS(rveh, 15) - 1, 1); //suspension
+					VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 18, 1); //turbo
+					VEHICLE::TOGGLE_VEHICLE_MOD(rveh, 22, 1); //xenon
+					VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, 1);
+					VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, "FIVE M");
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 1, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 2, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 3, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 4, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 5, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 6, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 7, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 8, -1);
+					VEHICLE::SET_VEHICLE_EXTRA(rveh, 9, -1);
+				}
+
 			}
-		}
 
-		WAIT(0);
-		STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+			if (featureVehSpawnInto)
+			{
+				PED::SET_PED_INTO_VEHICLE(PLAYER::PLAYER_PED_ID(), rveh, -1);
+				if (VEHICLE::IS_THIS_MODEL_A_HELI(ENTITY::GET_ENTITY_MODEL(rveh)) || VEHICLE::IS_THIS_MODEL_A_PLANE(ENTITY::GET_ENTITY_MODEL(rveh)))
+				{
+					VEHICLE::SET_HELI_BLADES_FULL_SPEED(PED::GET_VEHICLE_PED_IS_USING(PLAYER::PLAYER_PED_ID()));
+				}
+			}
 
-		return rveh;
+			STREAMING::SET_MODEL_AS_NO_LONGER_NEEDED(model);
+
+			onSpawn(rveh);
+		});
 	}
-	return -1;
+	else
+	{
+		onSpawn(-1);
+	}
 }
 
 
@@ -4549,137 +4661,140 @@ bool spawn_saved_car(int slot, std::string caption)
 
 	Ped playerPed = PLAYER::PLAYER_PED_ID();
 	preveh = rveh;
-	rveh = do_spawn_vehicle(savedVeh->model, caption);
-	if (rveh == -1)
+	do_spawn_vehicle(savedVeh->model, caption, [=](Vehicle rv) mutable
 	{
-		set_status_text("Spawn failed");
-	}
-	else
-	{
-		if (featureSpawnDelete)
+		rveh = rv;
+		if (rveh == -1)
 		{
-			if (!featureVehSpawnInto)
+			set_status_text("Spawn failed");
+		}
+		else
+		{
+			if (featureSpawnDelete)
 			{
-				Ped playerPed = PLAYER::PLAYER_PED_ID();
-				if (VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1) == playerPed)
+				if (!featureVehSpawnInto)
 				{
-					AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
+					Ped playerPed = PLAYER::PLAYER_PED_ID();
+					if (VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1) == playerPed)
+					{
+						AI::CLEAR_PED_TASKS_IMMEDIATELY(playerPed);
+					}
+				}
+				if (ownedveh == preveh && ownedveh != NULL)
+				{
+					set_status_text("Previous vehicle is owned and must be deleted manually from the Owned Vehicle menu.");
+				}
+				else
+				{
+					Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1);
+					if (ENTITY::DOES_ENTITY_EXIST(driver))
+					{
+						set_status_text("Driver in vehicle, can't delete.");
+					}
+					else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+					{
+						set_status_text("Passenger(s) in vehicle, can't delete.");
+					}
+					else if (ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+					{
+						set_status_text("Driver & passenger(s) in vehicle, can't delete.");
+					}
+					else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) == 0)
+					{
+						VEHICLE::DELETE_VEHICLE(&preveh);
+					}
 				}
 			}
-			if (ownedveh == preveh && ownedveh != NULL)
+
+			VEHICLE::SET_VEHICLE_MOD_KIT(rveh, 0);
+
+			VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(rveh, (savedVeh->burstableTyres == 1) ? TRUE : FALSE);
+
+
+			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, savedVeh->plateType);
+			VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, (char*)savedVeh->plateText.c_str());
+
+			VEHICLE::SET_VEHICLE_WINDOW_TINT(rveh, savedVeh->windowTint);
+
+			VEHICLE::SET_VEHICLE_WHEEL_TYPE(rveh, savedVeh->wheelType);
+
+			for (SavedVehicleExtraDBRow *extra : savedVeh->extras)
 			{
-				set_status_text("Previous vehicle is owned and must be deleted manually from the Owned Vehicle menu.");
+				VEHICLE::SET_VEHICLE_EXTRA(rveh, extra->extraID, (extra->extraState == 1) ? 0 : -1);
 			}
-			else
+
+			for (SavedVehicleModDBRow *mod : savedVeh->mods)
 			{
-				Ped driver = VEHICLE::GET_PED_IN_VEHICLE_SEAT(preveh, -1);
-				if (ENTITY::DOES_ENTITY_EXIST(driver)) 
+				if (mod->isToggle)
 				{
-					set_status_text("Driver in vehicle, can't delete.");
+					VEHICLE::TOGGLE_VEHICLE_MOD(rveh, mod->modID, mod->modState);
 				}
-				else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
+				else
 				{
-					set_status_text("Passenger(s) in vehicle, can't delete.");
-				}
-				else if (ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) > 0)
-				{
-					set_status_text("Driver & passenger(s) in vehicle, can't delete.");
-				}
-				else if (!ENTITY::DOES_ENTITY_EXIST(driver) && VEHICLE::GET_VEHICLE_NUMBER_OF_PASSENGERS(preveh) == 0)
-				{
-					VEHICLE::DELETE_VEHICLE(&preveh);
+					VEHICLE::SET_VEHICLE_MOD(rveh, mod->modID, mod->modState, 0);
 				}
 			}
-		}
 
-		VEHICLE::SET_VEHICLE_MOD_KIT(rveh, 0);
+			int currmod = VEHICLE::GET_VEHICLE_MOD(rveh, 23);
+			VEHICLE::SET_VEHICLE_MOD(rveh, 23, currmod, savedVeh->customTyres);
+			VEHICLE::SET_VEHICLE_MOD(rveh, 24, currmod, savedVeh->customTyres);
 
-		VEHICLE::SET_VEHICLE_TYRES_CAN_BURST(rveh, (savedVeh->burstableTyres == 1) ? TRUE : FALSE);
 
 
-		VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT_INDEX(rveh, savedVeh->plateType);
-		VEHICLE::SET_VEHICLE_NUMBER_PLATE_TEXT(rveh, (char*)savedVeh->plateText.c_str());
 
-		VEHICLE::SET_VEHICLE_WINDOW_TINT(rveh, savedVeh->windowTint);
-
-		VEHICLE::SET_VEHICLE_WHEEL_TYPE(rveh, savedVeh->wheelType);
-
-		for each (SavedVehicleExtraDBRow *extra in savedVeh->extras)
-		{
-			VEHICLE::SET_VEHICLE_EXTRA(rveh, extra->extraID, (extra->extraState == 1) ? 0 : -1);
-		}
-
-		for each (SavedVehicleModDBRow *mod in savedVeh->mods)
-		{
-			if (mod->isToggle)
+			if (savedVeh->livery != -1)
 			{
-				VEHICLE::TOGGLE_VEHICLE_MOD(rveh, mod->modID, mod->modState);
+				VEHICLE::SET_VEHICLE_LIVERY(rveh, savedVeh->livery);
 			}
-			else
+
+
+			VEHICLE::SET_VEHICLE_EXTRA_COLOURS(rveh, savedVeh->colourExtraPearl, savedVeh->colourExtraWheel);
+			VEHICLE::SET_VEHICLE_MOD_COLOR_1(rveh, savedVeh->colourMod1Type, savedVeh->colourMod1Colour, savedVeh->colourMod1P3);
+			VEHICLE::SET_VEHICLE_MOD_COLOR_2(rveh, savedVeh->colourMod2Type, savedVeh->colourMod2Colour);
+
+			VEHICLE::SET_VEHICLE_COLOURS(rveh, savedVeh->colourPrimary, savedVeh->colourSecondary);
+
+			if (savedVeh->colourCustom1RGB[0] != -1 &&
+				savedVeh->colourCustom1RGB[1] != -1 &&
+				savedVeh->colourCustom1RGB[2] != -1)
 			{
-				VEHICLE::SET_VEHICLE_MOD(rveh, mod->modID, mod->modState, 0);
+				VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(rveh, savedVeh->colourCustom1RGB[0], savedVeh->colourCustom1RGB[1], savedVeh->colourCustom1RGB[2]);
 			}
+
+			if (savedVeh->colourCustom2RGB[0] != -1 &&
+				savedVeh->colourCustom2RGB[1] != -1 &&
+				savedVeh->colourCustom2RGB[2] != -1)
+			{
+				VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(rveh, savedVeh->colourCustom2RGB[0], savedVeh->colourCustom2RGB[1], savedVeh->colourCustom2RGB[2]);
+			}
+
+			//set interior color
+			VEHICLE::_SET_VEHICLE_INTERIOR_COLOUR(rveh, savedVeh->interiorColor);
+
+			//set light color
+			VEHICLE::_SET_VEHICLE_DASHBOARD_COLOUR(rveh, savedVeh->lightColor);
+
+			//set neon color		
+			VEHICLE::_SET_VEHICLE_NEON_LIGHTS_COLOUR(rveh, savedVeh->neonColor[0], savedVeh->neonColor[1], savedVeh->neonColor[2]);
+
+			//set tire smoke color
+			VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(rveh, savedVeh->smokeColor[0], savedVeh->smokeColor[1], savedVeh->smokeColor[2]);
+
+			//set neon toggle
+			VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 0, savedVeh->neonToggle[0] == 1);
+			VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 1, savedVeh->neonToggle[1] == 1);
+			VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 2, savedVeh->neonToggle[2] == 1);
+			VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 3, savedVeh->neonToggle[3] == 1);
+
+			VEHICLE::SET_VEHICLE_DIRT_LEVEL(rveh, 0.0);
 		}
 
-		int currmod = VEHICLE::GET_VEHICLE_MOD(rveh, 23);
-		VEHICLE::SET_VEHICLE_MOD(rveh, 23, currmod, savedVeh->customTyres);
-		VEHICLE::SET_VEHICLE_MOD(rveh, 24, currmod, savedVeh->customTyres);
-
-
-
-
-		if (savedVeh->livery != -1)
+		for (std::vector<SavedVehicleDBRow*>::iterator it = savedVehs.begin(); it != savedVehs.end(); ++it)
 		{
-			VEHICLE::SET_VEHICLE_LIVERY(rveh, savedVeh->livery);
+			delete (*it);
 		}
-
-
-		VEHICLE::SET_VEHICLE_EXTRA_COLOURS(rveh, savedVeh->colourExtraPearl, savedVeh->colourExtraWheel);
-		VEHICLE::SET_VEHICLE_MOD_COLOR_1(rveh, savedVeh->colourMod1Type, savedVeh->colourMod1Colour, savedVeh->colourMod1P3);
-		VEHICLE::SET_VEHICLE_MOD_COLOR_2(rveh, savedVeh->colourMod2Type, savedVeh->colourMod2Colour);
-
-		VEHICLE::SET_VEHICLE_COLOURS(rveh, savedVeh->colourPrimary, savedVeh->colourSecondary);
-
-		if (savedVeh->colourCustom1RGB[0] != -1 &&
-			savedVeh->colourCustom1RGB[1] != -1 &&
-			savedVeh->colourCustom1RGB[2] != -1)
-		{
-			VEHICLE::SET_VEHICLE_CUSTOM_PRIMARY_COLOUR(rveh, savedVeh->colourCustom1RGB[0], savedVeh->colourCustom1RGB[1], savedVeh->colourCustom1RGB[2]);
-		}
-
-		if (savedVeh->colourCustom2RGB[0] != -1 &&
-			savedVeh->colourCustom2RGB[1] != -1 &&
-			savedVeh->colourCustom2RGB[2] != -1)
-		{
-			VEHICLE::SET_VEHICLE_CUSTOM_SECONDARY_COLOUR(rveh, savedVeh->colourCustom2RGB[0], savedVeh->colourCustom2RGB[1], savedVeh->colourCustom2RGB[2]);
-		}
-
-		//set interior color
-		VEHICLE::_SET_VEHICLE_INTERIOR_COLOUR(rveh, savedVeh->interiorColor);
-
-		//set light color
-		VEHICLE::_SET_VEHICLE_DASHBOARD_COLOUR(rveh, savedVeh->lightColor);
-
-		//set neon color		
-		VEHICLE::_SET_VEHICLE_NEON_LIGHTS_COLOUR(rveh, savedVeh->neonColor[0], savedVeh->neonColor[1], savedVeh->neonColor[2]);
-		
-		//set tire smoke color
-		VEHICLE::SET_VEHICLE_TYRE_SMOKE_COLOR(rveh, savedVeh->smokeColor[0], savedVeh->smokeColor[1], savedVeh->smokeColor[2]);
-
-		//set neon toggle
-		VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 0, savedVeh->neonToggle[0] == 1);
-		VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 1, savedVeh->neonToggle[1] == 1);
-		VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 2, savedVeh->neonToggle[2] == 1);
-		VEHICLE::_SET_VEHICLE_NEON_LIGHT_ENABLED(rveh, 3, savedVeh->neonToggle[3] == 1);
-
-		VEHICLE::SET_VEHICLE_DIRT_LEVEL(rveh, 0.0);
-	}
-
-	for (std::vector<SavedVehicleDBRow*>::iterator it = savedVehs.begin(); it != savedVehs.end(); ++it)
-	{
-		delete (*it);
-	}
-	savedVehs.clear();
+		savedVehs.clear();
+	});
 
 	return false;
 }
@@ -4702,18 +4817,20 @@ bool onconfirm_savedveh_slot_menu(MenuItem<int> choice)
 	break;
 	case 3: //rename
 	{
-		std::string result = show_keyboard(NULL, (char*)activeSavedVehicleSlotName.c_str());
-		if (!result.empty())
+		show_keyboard(NULL, (char*)activeSavedVehicleSlotName.c_str(), [=](const std::string& result)
 		{
-			ERDatabase* database = get_database();
-			database->rename_saved_vehicle(result, activeSavedVehicleIndex);
+			if (!result.empty())
+			{
+				ERDatabase* database = get_database();
+				database->rename_saved_vehicle(result, activeSavedVehicleIndex);
 
-			activeSavedVehicleSlotName = result;
-		}
-		requireRefreshOfSaveSlots = true;
-		requireRefreshOfSlotMenu = true;
-		vehSaveSlotMenuInterrupt = true;
-		vehSaveMenuInterrupt = true;
+				activeSavedVehicleSlotName = result;
+			}
+			requireRefreshOfSaveSlots = true;
+			requireRefreshOfSlotMenu = true;
+			vehSaveSlotMenuInterrupt = true;
+			vehSaveMenuInterrupt = true;
+		});
 	}
 	break;
 	case 4: //delete
@@ -4738,30 +4855,27 @@ bool process_savedveh_slot_menu(int slot)
 		vehSaveSlotMenuInterrupt = false;
 		requireRefreshOfSlotMenu = false;
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 1;
-		item->caption = "Spawn";
+		MenuItem<int> item;
+		item.isLeaf = false;
+		item.value = 1;
+		item.caption = "Spawn";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 2;
-		item->caption = "Overwrite With Current";
+		item.isLeaf = false;
+		item.value = 2;
+		item.caption = "Overwrite With Current";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 3;
-		item->caption = "Rename";
+		item.isLeaf = false;
+		item.value = 3;
+		item.caption = "Rename";
 		menuItems.push_back(item);
 
-		item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = 4;
-		item->caption = "Delete";
+		item.isLeaf = false;
+		item.value = 4;
+		item.caption = "Delete";
 		menuItems.push_back(item);
 
 		draw_generic_menu<int>(menuItems, 0, activeSavedVehicleSlotName, onconfirm_savedveh_slot_menu, NULL, NULL, vehicle_save_slot_menu_interrupt);
@@ -4800,20 +4914,22 @@ void save_current_vehicle(int slot)
 					}
 
 					auto existingText = ss.str();
-					std::string result = show_keyboard(NULL, (char*)existingText.c_str());
-					if (!result.empty())
+					show_keyboard(NULL, (char*)existingText.c_str(), [=](const std::string& result)
 					{
-						ERDatabase* database = get_database();
-						if (database->save_vehicle(veh, result, slot))
+						if (!result.empty())
 						{
-							set_status_text("Saved Vehicle");
-							activeSavedVehicleSlotName = result;
+							ERDatabase* database = get_database();
+							if (database->save_vehicle(veh, result, slot))
+							{
+								set_status_text("Saved Vehicle");
+								activeSavedVehicleSlotName = result;
+							}
+							else
+							{
+								set_status_text("Save Error");
+							}
 						}
-						else
-						{
-							set_status_text("Save Error");
-						}
-					}
+					});
 				}
 				else
 				{
@@ -4860,20 +4976,20 @@ bool process_savedveh_menu()
 
 		lastKnownSavedVehicleCount = savedVehs.size();
 
-		std::vector<MenuItem<int>*> menuItems;
+		MenuItemVector<int> menuItems;
 
-		MenuItem<int> *item = new MenuItem<int>();
-		item->isLeaf = false;
-		item->value = -1;
-		item->caption = "Create New Vehicle Save";
+		MenuItem<int> item;
+		item.isLeaf = false;
+		item.value = -1;
+		item.caption = "Create New Vehicle Save";
 		menuItems.push_back(item);
 
-		for each (SavedVehicleDBRow *sv in savedVehs)
+		for (SavedVehicleDBRow *sv : savedVehs)
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->isLeaf = false;
-			item->value = sv->rowID;
-			item->caption = sv->saveName;
+			item.isLeaf = false;
+			item.value = sv->rowID;
+			item.caption = sv->saveName;
+			item.toggle_name = "vehicle_spawn_hash_"s + std::to_string(sv->model); // FT("vehicle_spawn_hash_[uint hash]")
 			menuItems.push_back(item);
 		}
 

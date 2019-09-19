@@ -11,10 +11,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="database_kvs.cpp" />
     <ClCompile Include="noclip.cpp" />
     <ClCompile Include="anims.cpp" />
     <ClCompile Include="config_io.cpp" />
-    <ClCompile Include="database.cpp" />
+    <ClCompile Include="database_sqlite.cpp" />
     <ClCompile Include="debuglog.cpp" />
     <ClCompile Include="inc\sqlite3\sqlite3.c" />
     <ClCompile Include="io.cpp" />
@@ -23,6 +24,7 @@
     <ClCompile Include="menu_functions.cpp" />
     <ClCompile Include="paintmenu.cpp" />
     <ClCompile Include="script.cpp" />
+    <ClCompile Include="server_events.cpp" />
     <ClCompile Include="skins.cpp" />
     <ClCompile Include="teleportation.cpp" />
     <ClCompile Include="vehicles.cpp" />
@@ -32,6 +34,7 @@
     <ClCompile Include="weapons.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="event_handler.h" />
     <ClInclude Include="inc\enums.h" />
     <ClInclude Include="inc\natives.h" />
     <ClInclude Include="inc\types.h" />
@@ -116,6 +119,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;NativeTrainer_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <ExceptionHandling>false</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\msgpack-c\include;$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,6 +139,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FloatingPointModel>Fast</FloatingPointModel>
       <ExceptionHandling>Sync</ExceptionHandling>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Vendor\msgpack-c\include;$(SolutionDir)\Client\Include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

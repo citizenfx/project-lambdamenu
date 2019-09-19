@@ -18,6 +18,7 @@
 #include "debuglog.h"
 #include <sstream>
 
+#ifndef SERVER_SIDED
 // A global Windows "basic string". Actual memory is allocated by the
 // COM methods used by MSXML which take &bstr. We must use SysFreeString() 
 // to free this memory before subsequent uses, to prevent a leak.
@@ -303,3 +304,4 @@ TrainerConfig::TrainerConfig()
 {
 	this->keyConfig = new KeyInputConfig();
 }
+#endif

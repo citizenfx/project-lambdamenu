@@ -2,4 +2,4 @@
 
 In-game menu for FiveM/Project Λ.
 
-Project maintained by Oui.
+Project maintained by the CitizenFX Collective.

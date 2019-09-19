@@ -18,6 +18,14 @@
 
 #include <vector>
 
+#ifndef _MSC_VER
+#include <experimental/string_view>
+using string_view = std::experimental::string_view;
+#else
+#include <string_view>
+using string_view = std::string_view;
+#endif
+
 class TreeNode
 {
 public:
@@ -31,11 +39,11 @@ public:
 		return children.size() > 0;
 	};
 
-	inline TreeNode* findChildWithValue(std::string value)
+	inline TreeNode* findChildWithValue(string_view value)
 	{
-		for each (TreeNode *child  in children)
+		for (TreeNode *child : children)
 		{
-			if (child->value.compare(value) == 0)
+			if (value.compare(child->value) == 0)
 			{
 				return child;
 			}
@@ -43,10 +51,10 @@ public:
 		return NULL;
 	}
 
-	inline TreeNode* addChild(std::string value)
+	inline TreeNode* addChild(string_view value)
 	{
 		TreeNode *newChild = new TreeNode();
-		newChild->value = value;
+		newChild->value = std::string(value);
 		newChild->parent = this;
 		children.push_back(newChild);
 		return newChild;
@@ -85,11 +93,11 @@ public:
 
 void build_anim_tree();
 
-TreeNode* build_anim_tree(std::vector<std::string> input);
+TreeNode* build_anim_tree(const char*const* input, size_t count, std::string filter = "");
 
 TreeNode* build_anim_tree_with_suffix_filter(std::string filter);
 
-bool process_anims_menu();
+bool process_anims_menu(std::function<void(bool)> onExit);
 
 bool process_anims_menu_top();
 

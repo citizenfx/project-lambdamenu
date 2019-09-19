@@ -6,6 +6,7 @@
 
 #pragma once
 
+#ifndef SERVER_SIDED
 #include <windows.h>
 
 #define VK_KEY_0	0x30                //('0')	0
@@ -255,3 +256,4 @@ static const VirtualKeysWithNames ALL_KEYS[] =
 };
 
 int keyNameToVal(char * input);
+#endif

@@ -30,7 +30,7 @@ int currentAnimMenuMode = -1;
 
 int driveStyle;
 
-const std::vector<std::string> ALL_ANIMS =
+constexpr const char* ALL_ANIMS[] =
 {
 	"amb@bagels@male@walking@ static",
 	"amb@code_human_cower@female@base base",
@@ -21915,7 +21915,6 @@ const std::vector<std::string> ALL_ANIMS =
 	"weapons@unarmed walk_additive_right"
 };
 
-
 //=============================
 // FUNCTION THAT UPDATES THINGS
 //=============================
@@ -21927,16 +21926,16 @@ void update_actions()
 //=============================
 
 
-static bool StringEndsWith(const std::string& a, const std::string& b)
+static bool StringEndsWith(const string_view& a, const string_view& b)
 {
 	if (b.size() > a.size()) return false;
 	return std::equal(a.begin() + a.size() - b.size(), a.end(), b.begin());
 }
 
-std::vector<std::string> find_all_anims_with_suffix(std::string suffix)
+/*std::vector<std::string> find_all_anims_with_suffix(std::string suffix)
 {
 	std::vector<std::string> results;
-	for each (std::string anim in ALL_ANIMS)
+	for (const auto& anim : ALL_ANIMS)
 	{
 		if (StringEndsWith(anim, suffix))
 		{
@@ -21944,41 +21943,50 @@ std::vector<std::string> find_all_anims_with_suffix(std::string suffix)
 		}
 	}
 	return results;
-}
+}*/
 
-std::string get_dict_from_string(std::string line)
+string_view get_dict_from_string(string_view line)
 {
 	std::string::size_type pos = line.find_first_of(' ');
-	std::string dict = line.substr(0, pos);
+	auto dict = line.substr(0, pos);
 	return dict;
 }
 
-std::string get_anim_from_string(std::string line)
+string_view get_anim_from_string(string_view line)
 {
 	std::string::size_type pos = line.find_first_of(' ');
-	std::string anim = line.substr(pos+1);
+	auto anim = line.substr(pos+1);
 	return anim;
 }
 
 
 TreeNode* build_anim_tree_with_suffix_filter(std::string filter)
 {
-	std::vector<std::string> filtered = find_all_anims_with_suffix(filter);
-	return build_anim_tree(filtered);
+	return build_anim_tree(ALL_ANIMS, std::extent<decltype(ALL_ANIMS)>::value, filter);
 }
 
 void build_anim_tree()
 {
-	rootNode = build_anim_tree(ALL_ANIMS);
+	rootNode = build_anim_tree(ALL_ANIMS, std::extent<decltype(ALL_ANIMS)>::value);
 	facialsNode = build_anim_tree_with_suffix_filter("facial");
 }
 
-TreeNode* build_anim_tree(std::vector<std::string> input)
+TreeNode* build_anim_tree(const char*const* input, size_t count, std::string filter)
 {
 	TreeNode* resultRoot = new TreeNode();
 	
-	for each (std::string anim in input)
+	for (size_t i = 0; i < count; i++)
 	{
+		auto anim = input[i];
+
+		if (!filter.empty())
+		{
+			if (!StringEndsWith(anim, filter))
+			{
+				continue;
+			}
+		}
+
 		/*
 		std::stringstream logss;
 		logss << "Processing line " << anim;
@@ -21986,16 +21994,31 @@ TreeNode* build_anim_tree(std::vector<std::string> input)
 		logss.str(""); logss.clear();
 		*/
 
-		std::string dict = get_dict_from_string(anim);
-
-		std::stringstream ss(dict);
-
-		std::string token;
+		string_view dict = get_dict_from_string(anim);
+		string_view token;
 
 		TreeNode* currentNode = resultRoot;
 
-		while (std::getline(ss, token, '@'))
+		int pos = 0;
+		int lastPos = 0;
+
+		while (pos != std::string::npos)
 		{
+			pos = dict.find_first_of('@', pos);
+
+			if (pos == std::string::npos)
+			{
+				token = dict.substr(lastPos);
+			}
+			else
+			{
+				token = dict.substr(lastPos, pos - lastPos);
+
+				++pos;
+			}
+
+			lastPos = pos;
+
 			/*
 			std::stringstream logss;
 			logss << "Parsed token " << token;
@@ -22118,14 +22141,19 @@ bool onconfirm_animation_menu(MenuItem<int> choice)
 	}
 
 	STREAMING::REQUEST_ANIM_DICT(dict);
-	while (!STREAMING::HAS_ANIM_DICT_LOADED(dict))
-		WAIT(0);
+
+	submit_call_on_result([=]()
+	{
+		return STREAMING::HAS_ANIM_DICT_LOADED(dict);
+	}, [=]()
+	{
+		AI::TASK_PLAY_ANIM(playerPed, dict, anim, 1, -1, -1, 44, 0, 0, 0, 0); //most recently used in efmtr 1.8
+		//	AI::TASK_PLAY_ANIM(playerPed, dict, anim, 8.0, -1, -1, 0, 0, 0, 0, 0);
+		//  AI:TASK_PLAY_ANIM(playerPed, dict, anim, 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
+		STREAMING::REMOVE_ANIM_DICT(dict);
+	});
 	//	AI::TASK_PLAY_ANIM(playerPed, dict, anim, 8, -8, -1, 0, 0, false, 0, true); //original enhanced native trainer
 	//	AI::TASK_PLAY_ANIM(playerPed, dict, anim, 1, -1, -1, 48, 0, 0, 0, 0); //original enhanced fivem trainer
-		AI::TASK_PLAY_ANIM(playerPed, dict, anim, 1, -1, -1, 44, 0, 0, 0, 0); //most recently used in efmtr 1.8
-	//	AI::TASK_PLAY_ANIM(playerPed, dict, anim, 8.0, -1, -1, 0, 0, 0, 0, 0);
-	//  AI:TASK_PLAY_ANIM(playerPed, dict, anim, 8.0f, 0.0f, -1, 9, 0, 0, 0, 0);
-	STREAMING::REMOVE_ANIM_DICT(dict);
 	return false;
 }
 
@@ -22174,13 +22202,21 @@ bool onconfirm_anim_menu(MenuItem<int> choice)
 	if (!target->hasChildren())
 	{
 		auto dict_str = target->getFullDict();
+
+		if (StringEndsWith(dict_str, "@@"))
+		{
+			dict_str = dict_str.substr(0, dict_str.length() - 1);
+		}
+
 		char* dict = (char*) dict_str.c_str();
 		auto anim_str = target->value;
 		char* anim = (char*)anim_str.c_str();
 
 		std::stringstream ss;
 		ss << "Selected dict: " << dict << " and anim: " << anim;
-		write_text_to_log_file(ss.str());
+
+		std::string ssStr = ss.str();
+		write_text_to_log_file(ssStr);
 
 		Player player = PLAYER::PLAYER_ID();
 		Ped playerPed = PLAYER::PLAYER_PED_ID();
@@ -22188,29 +22224,37 @@ bool onconfirm_anim_menu(MenuItem<int> choice)
 		if (STREAMING::DOES_ANIM_DICT_EXIST(dict))
 		{
 			STREAMING::REQUEST_ANIM_DICT(dict);
-			while (!STREAMING::HAS_ANIM_DICT_LOADED(dict))
+			submit_call_on_result([=]()
 			{
-				WAIT(0);
-			}
+				char* dict = (char*)dict_str.c_str();
 
-			PED::SET_PED_CAN_PLAY_AMBIENT_ANIMS(playerPed, true);
-			PED::SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS(playerPed, true);
-			PED::SET_PED_CAN_PLAY_GESTURE_ANIMS(playerPed, true);
-			//PED::SET_PED_CAN_PLAY_VISEME_ANIMS(playerPed, true);
-
-			switch (currentAnimMenuMode)
+				return STREAMING::HAS_ANIM_DICT_LOADED(dict);
+			}, [=]()
 			{
-			case 0:
-				PED::PLAY_FACIAL_ANIM(playerPed, anim, dict);
-				break;
-			case 1:
-				PED::SET_FACIAL_IDLE_ANIM_OVERRIDE(playerPed, anim, dict);
-				break;
-			case 2:
-				AI::TASK_PLAY_ANIM(playerPed, dict, anim, 8, -8, -1, 0, 0, false, 0, true);
-				break;
-			}
-			set_status_text(ss.str());
+				char* dict = (char*)dict_str.c_str();
+				char* anim = (char*)anim_str.c_str();
+
+				PED::SET_PED_CAN_PLAY_AMBIENT_ANIMS(playerPed, true);
+				PED::SET_PED_CAN_PLAY_AMBIENT_BASE_ANIMS(playerPed, true);
+				PED::SET_PED_CAN_PLAY_GESTURE_ANIMS(playerPed, true);
+				//PED::SET_PED_CAN_PLAY_VISEME_ANIMS(playerPed, true);
+
+				switch (currentAnimMenuMode)
+				{
+				case 0:
+					PED::PLAY_FACIAL_ANIM(playerPed, anim, dict);
+					break;
+				case 1:
+					PED::SET_FACIAL_IDLE_ANIM_OVERRIDE(playerPed, anim, dict);
+					break;
+				case 2:
+					AI::TASK_PLAY_ANIM(playerPed, dict, anim, 8, -8, -1, 0, 0, false, 0, true);
+					break;
+				}
+				set_status_text(ssStr);
+
+				STREAMING::REMOVE_ANIM_DICT(dict);
+			});
 		}
 		else
 		{
@@ -22223,14 +22267,16 @@ bool onconfirm_anim_menu(MenuItem<int> choice)
 		currentAnimMenuDepth++;
 		TreeNode *rememberedNode = currentMenuNode;
 		currentMenuNode = target;
-		process_anims_menu();
-		currentMenuNode = rememberedNode;
-		currentAnimMenuDepth--;
+		process_anims_menu([=](bool)
+		{
+			currentMenuNode = rememberedNode;
+			currentAnimMenuDepth--;
+		});
 		return false;
 	}
 }
 
-bool process_anims_menu()
+bool process_anims_menu(std::function<void(bool)> onExit)
 {
 	if (currentAnimMenuDepth == 0)
 	{
@@ -22249,22 +22295,22 @@ bool process_anims_menu()
 		
 	}
 
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int i = 0;
-	for each (TreeNode *node in currentMenuNode->children)
+	for (TreeNode *node : currentMenuNode->children)
 	{
-		MenuItem<int> *item = new MenuItem<int>();
+		MenuItem<int> item;
 		if (node->hasChildren())
 		{
-			item->isLeaf = false;
+			item.isLeaf = false;
 		}
 		else
 		{
-			item->isLeaf = true;
+			item.isLeaf = true;
 		}
-		item->caption = node->value;
-		item->value = i++;
+		item.caption = node->value;
+		item.value = i++;
 		menuItems.push_back(item);
 	}
 
@@ -22286,7 +22332,7 @@ bool process_anims_menu()
 	caption_ss << caption << " Level " << (currentAnimMenuDepth + 1);
 	auto caption_str = caption_ss.str();
 
-	bool result = draw_generic_menu<int>(menuItems, 0, caption_str, onconfirm_anim_menu, NULL, NULL, NULL);
+	bool result = draw_generic_menu<int>(menuItems, 0, caption_str, onconfirm_anim_menu, NULL, onExit, NULL);
 
 	return result;
 }
@@ -22301,38 +22347,35 @@ bool onconfirm_anim_top_menu(MenuItem<int> choice)
 		return false;
 	}
 	currentAnimMenuMode = choice.value;
-	process_anims_menu();
+	process_anims_menu(nullptr);
 	return false;
 }
 
 bool process_anims_menu_top()
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 
 	int i = 0;
 
-	MenuItem<int> *item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Facial Anims (Immediate)";
-	item->value = i++;
+	MenuItem<int> item;
+	item.isLeaf = false;
+	item.caption = "Facial Anims (Immediate)";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Facial Anims (Idle)";
-	item->value = i++;
+	item.isLeaf = false;
+	item.caption = "Facial Anims (Idle)";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = false;
-	item->caption = "Player Anims";
-	item->value = i++;
+	item.isLeaf = false;
+	item.caption = "Player Anims";
+	item.value = i++;
 	menuItems.push_back(item);
 
-	item = new MenuItem<int>();
-	item->isLeaf = true;
-	item->caption = "Clear Idle Facial Anim";
-	item->value = i++;
+	item.isLeaf = true;
+	item.caption = "Clear Idle Facial Anim";
+	item.value = i++;
 	menuItems.push_back(item);
 
 	draw_generic_menu<int>(menuItems, 0, "Animation Types", onconfirm_anim_top_menu, NULL, NULL, NULL);

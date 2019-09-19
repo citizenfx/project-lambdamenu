@@ -46,8 +46,8 @@ bool is_menu_showing()
 void draw_menu_line(std::string caption, float lineWidth, float lineHeight, float lineTop, float lineLeft, float textLeft, bool active, bool title, bool rescaleText)
 {
 	// default values
-	int text_col[4] = { 255, 255, 255, 255.0f },
-		rect_col[4] = { 255, 255, 255, 80.f };
+	int text_col[4] = { 255, 255, 255, 255 },
+		rect_col[4] = { 255, 255, 255, 80 };
 	float text_scale = 0.35;
 	int font = 0;
 	bool outline = false;
@@ -66,7 +66,7 @@ void draw_menu_line(std::string caption, float lineWidth, float lineHeight, floa
 		rect_col[0] = 93;
 		rect_col[1] = 182;
 		rect_col[2] = 229;
-		rect_col[3] = 200.0f;
+		rect_col[3] = 200;
 
 
 		if (rescaleText) text_scale = 0.40;
@@ -80,7 +80,7 @@ void draw_menu_line(std::string caption, float lineWidth, float lineHeight, floa
 		rect_col[0] = 0;
 		rect_col[1] = 0;
 		rect_col[2] = 0;
-		rect_col[3] = 200.0f;
+		rect_col[3] = 200;
 
 		if (rescaleText) text_scale = 0.60;
 		font = 2;
@@ -142,7 +142,7 @@ void draw_rect(float A_0, float A_1, float A_2, float A_3, int A_4, int A_5, int
 
 void set_status_text(std::string str, bool isGxtEntry)
 {
-	UI::_SET_NOTIFICATION_TEXT_ENTRY((isGxtEntry ? &str[0u] : "STRING"));
+	UI::_SET_NOTIFICATION_TEXT_ENTRY(const_cast<char*>(isGxtEntry ? &str[0u] : "STRING"));
 	UI::_ADD_TEXT_COMPONENT_STRING(&str[0u]);
 	UI::_DRAW_NOTIFICATION(FALSE, FALSE); // _DRAW_NOTIFICATION(BOOL blink, BOOL p1)
 }
@@ -188,35 +188,38 @@ void menu_beep()
 
 void draw_menu_from_struct_def(StandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<int> value))
 {
-	std::vector<MenuItem<int>*> menuItems;
+	MenuItemVector<int> menuItems;
 	for (int i = 0; i < lineCount; i++)
 	{
 		if (defs[i].pState != NULL)
 		{
-			ToggleMenuItem<int> *item = new ToggleMenuItem<int>();
-			item->caption = defs[i].text;
-			item->value = i;
-			item->toggleValue = defs[i].pState;
-			item->isLeaf = false;
+			ToggleMenuItem<int> item;
+			item.caption = defs[i].text;
+			item.value = i;
+			item.toggleValue = defs[i].pState;
+			item.isLeaf = false;
 			if (defs[i].pUpdated != NULL)
 			{
-				item->toggleValueUpdated = defs[i].pUpdated;
+				item.toggleValueUpdated = defs[i].pUpdated;
 			}
+			item.toggle_name = defs[i].toggle_name;
 			menuItems.push_back(item);
 		}
 		else if (defs[i].itemType != NULL && defs[i].itemType == WANTED)
 		{
-			WantedSymbolItem<int> *item = new WantedSymbolItem<int>();
-			item->caption = defs[i].text;
-			item->value = i;
+			WantedSymbolItem<int> item;
+			item.caption = defs[i].text;
+			item.value = i;
+			item.toggle_name = defs[i].toggle_name;
 			menuItems.push_back(item);
 		}
 		else
 		{
-			MenuItem<int> *item = new MenuItem<int>();
-			item->caption = defs[i].text;
-			item->value = i;
-			item->isLeaf = defs[i].isLeaf;
+			MenuItem<int> item;
+			item.caption = defs[i].text;
+			item.value = i;
+			item.isLeaf = defs[i].isLeaf;
+			item.toggle_name = defs[i].toggle_name;
 			menuItems.push_back(item);
 		}
 	}
@@ -226,28 +229,28 @@ void draw_menu_from_struct_def(StandardOrToggleMenuDef defs[], int lineCount, in
 
 void draw_menu_from_struct_def(StringStandardOrToggleMenuDef defs[], int lineCount, int* selectionRef, std::string caption, bool(*onConfirmation)(MenuItem<std::string> value))
 {
-	std::vector<MenuItem<std::string>*> menuItems;
+	MenuItemVector<std::string> menuItems;
 	for (int i = 0; i < lineCount; i++)
 	{
 		if (defs[i].pState != NULL)
 		{
-			ToggleMenuItem<std::string> *item = new ToggleMenuItem<std::string>();
-			item->caption = defs[i].text;
-			item->toggleValue = defs[i].pState;
-			item->currentMenuIndex = i;
-			item->value = defs[i].value;
+			ToggleMenuItem<std::string> item;
+			item.caption = defs[i].text;
+			item.toggleValue = defs[i].pState;
+			item.currentMenuIndex = i;
+			item.value = defs[i].value;
 			if (defs[i].pUpdated != NULL)
 			{
-				item->toggleValueUpdated = defs[i].pUpdated;
+				item.toggleValueUpdated = defs[i].pUpdated;
 			}
 			menuItems.push_back(item);
 		}
 		else
 		{
-			MenuItem<std::string> *item = new MenuItem<std::string>();
-			item->caption = defs[i].text;
-			item->value = defs[i].value;
-			item->currentMenuIndex = i;
+			MenuItem<std::string> item;
+			item.caption = defs[i].text;
+			item.value = defs[i].value;
+			item.currentMenuIndex = i;
 			menuItems.push_back(item);
 		}
 	}
@@ -255,44 +258,45 @@ void draw_menu_from_struct_def(StringStandardOrToggleMenuDef defs[], int lineCou
 	draw_generic_menu<std::string>(menuItems, selectionRef, caption, onConfirmation, NULL, NULL);
 }
 
-std::string show_keyboard(char* title_id, char* prepopulated_text)
+void show_keyboard(char* title_id, const std::string& prepopulated_text, const std::function<void(const std::string&)>& onEntry)
 {
 	DWORD time = GetTickCount() + 400;
-	while (GetTickCount() < time)
-	{
-		make_periodic_feature_call();
-		WAIT(0);
-	}
 
-	/*
-	Any x;
-	GAMEPLAY::START_SAVE_DATA(&x, 1, 1);
-	GAMEPLAY::REGISTER_TEXT_LABEL_TO_SAVE(&x, "XYZ123");
-	GAMEPLAY::STOP_SAVE_DATA();
-	*/
-
-	GAMEPLAY::DISPLAY_ONSCREEN_KEYBOARD(
-		true,
-		(title_id == NULL ? "HUD_TITLE" : title_id),
-		"",
-		(prepopulated_text == NULL ? "" : prepopulated_text),
-		"", "", "", 64);
-
-	while (GAMEPLAY::UPDATE_ONSCREEN_KEYBOARD() == 0)
+	submit_call_on_result([=]()
 	{
-		//update_status_text();
-		WAIT(0);
-	}
+		return (GetTickCount() >= time);
+	}, [=]()
+	{
 
-	std::stringstream ss;
-	if (!GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT())
-	{
-		return std::string("");
-	}
-	else
-	{
-		return std::string(GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT());
-	}
+		/*
+		Any x;
+		GAMEPLAY::START_SAVE_DATA(&x, 1, 1);
+		GAMEPLAY::REGISTER_TEXT_LABEL_TO_SAVE(&x, "XYZ123");
+		GAMEPLAY::STOP_SAVE_DATA();
+		*/
+
+		GAMEPLAY::DISPLAY_ONSCREEN_KEYBOARD(
+			true,
+			const_cast<char*>(title_id == NULL ? "HUD_TITLE" : title_id),
+			"",
+			const_cast<char*>(prepopulated_text.c_str()),
+			"", "", "", 64);
+
+		submit_call_on_result([=]()
+		{
+			return GAMEPLAY::UPDATE_ONSCREEN_KEYBOARD() != 0;
+		}, [=]()
+		{
+			if (!GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT())
+			{
+				onEntry("");
+			}
+			else
+			{
+				onEntry(std::string(GAMEPLAY::GET_ONSCREEN_KEYBOARD_RESULT()));
+			}
+		});
+	});
 }
 
 
@@ -313,7 +317,7 @@ void ToggleMenuItem<T>::onConfirm()
 	//set_status_text("Base confirm");
 
 	//call super
-	MenuItem::onConfirm();
+	MenuItem<T>::onConfirm();
 
 	//toggle the value if there is none
 	if (toggleValue != NULL)
