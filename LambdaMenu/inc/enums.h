@@ -1,10 +1,51 @@
 /*
 	THIS FILE IS A PART OF GTA V SCRIPT HOOK SDK
 				http://dev-c.com
-			(C) Alexander Blade 2015
+		(C) Alexander Blade 2015-2016
 */
 
 #pragma once
+
+#include <windows.h>
+
+enum eAudioFlag
+{
+	AudioFlagActivateSwitchWheelAudio,
+	AudioFlagAllowCutsceneOverScreenFade,
+	AudioFlagAllowForceRadioAfterRetune,
+	AudioFlagAllowPainAndAmbientSpeechToPlayDuringCutscene,
+	AudioFlagAllowPlayerAIOnMission,
+	AudioFlagAllowPoliceScannerWhenPlayerHasNoControl,
+	AudioFlagAllowRadioDuringSwitch,
+	AudioFlagAllowRadioOverScreenFade,
+	AudioFlagAllowScoreAndRadio,
+	AudioFlagAllowScriptedSpeechInSlowMo,
+	AudioFlagAvoidMissionCompleteDelay,
+	AudioFlagDisableAbortConversationForDeathAndInjury,
+	AudioFlagDisableAbortConversationForRagdoll,
+	AudioFlagDisableBarks,
+	AudioFlagDisableFlightMusic,
+	AudioFlagDisableReplayScriptStreamRecording,
+	AudioFlagEnableHeadsetBeep,
+	AudioFlagForceConversationInterrupt,
+	AudioFlagForceSeamlessRadioSwitch,
+	AudioFlagForceSniperAudio,
+	AudioFlagFrontendRadioDisabled,
+	AudioFlagHoldMissionCompleteWhenPrepared,
+	AudioFlagIsDirectorModeActive,
+	AudioFlagIsPlayerOnMissionForSpeech,
+	AudioFlagListenerReverbDisabled,
+	AudioFlagLoadMPData,
+	AudioFlagMobileRadioInGame,
+	AudioFlagOnlyAllowScriptTriggerPoliceScanner,
+	AudioFlagPlayMenuMusic,
+	AudioFlagPoliceScannerDisabled,
+	AudioFlagScriptedConvListenerMaySpeak,
+	AudioFlagSpeechDucksScore,
+	AudioFlagSuppressPlayerScubaBreathing,
+	AudioFlagWantedMusicDisabled,
+	AudioFlagWantedMusicOnMission
+};
 
 enum eBlipColor
 {
@@ -649,7 +690,7 @@ enum eDrivingStyle
 	DrivingStyleSometimesOvertakeTraffic = 5,
 	DrivingStyleRushed = 0x400C0025,
 	DrivingStyleAvoidTraffic = 0xC0024,
-	DrivingStyleAvoidTrafficExtremely = 6,
+	DrivingStyleAvoidTrafficExtremely = 6
 };
 
 enum eBone
@@ -947,13 +988,33 @@ enum eVehicleColor
 
 enum eVehicleDoor
 {
-	VehicleDoorFrontRightDoor = 1,
 	VehicleDoorFrontLeftDoor = 0,
-	VehicleDoorBackRightDoor = 3,
+	VehicleDoorFrontRightDoor = 1,
 	VehicleDoorBackLeftDoor = 2,
+	VehicleDoorBackRightDoor = 3,
 	VehicleDoorHood = 4,
 	VehicleDoorTrunk = 5,
 	VehicleDoorTrunk2 = 6,
+};
+
+enum eVehicleLockStatus
+{
+	VehicleLockStatusNone = 0,
+	VehicleLockStatusUnlocked = 1,
+	VehicleLockStatusLocked = 2,
+	VehicleLockStatusLockedForPlayer = 3,
+	VehicleLockStatusStickPlayerInside = 4,
+	VehicleLockStatusCanBeBrokenInto = 7,
+	VehicleLockStatusCanBeBrokenIntoPersist = 8,
+	VehicleLockStatusCannotBeTriedToEnter = 10
+};
+
+enum eVehicleLandingGear
+{
+	VehicleLandingGearDeployed = 0,
+	VehicleLandingGearClosing = 1,
+	VehicleLandingGearOpening = 2,
+	VehicleLandingGearRetracted = 3,
 };
 
 enum eVehicleMod
@@ -1045,42 +1106,91 @@ enum eVehicleWindowTint
 	VehicleWindowTintGreen = 6
 };
 
+enum eNumberPlateMounting
+{
+	NumberPlateMountingFrontAndRear = 0,
+	NumberPlateMountingFront = 1,
+	NumberPlateMountingRear = 2,
+	NumberPlateMountingNone = 3,
+};
+
+enum eNumberPlateType
+{
+	NumberPlateTypeBlueOnWhite1 = 0,
+	NumberPlateTypeYellowOnBlack = 1,
+	NumberPlateTypeYellowOnBlue = 2,
+	NumberPlateTypeBlueOnWhite2 = 3,
+	NumberPlateTypeBlueOnWhite3 = 4,
+	NumberPlateTypeNorthYankton = 5,
+};
+
+enum eVehicleClass
+{
+	VehicleClassCompacts = 0,
+	VehicleClassSedans = 1,
+	VehicleClassSUVs = 2,
+	VehicleClassCoupes = 3,
+	VehicleClassMuscle = 4,
+	VehicleClassSportsClassics = 5,
+	VehicleClassSports = 6,
+	VehicleClassSuper = 7,
+	VehicleClassMotorcycles = 8,
+	VehicleClassOffRoad = 9,
+	VehicleClassIndustrial = 10,
+	VehicleClassUtility = 11,
+	VehicleClassVans = 12,
+	VehicleClassCycles = 13,
+	VehicleClassBoats = 14,
+	VehicleClassHelicopters = 15,
+	VehicleClassPlanes = 16,
+	VehicleClassService = 17,
+	VehicleClassEmergency = 18,
+	VehicleClassMilitary = 19,
+	VehicleClassCommercial = 20,
+	VehicleClassTrains = 21,
+};
+
 enum eExplosionType
 {
-	ExplosionTypeSmallExplosion1 = 1,
-	ExplosionTypeSmallExplosion2 = 2,
-	ExplosionTypeMolotov1 = 3,
-	ExplosionTypeSmallExplosionWithFire1 = 4,
-	ExplosionTypeSmallExplosion3 = 5,
-	ExplosionTypeSmallExplosionWithFire2 = 6,
-	ExplosionTypeSmallExplosion4 = 7,
-	ExplosionTypeExplosionWithFire1 = 8,
-	ExplosionTypeExplosionWithFire2 = 9,
-	ExplosionTypeSmallExplosionWithFire3 = 10,
-	ExplosionTypeValveAir1 = 11,
-	ExplosionTypeValveFire1 = 12,
-	ExplosionTypeValveWater1 = 13,
-	ExplosionTypeValveFire2 = 14,
-	ExplosionTypeExplosionWithFire3 = 15,
-	ExplosionTypeExplosionWithFire4 = 16,
-	ExplosionTypeExplosion1 = 17,
-	ExplosionTypeSmallExplosion5 = 18,
-	ExplosionTypeSmoke1 = 19,
-	ExplosionTypeGas1 = 20,
-	ExplosionTypeGas2 = 21,
-	ExplosionTypeSignalFire = 22,
-	ExplosionTypeExplosionWithFire5 = 23,
-	ExplosionTypeValveAir2 = 24,
-	ExplosionTypeSmallExplosion6 = 25,
-	ExplosionTypeExplosion2 = 26,
-	ExplosionTypeExplosionWithFire6 = 27,
-	ExplosionTypeExplosion3 = 28,
-	ExplosionTypeBigExplosion1 = 29,
-	ExplosionTypeValveFire3 = 30,
-	ExplosionTypeExplosion4 = 31,
-	ExplosionTypeExplosion5 = 32,
-	ExplosionTypeSmallExplosion7 = 33,
-	ExplosionTypeExplosion6 = 34
+	ExplosionTypeGrenade = 0,
+	ExplosionTypeGrenadeL = 1,
+	ExplosionTypeStickyBomb = 2,
+	ExplosionTypeMolotov = 3,
+	ExplosionTypeRocket = 4,
+	ExplosionTypeTankShell = 5,
+	ExplosionTypeHiOctane = 6,
+	ExplosionTypeCar = 7,
+	ExplosionTypePlane = 8,
+	ExplosionTypePetrolPump = 9,
+	ExplosionTypeBike = 10,
+	ExplosionTypeSteam = 11,
+	ExplosionTypeFlame = 12,
+	ExplosionTypeWaterHydrant = 13,
+	ExplosionTypeGasCanister = 14,
+	ExplosionTypeBoat = 15,
+	ExplosionTypeShipDestroy = 16,
+	ExplosionTypeTruck = 17,
+	ExplosionTypeBullet = 18,
+	ExplosionTypeSmokeGL = 19,
+	ExplosionTypeSmokeG = 20,
+	ExplosionTypeBZGas = 21,
+	ExplosionTypeFlare = 22,
+	ExplosionTypeGasCanister2 = 23,
+	ExplosionTypeExtinguisher = 24,
+	ExplosionTypeProgramAR = 25,
+	ExplosionTypeTrain = 26,
+	ExplosionTypeBarrel = 27,
+	ExplosionTypePropane = 28,
+	ExplosionTypeBlimp = 29,
+	ExplosionTypeFlameExplode = 30,
+	ExplosionTypeTanker = 31,
+	ExplosionTypePlaneRocket = 32,
+	ExplosionTypeVehicleBullet = 33,
+	ExplosionTypeGasTank = 34,
+	ExplosionTypeFireWork = 35,
+	ExplosionTypeSnowBall = 36,
+	ExplosionTypeProxMine = 37,
+	ExplosionTypeValkyrie = 38
 };
 
 enum eIntersectFlags
@@ -1204,6 +1314,113 @@ enum eWeapon : DWORD
 	WeaponUnarmed = 0xA2719263
 };
 
+enum eWeaponGroup : DWORD
+{
+	WeaponGroupUnarmed = 0xA00FC1E4,
+	WeaponGroupMelee = 0xD49321D4,
+	WeaponGroupPistol = 0x18D5FA97,
+	WeaponGroupSMG = 0xC6E9A5C5,
+	WeaponGroupAssaultRifle = 0xC7D15052,
+	WeaponGroupMG = 0x451B04BC,
+	WeaponGroupShotgun = 0x33431399,
+	WeaponGroupSniper = 0xB7BBD827,
+	WeaponGroupHeavy = 0xA27A4F9F,
+	WeaponGroupThrown = 0x5C4C5883,
+	WeaponGroupPetrolCan = 0x5F1BE07C
+};
+
+enum eWeaponTint
+{
+	WeaponTintNormal = 0,
+	WeaponTintGreen = 1,
+	WeaponTintGold = 2,
+	WeaponTintPink = 3,
+	WeaponTintArmy = 4,
+	WeaponTintLSPD = 5,
+	WeaponTintOrange = 6,
+	WeaponTintPlatinum = 7
+};
+
+enum ePickupType : DWORD
+{
+	PickupTypeCustomScript = 0x2C014CA6,
+	PickupTypeVehicleCustomScript = 0xA5B8CAA9,
+	PickupTypeParachute = 0x6773257D,
+	PickupTypePortablePackage = 0x80AB931C,
+	PickupTypePortableCrateUnfixed = 0x6E717A95,
+
+	PickupTypeHealth = 0x8F707C18,
+	PickupTypeHealthSnack = 0x1CD2CF66,
+	PickupTypeArmour = 0x4BFB42D1,
+
+	PickupTypeMoneyCase = 0xCE6FDD6B,
+	PickupTypeMoneySecurityCase = 0xDE78F17E,
+	PickupTypeMoneyVariable = 0xFE18F3AF,
+	PickupTypeMoneyMedBag = 0x14568F28,
+	PickupTypeMoneyPurse = 0x1E9A99F8,
+	PickupTypeMoneyDepBag = 0x20893292,
+	PickupTypeMoneyWallet = 0x5DE0AD3E,
+	PickupTypeMoneyPaperBag = 0x711D02A4,
+
+	PickupTypeWeaponPistol = 0xF9AFB48F,
+	PickupTypeWeaponCombatPistol = 0x8967B4F3,
+	PickupTypeWeaponAPPistol = 0x3B662889,
+	PickupTypeWeaponSNSPistol = 0xC5B72713,
+	PickupTypeWeaponHeavyPistol = 0x9CF13918,
+	PickupTypeWeaponMicroSMG = 0x1D9588D3,
+	PickupTypeWeaponSMG = 0x3A4C2AD2,
+	PickupTypeWeaponMG = 0x85CAA9B1,
+	PickupTypeWeaponCombatMG = 0xB2930A14,
+	PickupTypeWeaponAssaultRifle = 0xF33C83B0,
+	PickupTypeWeaponCarbineRifle = 0xDF711959,
+	PickupTypeWeaponAdvancedRifle = 0xB2B5325E,
+	PickupTypeWeaponSpecialCarbine = 0x968339D,
+	PickupTypeWeaponBullpupRifle = 0x815D66E8,
+	PickupTypeWeaponPumpShotgun = 0xA9355DCD,
+	PickupTypeWeaponSawnoffShotgun = 0x96B412A3,
+	PickupTypeWeaponAssaultShotgun = 0x9299C95B,
+	PickupTypeWeaponSniperRifle = 0xFE2A352C,
+	PickupTypeWeaponHeavySniper = 0x693583AD,
+	PickupTypeWeaponGrenadeLauncher = 0x2E764125,
+	PickupTypeWeaponRPG = 0x4D36C349,
+	PickupTypeWeaponMinigun = 0x2F36B434,
+	PickupTypeWeaponGrenade = 0x5E0683A1,
+	PickupTypeWeaponStickyBomb = 0x7C119D58,
+	PickupTypeWeaponSmokeGrenade = 0x1CD604C7,
+	PickupTypeWeaponMolotov = 0x2DD30479,
+	PickupTypeWeaponPetrolCan = 0xC69DE3FF,
+	PickupTypeWeaponKnife = 0x278D8734,
+	PickupTypeWeaponNightstick = 0x5EA16D74,
+	PickupTypeWeaponBat = 0x81EE601E,
+	PickupTypeWeaponCrowbar = 0x872DC888,
+	PickupTypeWeaponGolfclub = 0x88EAACA7,
+	PickupTypeWeaponBottle = 0xFA51ABF5,
+
+	PickupTypeVehicleWeaponPistol = 0xA54AE7B7,
+	PickupTypeVehicleWeaponCombatPistol = 0xD0AACEF7,
+	PickupTypeVehicleWeaponAPPistol = 0xCC8B3905,
+	PickupTypeVehicleWeaponMicroSMG = 0xB86AEE5B,
+	PickupTypeVehicleWeaponSawnoffShotgun = 0x2E071B5A,
+	PickupTypeVehicleWeaponGrenade = 0xA717F898,
+	PickupTypeVehicleWeaponSmokeGrenade = 0x65A7D8E9,
+	PickupTypeVehicleWeaponStickyBomb = 0x2C804FE3,
+	PickupTypeVehicleWeaponMolotov = 0x84D676D4,
+	PickupTypeVehicleHealth = 0x98D79EF,
+
+	PickupTypeAmmoPistol = 0x20796A82,
+	PickupTypeAmmoSMG = 0x116FC4E6,
+	PickupTypeAmmoMG = 0xDE58E0B3,
+	PickupTypeAmmoRifle = 0xE4BD2FC6,
+	PickupTypeAmmoShotgun = 0x77F3F2DD,
+	PickupTypeAmmoSniper = 0xC02CF125,
+	PickupTypeAmmoGrenadeLauncher = 0x881AB0A8,
+	PickupTypeAmmoRPG = 0x84837FD7,
+	PickupTypeAmmoMinigun = 0xF25A01B9,
+	PickupTypeAmmoMissileMP = 0xF99E15D0,
+	PickupTypeAmmoBulletMP = 0x550447A9,
+	PickupTypeAmmoGrenadeLauncherMP = 0xA421A532
+};
+
 enum eHudComponent
 {
 	HudComponentMain = 0,
@@ -1226,6 +1443,37 @@ enum eHudComponent
 	HudComponentSaving,
 	HudComponentGameStreamUnused,
 	HudComponentWeaponWheel,
-	HudComponentWeaponWheelStats
+	HudComponentWeaponWheelStats,
+	HudComponentDrugsPurse01,
+	HudComponentDrugsPurse02,
+	HudComponentDrugsPurse03,
+	HudComponentDrugsPurse04,
+	HudComponentMpTagCashFromBank,
+	HudComponentMpTagPackages,
+	HudComponentMpTagCuffKeys,
+	HudComponentMpTagDownloadData,
+	HudComponentMpTagIfPedFollowing,
+	HudComponentMpTagKeyCard,
+	HudComponentMpTagRandomObject,
+	HudComponentMpTagRemoteControl,
+	HudComponentMpTagCashFromSafe,
+	HudComponentMpTagWeaponsPackage,
+	HudComponentMpTagKeys,
+	HudComponentMpVehicle,
+	HudComponentMpVehicleHeli,
+	HudComponentMpVehiclePlane,
+	HudComponentPlayerSwitchAlert,
+	HudComponentMpRankBar,
+	HudComponentDirectorMode,
+	HudComponentReplayController,
+	HudComponentReplayMouse,
+	HudComponentReplayHeader,
+	HudComponentReplayOptions,
+	HudComponentReplayHelpText,
+	HudComponentReplayMiscText,
+	HudComponentReplayTopLine,
+	HudComponentReplayBottomLine,
+	HudComponentReplayLeftBar,
+	HudComponentReplayTimer
 };
 
