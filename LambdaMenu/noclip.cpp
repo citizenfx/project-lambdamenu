@@ -104,7 +104,7 @@ void process_noclip_menu()
 
 		noclip(inVehicle);
 
-		//WAIT(0);
+		WAIT(0);
 	}
 
 	if (!inVehicle)
